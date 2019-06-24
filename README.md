@@ -33,4 +33,15 @@ run jobs on condor:
 * python condor_submitargs.py
 
 check error in the logs just outside the CMSSW dir:
-      ID
+* grep ERROR *.out
+
+
+Data, NP, and CMID need to be hadded after analyzer step before using the plotter/table maker
+* eg.  hadd_Data_NP_CMID_afterAnalyzer.sh
+
+Duplicate check:
+*   root -l  dupCheck.cc
+
+
+Prompt rate measurement:
+* ./PromptRate_2017data.o <Data/MC> <El/Mu> <ID> <era>
