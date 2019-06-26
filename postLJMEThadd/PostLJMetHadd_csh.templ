@@ -1,0 +1,33 @@
+#!/bin/csh
+#
+# Template of the shell script for submitting a CONDOR job
+#
+# Need to be substituted:
+#    - C M S S W B A S E - local release base ($CMSSW_BASE)
+#    - D I R E C T O R Y - condor work and output dir
+#    - P R E F I X - some generic name for the set of jobs (like ttbar, wjets)
+#    - J O B I D  - job number
+#
+#
+#_____ setup the environment ____________________________________________
+#
+#setenv PATH /bin:/usr/bin:/usr/local/bin:/usr/krb5/bin:/usr/afsws/bin:/usr/krb5/bin/aklog
+
+#source /uscmst1/prod/sw/cms/cshrc prod
+#cd CMSSWBASE/src/
+#pwd
+source /cvmfs/cms.cern.ch/cmsset_default.csh
+setenv SCRAM_ARCH slc6_amd64_gcc630
+cmsrel CMSSWVERSION
+cd CMSSWVERSION/src/
+eval `scram runtime -csh`
+cmsenv
+
+
+#do hadd
+echo HADD_CMD
+HADD_CMD
+
+#move output to eos
+echo XRDCP_CMD
+XRDCP_CMD
