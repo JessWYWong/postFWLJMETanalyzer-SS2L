@@ -11,8 +11,8 @@ PWD         = $(shell pwd)
 
 TOOLDIR     = $(PWD)/../
 
-T53Analyzer:
-	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o X53Analyzer.o X53Analyzer.cc
+LJMETanalyzer:
+	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o LJMETanalyzer.o LJMETanalyzer.cc
 HighHTCheck:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o HighHTCheck.o HighHTCheck.cc
 
