@@ -26,6 +26,8 @@ def collect_rootfile_paths(basedir,folder,samples):
 
 def create_condor_files_from_template(rel_base,cmssw,locdir,eosdir,samples,rootfile_paths,submit=False):
 
+	'''Create condor jdl and condor bash files based on template files'''
+
 	for sample in samples:
 	
 		print '\n'+'Creating condor files for:',sample
