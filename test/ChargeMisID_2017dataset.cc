@@ -52,15 +52,19 @@ int main(int argc, char* argv[]){
   bool FiftyNS;
 
   if(argv1=="Data" && argv2=="50ns") {filename="root://cmseos.fnal.gov//store/user/clint/Run2015B/ljmet_trees/ljmet_Data_ElEl.root"; data=true; FiftyNS=true;}
-  else  if(argv1=="Data"){
-     data=true; FiftyNS=false;
-     //std::string filedir = "LJMet94x_2lepTT_2017datasets_2019_1_13_rizki_hadds";
-     std::string filedir = "LJMet94x_2lepTT_2017datasets_2019_3_15_rizki_hadds";
-      if(argv2=="2017B") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRB.root";
-      else if(argv2=="2017C") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRC.root";
-      else if(argv2=="2017D") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRD.root";
-      else if(argv2=="2017E") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRE.root";
-      else if(argv2=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRF.root";
+  else if(argv1=="Data"){
+      data=true; FiftyNS=false;
+
+      // Input file folder
+      std::string filedir = "FWLJMET102X_2lep2017_062719_hadds";
+
+      // Input files
+      if(argv2=="2017B") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017FBroot";
+      else if(argv2=="2017C") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017C.root";
+      else if(argv2=="2017D") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017D.root";
+      else if(argv2=="2017E") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017E.root";
+      //else if(argv2=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017F.root";
+      else if(argv2=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017F_TEST.root";
   }
   else if(argv1=="MC" && argv2=="50ns") {filename="root://cmseos.fnal.gov//store/user/clint/PHYS14/50ns/ljmet_trees/ljmet_DYJets.root"; data=false; FiftyNS=true;}
   else if(argv1=="MC" && argv2=="25ns") {filename="root://cmseos.fnal.gov//store/user/lpctlbsm/clint/Spring16/25ns/Feb16/ljmet_trees/ljmet_DYJets.root"; data=false; FiftyNS=false;}
@@ -72,15 +76,22 @@ int main(int argc, char* argv[]){
              <<"./ChargeMisID.o MC 25ns \n";
   }
 
+  //make output folder
+  TString outdir = "ChargeMisID";
+  system("mkdir -pv "+outdir);
+
+
   //make filename for output root file
-  std::string outname;
-  if(data)outname="ChargeMisID_Data_"+argv2+"_Electrons_"+ID+".root";
-  else outname="ChargeMisID_MC_Electrons_"+ID+".root";
+  TString outname;
+  if(data)outname=outdir+"/"+"ChargeMisID_Data_"+argv2+"_Electrons_"+ID+".root";
+  else outname=outdir+"/"+"ChargeMisID_MC_Electrons_"+ID+".root";
+
+
   //open output file
-  TFile* fout= new TFile(outname.c_str(),"RECREATE");
+  TFile* fout= new TFile(outname,"RECREATE");
 
   //get tree reader to read in data
-  TreeReader* tr =  new TreeReader(filename.c_str(),false,false);
+  TreeReader* tr =  new TreeReader(filename.c_str(),"ljmet/ljmet",false,false);
   TTree* t=tr->tree;
 
   //now change back to output file

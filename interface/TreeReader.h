@@ -21,7 +21,7 @@ class TreeReader{
 
   //constructor and desctructor
   TreeReader(TTree *tree,bool mc,bool latestVers);
-  TreeReader(const TString &filename,bool mc,bool latestVers);
+  TreeReader(const TString &filename,const TString &treename,bool mc,bool latestVers);
   virtual ~TreeReader();
 
   //high level collections
@@ -446,11 +446,13 @@ class TreeReader{
   //double muon
   bool HLT_Mu37_TkMu27;
   bool HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8;
+  bool HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8;
   bool HLT_DoubleMu8_Mass8_PFHT350;
   bool HLT_DoubleMu4_Mass8_DZ_PFHT350;
 
   TBranch* b_HLT_Mu37_TkMu27_DileptonCalc;
   TBranch* b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_DileptonCalc;
+  TBranch* b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_DileptonCalc;
   TBranch* b_HLT_DoubleMu8_Mass8_PFHT350_DileptonCalc;
   TBranch* b_HLT_DoubleMu4_Mass8_DZ_PFHT350_DileptonCalc;
 

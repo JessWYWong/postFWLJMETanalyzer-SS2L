@@ -15,21 +15,43 @@
 #include "../plugins/Macros.cc"
 
 //helper functions
-TLepton* makeTagLepton(std::vector<TMuon*> muons,std::vector<TElectron*> electrons,bool Muons,bool mc,bool FiftyNs,std::string ID);
-std::vector<TLepton*> makeProbeLeptons(TLepton* tag, std::vector<TMuon*> muons, std::vector<TElectron*> electrons, bool Muons, bool mc, bool FiftyNs, std::string ID);
+TLepton* makeTagLepton(
+    std::vector<TMuon*> muons,
+    std::vector<TElectron*> electrons,
+    bool Muons,
+    bool mc,
+    bool FiftyNs,
+    std::string ID
+    );
+std::vector<TLepton*> makeProbeLeptons(
+    TLepton* tag, 
+    std::vector<TMuon*> muons, 
+    std::vector<TElectron*> electrons, 
+    bool Muons, 
+    bool mc, 
+    bool FiftyNs, 
+    std::string ID
+    );
+std::vector<TLepton*> makeAramLeptons(
+    std::vector<TMuon*> muons,
+    std::vector<TElectron*> electrons,
+    bool MuonChannel,
+    bool mc,
+    bool FiftyNs,
+    std::string ID
+    );
 std::vector<TLepton*> findBestPair(TLepton* tag, std::vector<TLepton*> probes);
-std::vector<TLepton*> makeAramLeptons(std::vector<TMuon*> muons,std::vector<TElectron*> electrons,bool MuonChannel,bool mc,bool FiftyNs,std::string ID);
 bool sortByPhi(TLepton* lep1, TLepton* lep2){return lep1->phi > lep2->phi;};
 bool sortByPt(TLepton* lep1, TLepton* lep2){return lep1->pt > lep2->pt;};
+
 bool isoTrig;
 
 //A script to get the prompt rate for electrons and muons. Usage is ./PromptRate.o <Data,MC> <El,Mu> 
 
 int main(int argc, char* argv[]){
 
-  isoTrig = true;
-  std::cout << "isoTrig ="<< isoTrig << std::endl;
 
+  // Fail safe
   if(argc<4){
     std::cout<<"Need to specify whether running on Data or MC and whether running for electrons or muons as well as the ID used. The four possible ways of running are\n"
 	     <<"./PromptRate.o Data El ID\n"
@@ -45,6 +67,7 @@ int main(int argc, char* argv[]){
   std::string ID = argv[3];
   std::string argv4 = argv[4];
 
+  // Fail safe
   bool correctusage=false;
   if(argc>=4 && (argv1.find("Data")!=std::string::npos || argv1.find("MC")!=std::string::npos ) && (argv2.find("El")!=std::string::npos || argv2.find("Mu")!=std::string::npos)  ) correctusage=true;
   if(!correctusage){
@@ -56,6 +79,21 @@ int main(int argc, char* argv[]){
     return 0;
   }
 
+  
+  // Which trigger?
+  std::string isoTrig_str = argv[5];
+  if(isoTrig_str=="1") isoTrig = true;
+  else                 isoTrig = false;
+  std::string isoTrigStr;
+  if(isoTrig){
+      isoTrigStr = "_isoTrig_forTrilep";
+  }
+  else{
+      isoTrigStr = "_nonIsoHTTrig";  
+  }
+  std::cout << "isoTrig ="<< isoTrig << std::endl;
+  
+
   //get filename based on Data/MC
   std::string filename;
   bool data;
@@ -64,54 +102,62 @@ int main(int argc, char* argv[]){
   bool MuonChannel;
   if(argv2=="Mu") MuonChannel=true;
   else MuonChannel=false;
+
+  // is Data/MC ?
   if(argv1=="Data") {
+
     data=true;
-    //std::string filedir = "LJMet94x_2lepTT_2017datasets_2019_1_13_rizki_hadds";
-    std::string filedir = "LJMet94x_2lepTT_2017datasets_2019_3_15_rizki_hadds";
+    
+    // Input folder
+    std::string filedir = "FWLJMET102X_2lep2017_062719_hadds";
+
+    // Input files
     if(MuonChannel){
-      if(argv4=="2017B") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRB.root";
-      else if(argv4=="2017C") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRC.root";
-      else if(argv4=="2017D") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRD.root";
-      else if(argv4=="2017E") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRE.root";
-      else if(argv4=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRF.root";
-      else if(argv4=="2017F_1") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRF_1.root";
-      else if(argv4=="2017F_2_1") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRF_2_1.root";
-      else if(argv4=="2017F_2_2") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRF_2_2.root";
-      else if(argv4=="2017F_2_3") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRF_2_3.root";
-      else if(argv4=="2017F_2_4") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRF_2_4.root";
-      else if(argv4=="2017F_2_5") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRF_2_5.root";
+      if(argv4=="2017B") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017B.root";
+      else if(argv4=="2017C") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017C.root";
+      else if(argv4=="2017D") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017D.root";
+      else if(argv4=="2017E") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017E.root";
+      else if(argv4=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017F.root";
     }
     else{            
-      if(argv4=="2017B") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRB.root";
-      else if(argv4=="2017C") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRC.root";
-      else if(argv4=="2017D") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRD.root";
-      else if(argv4=="2017E") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRE.root";
-      else if(argv4=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRF.root";
-
+      if(argv4=="2017B") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017B.root";
+      else if(argv4=="2017C") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017C.root";
+      else if(argv4=="2017D") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017D.root";
+      else if(argv4=="2017E") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017E.root";
+      //else if(argv4=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017F.root";
+      else if(argv4=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017F_TEST.root";
     }
   }
-  else {filename="/eos/uscms/store/user/lpctlbsm/clint/Spring15/25ns/Nov17/ljmet_trees/ljmet_DYJets.root"; data=false;}
-  bool FiftyNs=data;
+  else { //MC
+      filename="/eos/uscms/store/user/lpctlbsm/clint/Spring15/25ns/Nov17/ljmet_trees/ljmet_DYJets.root"; data=false;    
+  }
+
+  bool FiftyNs=data; // depracated. -- June 28, 2019.
+
+  //make output folder
+  TString outdir = "PromptRate"+isoTrigStr;
+  system("mkdir -pv "+outdir);
+
   //make filename for output root file
   std::string outname;
   if(MuonChannel){
   	if(isoTrig){
-		if(data)outname="PromptRate_Data_"+argv4+"_Muons_"+ID+"_SortByPhi_IsoTrig.root"; 
-		else outname="PromptRate_MC_Muons_"+ID+"_SortByPhi_IsoTrig.root"; 
+		if(data)outname=outdir+"/"+"PromptRate_Data_"+argv4+"_Muons_"+ID+"_SortByPhi"+isoTrigStr+".root"; 
+		else outname=outdir+"/"+"PromptRate_MC_Muons_"+ID+"_SortByPhi"+isoTrigStr+".root"; 
   	}
   	else{
-		if(data)outname="PromptRate_Data_"+argv4+"_Muons_"+ID+"_SortByPhi.root"; 
-		else outname="PromptRate_MC_Muons_"+ID+"_SortByPhi.root"; 
+		if(data)outname=outdir+"/"+"PromptRate_Data_"+argv4+"_Muons_"+ID+"_SortByPhi"+isoTrigStr+".root";
+		else outname=outdir+"/"+"PromptRate_MC_Muons_"+ID+"_SortByPhi"+isoTrigStr+".root";
 	}
   }
   else{
   	if(isoTrig){
-		if(data)outname="PromptRate_Data_"+argv4+"_Electrons_"+ID+"_SortByPhi_IsoTrig.root"; 
-		else outname="PromptRate_MC_Electrons_"+ID+"_SortByPhi_IsoTrig.root"; 
+		if(data)outname=outdir+"/"+"PromptRate_Data_"+argv4+"_Electrons_"+ID+"_SortByPhi"+isoTrigStr+".root"; 
+		else outname=outdir+"/"+"PromptRate_MC_Electrons_"+ID+"_SortByPhi"+isoTrigStr+".root"; 
   	}
   	else{
-		if(data)outname="PromptRate_Data_"+argv4+"_Electrons_"+ID+"_SortByPhi.root"; 
-		else outname="PromptRate_MC_Electrons_"+ID+"_SortByPhi.root"; 
+		if(data)outname=outdir+"/"+"PromptRate_Data_"+argv4+"_Electrons_"+ID+"_SortByPhi"+isoTrigStr+".root";
+		else outname=outdir+"/"+"PromptRate_MC_Electrons_"+ID+"_SortByPhi"+isoTrigStr+".root";
     }
   }
 
@@ -135,7 +181,7 @@ int main(int argc, char* argv[]){
 
 
   //get tree reader to read in data
-  TreeReader* tr= new TreeReader(filename.c_str(),!data,false);
+  TreeReader* tr= new TreeReader(filename.c_str(),"ljmet/ljmet",!data,false);
   TTree* t=tr->tree;
 
   //initialize needed histograms
@@ -170,7 +216,8 @@ int main(int argc, char* argv[]){
     else{
       if(MuonChannel){
       	if(isoTrig){
-          if(tr->HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8) passTrig=true;
+          //if(tr->HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8) passTrig=true;
+          if(tr->HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8) passTrig=true;
       	}
       	else{
           if(tr->HLT_DoubleMu4_Mass8_DZ_PFHT350) passTrig=true;      	
@@ -283,7 +330,15 @@ int main(int argc, char* argv[]){
 }
 
 
-std::vector<TLepton*> makeProbeLeptons(TLepton* tag, std::vector<TMuon*> muons, std::vector<TElectron*> electrons, bool Muons,bool mc, bool FiftyNs, std::string ID){
+std::vector<TLepton*> makeProbeLeptons(
+    TLepton* tag, 
+    std::vector<TMuon*> muons, 
+    std::vector<TElectron*> electrons, 
+    bool Muons,
+    bool mc, 
+    bool FiftyNs, 
+    std::string ID
+    ){
 
   std::vector<TLepton*> Leptons;
 
@@ -297,21 +352,21 @@ std::vector<TLepton*> makeProbeLeptons(TLepton* tag, std::vector<TMuon*> muons, 
       //skip if probe has same sign charge as tag
       if(imu->charge == tag->charge) continue;
       if(ID=="CBTight"){
-	iLep->Tight=imu->cutBasedTight();
-	iLep->Loose=imu->cutBasedLoose();
+          iLep->Tight=imu->cutBasedTight();
+          iLep->Loose=imu->cutBasedLoose();
       }
       else if(ID=="CBTightMiniIso"){
-	iLep->Tight=imu->cutBasedTight_NoIso();
-	iLep->Loose=imu->cutBasedLooseMiniIso();
+          iLep->Tight=imu->cutBasedTight_NoIso();
+          iLep->Loose=imu->cutBasedLooseMiniIso();
       }
       else if(ID=="CBLoose"){
-	iLep->Tight=imu->cutBasedLoose();
-	iLep->Loose=true; //in case 'loose ID' is specified as 'tight', take any muon as loose ID
+          iLep->Tight=imu->cutBasedLoose();
+          iLep->Loose=true; //in case 'loose ID' is specified as 'tight', take any muon as loose ID
       }
-    else if(ID=="CBTightMiniIsoTight"){ //added by rizki
-      iLep->Tight=imu->cutBasedTightMiniIsoTight();
-      iLep->Loose=imu->cutBasedLooseMiniIso();
-    }
+      else if(ID=="CBTightMiniIsoTight"){ //added by rizki
+          iLep->Tight=imu->cutBasedTightMiniIsoTight();
+          iLep->Loose=imu->cutBasedLooseMiniIso();
+      }
       iLep->isMu = true;
       iLep->isEl = false;
       //only save if at least loose
@@ -334,80 +389,80 @@ std::vector<TLepton*> makeProbeLeptons(TLepton* tag, std::vector<TMuon*> muons, 
       //skip if same as tag
       if(iel->pt==tag->pt && iel->eta==tag->eta && iel->phi==tag->eta) continue;
       if(ID=="CBTight"){
-	iLep->Tight=iel->cutBasedTight25nsSpring15MC();
-	iLep->Loose=iel->cutBasedLoose25nsSpring15MC();
+          iLep->Tight=iel->cutBasedTight25nsSpring15MC();
+          iLep->Loose=iel->cutBasedLoose25nsSpring15MC();
       }
       else if(ID=="CBTightRC"){
-	iLep->Tight=iel->cutBasedTight25nsSpring15MCRC();
-	iLep->Loose=iel->cutBasedLoose25nsSpring15MCRC();
+          iLep->Tight=iel->cutBasedTight25nsSpring15MCRC();
+          iLep->Loose=iel->cutBasedLoose25nsSpring15MCRC();
       }
       else if(ID=="CBLoose"){
-	iLep->Tight=iel->cutBasedLoose25nsSpring15MC();
-	iLep->Loose=true;
+          iLep->Tight=iel->cutBasedLoose25nsSpring15MC();
+          iLep->Loose=true;
       }
       else if(ID=="MVATightNew"){
-	iLep->Tight=iel->mvaTightNew();
-	iLep->Loose=iel->mvaLooseNew();
+          iLep->Tight=iel->mvaTightNew();
+          iLep->Loose=iel->mvaLooseNew();
       }
       else if(ID=="MVATightNewRC"){
-	iLep->Tight=iel->mvaTightNewRC();
-	iLep->Loose=iel->mvaLooseNewRC();
+          iLep->Tight=iel->mvaTightNewRC();
+          iLep->Loose=iel->mvaLooseNewRC();
       }
       else if(ID=="MVATight"){
-	iLep->Tight=iel->mvaTightIso();
-	iLep->Loose=iel->mvaLooseIso();
+          iLep->Tight=iel->mvaTightIso();
+          iLep->Loose=iel->mvaLooseIso();
       }
       else if(ID=="MVATightRC"){
-	iLep->Tight=iel->mvaTightRC();
-	iLep->Loose=iel->mvaLooseRC();
+          iLep->Tight=iel->mvaTightRC();
+          iLep->Loose=iel->mvaLooseRC();
       }
       else if(ID=="MVA2016TightRC"){
-	iLep->Tight=iel->mva2016TightRC();
-	iLep->Loose=iel->mvaJulieLooseRC();
+          iLep->Tight=iel->mva2016TightRC();
+          iLep->Loose=iel->mvaJulieLooseRC();
       }
       else if(ID=="MVA80XTightRC"){
-	iLep->Tight=iel->mva80XTightRC();
-	iLep->Loose=iel->mva80XLooseRC();
+          iLep->Tight=iel->mva80XTightRC();
+          iLep->Loose=iel->mva80XLooseRC();
       }
       else if(ID=="MVAJulieTightRC"){
-	iLep->Tight=iel->mvaJulieTightRC();
-	iLep->Loose=iel->mvaJulieLooseRC();
+          iLep->Tight=iel->mvaJulieTightRC();
+          iLep->Loose=iel->mvaJulieLooseRC();
       }
       else if(ID=="MVAJulieNewTightRC"){
-	iLep->Tight=iel->mvaJulieNewTightRC();
-	iLep->Loose=iel->mvaJulieLooseRC();
+          iLep->Tight=iel->mvaJulieNewTightRC();
+          iLep->Loose=iel->mvaJulieLooseRC();
       }
       else if(ID=="MVATightNoIso"){
-	iLep->Tight=iel->mvaTight();
-	iLep->Loose=iel->mvaLoose();
+          iLep->Tight=iel->mvaTight();
+          iLep->Loose=iel->mvaLoose();
       }
       else if(ID=="MVALoose"){
-	iLep->Tight=iel->mvaLooseIso();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLooseIso();
+          iLep->Loose=true;
       }
       else if(ID=="MVALooseNoIso"){
-	iLep->Tight=iel->mvaLoose();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLoose();
+          iLep->Loose=true;
       }
       else if(ID=="MVATightCC"){
-	iLep->Tight=iel->mvaTightCCIso();
-	iLep->Loose=iel->mvaLooseCCIso();
+          iLep->Tight=iel->mvaTightCCIso();
+          iLep->Loose=iel->mvaLooseCCIso();
       }
       else if(ID=="MVATightCCNoIso"){
-	iLep->Tight=iel->mvaTightCC();
-	iLep->Loose=iel->mvaLooseCC();
+          iLep->Tight=iel->mvaTightCC();
+          iLep->Loose=iel->mvaLooseCC();
       }
       else if(ID=="MVALooseCC"){
-	iLep->Tight=iel->mvaLooseCCIso();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLooseCCIso();
+          iLep->Loose=true;
       }
       else if(ID=="MVALooseNoIso"){
-	iLep->Tight=iel->mvaLoose();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLoose();
+          iLep->Loose=true;
       }
       else if(ID=="SUSYTight"){
-	iLep->Tight=iel->susyTight();
-	iLep->Loose=iel->susyLoose();
+          iLep->Tight=iel->susyTight();
+          iLep->Loose=iel->susyLoose();
       }
       else if(ID=="MVA2017TightIsoRC"){ //added by rizki
 		  iLep->Tight=iel->mva94XTightV1_Iso_RC();
@@ -417,17 +472,17 @@ std::vector<TLepton*> makeProbeLeptons(TLepton* tag, std::vector<TMuon*> muons, 
 		  iLep->Tight=iel->mva94XTightV1_RC();
 		  iLep->Loose=iel->mva94XLooseV1_RC();
       }
-    else if(ID=="MVA2017TightV2IsoRC"){
-                iLep->Tight=iel->mva94XTightV2_90_Iso_RC();
-                iLep->Loose=iel->mva94XLooseV2_Iso_RC();
-    }
-    else if(ID=="MVA2017TightV2RC"){
-                iLep->Tight=iel->mva94XTightV2_90_RC();
-                iLep->Loose=iel->mva94XLooseV2_RC();
-    }
-      
+      else if(ID=="MVA2017TightV2IsoRC"){
+          iLep->Tight=iel->mva94XTightV2_90_Iso_RC();
+          iLep->Loose=iel->mva94XLooseV2_Iso_RC();
+      }
+      else if(ID=="MVA2017TightV2RC"){
+          iLep->Tight=iel->mva94XTightV2_90_RC();
+          iLep->Loose=iel->mva94XLooseV2_RC();
+      }      
       iLep->isMu = false;
       iLep->isEl = true;
+
       //save if loose
       if(iLep->Loose){
 		if(isoTrig){
@@ -492,26 +547,26 @@ TLepton* makeTagLepton(std::vector<TMuon*> muons,std::vector<TElectron*> electro
       TMuon* imu = muons.at(uimu);
       TLepton* iLep = new TLepton(imu->pt,imu->eta,imu->phi,imu->energy,imu->charge,imu->relIso,imu->miniIso,imu->susyIso);
       if(ID=="CBTight"){
-	iLep->Tight=imu->cutBasedTight();
-	iLep->Loose=imu->cutBasedLoose();
+          iLep->Tight=imu->cutBasedTight();
+          iLep->Loose=imu->cutBasedLoose();
       }
       else if(ID=="CBTightMiniIso"){
-	iLep->Tight=imu->cutBasedTightMiniIso();
-	iLep->Loose=imu->cutBasedLooseMiniIso();
+          iLep->Tight=imu->cutBasedTightMiniIso();
+          iLep->Loose=imu->cutBasedLooseMiniIso();
       }
       else if(ID=="CBLoose"){
-	iLep->Tight=imu->cutBasedLoose();
-	iLep->Loose=true; //in case 'loose ID' is specified as 'tight', take any muon as loose ID
+          iLep->Tight=imu->cutBasedLoose();
+          iLep->Loose=true; //in case 'loose ID' is specified as 'tight', take any muon as loose ID
       }
-    else if(ID=="CBTightMiniIsoTight"){
-      iLep->Tight=imu->cutBasedTightMiniIsoTight();
-      iLep->Loose=imu->cutBasedLooseMiniIso();
-    }
+      else if(ID=="CBTightMiniIsoTight"){
+          iLep->Tight=imu->cutBasedTightMiniIsoTight();
+          iLep->Loose=imu->cutBasedLooseMiniIso();
+      }
       iLep->isMu = true;
       iLep->isEl = false;
       //only save if tight
       if(iLep->Tight){
-	//apply pt cut
+        //apply pt cut
 		if(isoTrig){
 			if(iLep->pt>30) Leptons.push_back(iLep);
 		}
@@ -529,85 +584,85 @@ TLepton* makeTagLepton(std::vector<TMuon*> muons,std::vector<TElectron*> electro
       TLepton* iLep = new TLepton(iel->pt,iel->eta,iel->phi,iel->energy,iel->charge,iel->relIsoEA,iel->miniIso,iel->susyIso);
 
       if(ID=="CBTight"){
-	iLep->Tight=iel->cutBasedTight25nsSpring15MC();
-	iLep->Loose=iel->cutBasedLoose25nsSpring15MC();
+          iLep->Tight=iel->cutBasedTight25nsSpring15MC();
+          iLep->Loose=iel->cutBasedLoose25nsSpring15MC();
       }
       else if(ID=="CBLoose"){
-	iLep->Tight=iel->cutBasedLoose25nsSpring15MC();
-	iLep->Loose=true;
+          iLep->Tight=iel->cutBasedLoose25nsSpring15MC();
+          iLep->Loose=true;
       }
       else if(ID=="MVATightNew"){
-	iLep->Tight=iel->mvaTightNew();
-	iLep->Loose=iel->mvaLooseNew();
+          iLep->Tight=iel->mvaTightNew();
+          iLep->Loose=iel->mvaLooseNew();
       }
       else if(ID=="MVATightNewRC"){
-	iLep->Tight=iel->mvaTightNewRC();
-	iLep->Loose=iel->mvaLooseNewRC();
+          iLep->Tight=iel->mvaTightNewRC();
+          iLep->Loose=iel->mvaLooseNewRC();
       }
       else if(ID=="MVATight"){
-	iLep->Tight=iel->mvaTightIso();
-	iLep->Loose=iel->mvaLooseIso();
+          iLep->Tight=iel->mvaTightIso();
+          iLep->Loose=iel->mvaLooseIso();
       }
       else if(ID=="MVATightNoIso"){
-	iLep->Tight=iel->mvaTight();
-	iLep->Loose=iel->mvaLoose();
+          iLep->Tight=iel->mvaTight();
+          iLep->Loose=iel->mvaLoose();
       }
       else if(ID=="MVALoose"){
-	iLep->Tight=iel->mvaLooseIso();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLooseIso();
+          iLep->Loose=true;
       }
       else if(ID=="MVALooseNoIso"){
-	iLep->Tight=iel->mvaLoose();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLoose();
+          iLep->Loose=true;
       }
       else if(ID=="MVATightCC"){
-	iLep->Tight=iel->mvaTightCCIso();
-	iLep->Loose=iel->mvaLooseCCIso();
+          iLep->Tight=iel->mvaTightCCIso();
+          iLep->Loose=iel->mvaLooseCCIso();
       }
       else if(ID=="MVATightCCNoIso"){
-	iLep->Tight=iel->mvaTightCC();
-	iLep->Loose=iel->mvaLooseCC();
+          iLep->Tight=iel->mvaTightCC();
+          iLep->Loose=iel->mvaLooseCC();
       }
       else if(ID=="MVALooseCC"){
-	iLep->Tight=iel->mvaLooseCCIso();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLooseCCIso();
+          iLep->Loose=true;
       }
       else if(ID=="MVALooseCCNoIso"){
-	iLep->Tight=iel->mvaLooseCC();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLooseCC();
+          iLep->Loose=true;
       }
       else if(ID=="MVATightRC"){
-	iLep->Tight=iel->mvaTightRCIso();
-	iLep->Loose=iel->mvaLooseRCIso();
+          iLep->Tight=iel->mvaTightRCIso();
+          iLep->Loose=iel->mvaLooseRCIso();
       }
       else if(ID=="MVALooseRC"){
-	iLep->Tight=iel->mvaLooseRCIso();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLooseRCIso();
+          iLep->Loose=true;
       }
       else if(ID=="SUSYTight"){
-	iLep->Tight=iel->susyTight();
-	iLep->Loose=iel->susyLoose();
+          iLep->Tight=iel->susyTight();
+          iLep->Loose=iel->susyLoose();
       }
       else if(ID=="SUSYLoose"){
-	iLep->Tight=iel->susyLoose();
-	iLep->Loose=true;
+          iLep->Tight=iel->susyLoose();
+          iLep->Loose=true;
       }
       else if(ID=="SUSYTightRC"){
-	iLep->Tight=iel->susyTightRC();
-	iLep->Loose=iel->susyLooseRC();
+          iLep->Tight=iel->susyTightRC();
+          iLep->Loose=iel->susyLooseRC();
       }
       else if(ID=="MVA2017TightRC"){
-		  iLep->Tight=iel->mva94XTightV1_Iso_RC();
-		  iLep->Loose=iel->mva94XLooseV1_Iso_RC();
+          iLep->Tight=iel->mva94XTightV1_Iso_RC();
+          iLep->Loose=iel->mva94XLooseV1_Iso_RC();
       }
-    else if(ID=="MVA2017TightV2IsoRC"){
-                iLep->Tight=iel->mva94XTightV2_90_Iso_RC();
-                iLep->Loose=iel->mva94XLooseV2_Iso_RC();
-    }
-    else if(ID=="MVA2017TightV2RC"){
-                iLep->Tight=iel->mva94XTightV2_90_RC();
-                iLep->Loose=iel->mva94XLooseV2_RC();
-    }
+      else if(ID=="MVA2017TightV2IsoRC"){
+          iLep->Tight=iel->mva94XTightV2_90_Iso_RC();
+          iLep->Loose=iel->mva94XLooseV2_Iso_RC();
+      }
+      else if(ID=="MVA2017TightV2RC"){
+          iLep->Tight=iel->mva94XTightV2_90_RC();
+          iLep->Loose=iel->mva94XLooseV2_RC();
+      }
 
       iLep->isMu = false;
       iLep->isEl = true;
@@ -650,26 +705,27 @@ std::vector<TLepton*> makeAramLeptons(std::vector<TMuon*> muons,std::vector<TEle
       TLepton* iLep = new TLepton(imu->pt,imu->eta,imu->phi,imu->energy,imu->charge,imu->relIso,imu->miniIso,imu->susyIso);
 
       if(ID=="CBTight"){
-	iLep->Tight=imu->cutBasedTight();
-	iLep->Loose=imu->cutBasedLoose();
+          iLep->Tight=imu->cutBasedTight();
+          iLep->Loose=imu->cutBasedLoose();
       }
       else if(ID=="CBTightMiniIso"){
-	iLep->Tight=imu->cutBasedTightMiniIso();
-	iLep->Loose=imu->cutBasedLooseMiniIso();
+          iLep->Tight=imu->cutBasedTightMiniIso();
+          iLep->Loose=imu->cutBasedLooseMiniIso();
       }
       else if(ID=="CBLoose"){
-	iLep->Tight=imu->cutBasedLoose();
-	iLep->Loose=true; //in case 'loose ID' is specified as 'tight', take any muon as loose ID
+          iLep->Tight=imu->cutBasedLoose();
+          iLep->Loose=true; //in case 'loose ID' is specified as 'tight', take any muon as loose ID
       }
-    else if(ID=="CBTightMiniIsoTight"){
-      iLep->Tight=imu->cutBasedTightMiniIsoTight();
-      iLep->Loose=imu->cutBasedLooseMiniIso();
-    }
+      else if(ID=="CBTightMiniIsoTight"){ 
+          iLep->Tight=imu->cutBasedTightMiniIsoTight();
+          iLep->Loose=imu->cutBasedLooseMiniIso();
+      }
       iLep->isMu = true;
       iLep->isEl = false;
+
       //only save if at least loose
       if(iLep->Loose){
-	//apply pt cut
+        //apply pt cut
 		if(isoTrig){
 			if(iLep->pt>30) Leptons.push_back(iLep);
 		}
@@ -686,83 +742,83 @@ std::vector<TLepton*> makeAramLeptons(std::vector<TMuon*> muons,std::vector<TEle
       TElectron* iel = electrons.at(uiel);
       TLepton* iLep = new TLepton(iel->pt,iel->eta,iel->phi,iel->energy,iel->charge,iel->relIsoEA,iel->miniIso,iel->susyIso);
       if(ID=="CBTight"){
-	iLep->Tight=iel->cutBasedTight25nsSpring15MC();
-	iLep->Loose=iel->cutBasedLoose25nsSpring15MC();
+          iLep->Tight=iel->cutBasedTight25nsSpring15MC();
+          iLep->Loose=iel->cutBasedLoose25nsSpring15MC();
       }
       else if(ID=="CBLoose"){
-	iLep->Tight=iel->cutBasedLoose25nsSpring15MC();
-	iLep->Loose=true;
+          iLep->Tight=iel->cutBasedLoose25nsSpring15MC();
+          iLep->Loose=true;
       }
       else if(ID=="MVATight"){
-	iLep->Tight=iel->mvaTightIso();
-	iLep->Loose=iel->mvaLooseIso();
+          iLep->Tight=iel->mvaTightIso();
+          iLep->Loose=iel->mvaLooseIso();
       }
       else if(ID=="MVATightNoIso"){
-	iLep->Tight=iel->mvaTight();
-	iLep->Loose=iel->mvaLoose();
+          iLep->Tight=iel->mvaTight();
+          iLep->Loose=iel->mvaLoose();
       }
       else if(ID=="MVALoose"){
-	iLep->Tight=iel->mvaLooseIso();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLooseIso();
+          iLep->Loose=true;
       }
       else if(ID=="MVALooseNoIso"){
-	iLep->Tight=iel->mvaLoose();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLoose();
+          iLep->Loose=true;
       }
       else if(ID=="MVATightCC"){
-	iLep->Tight=iel->mvaTightCCIso();
-	iLep->Loose=iel->mvaLooseCCIso();
+          iLep->Tight=iel->mvaTightCCIso();
+          iLep->Loose=iel->mvaLooseCCIso();
       }
       else if(ID=="MVATightCCNoIso"){
-	iLep->Tight=iel->mvaTightCC();
-	iLep->Loose=iel->mvaLooseCC();
+          iLep->Tight=iel->mvaTightCC();
+          iLep->Loose=iel->mvaLooseCC();
       }
       else if(ID=="MVALooseCC"){
-	iLep->Tight=iel->mvaLooseCCIso();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLooseCCIso();
+          iLep->Loose=true;
       }
       else if(ID=="MVALooseCCNoIso"){
-	iLep->Tight=iel->mvaLooseCC();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLooseCC();
+          iLep->Loose=true;
       }
       else if(ID=="MVATightRC"){
-	iLep->Tight=iel->mvaTightRCIso();
-	iLep->Loose=iel->mvaLooseRCIso();
+          iLep->Tight=iel->mvaTightRCIso();
+          iLep->Loose=iel->mvaLooseRCIso();
       }
       else if(ID=="MVALooseRC"){
-	iLep->Tight=iel->mvaLooseRCIso();
-	iLep->Loose=true;
+          iLep->Tight=iel->mvaLooseRCIso();
+          iLep->Loose=true;
       }
       else if(ID=="SUSYTight"){
-	iLep->Tight=iel->susyTight();
-	iLep->Loose=iel->susyLoose();
+          iLep->Tight=iel->susyTight();
+          iLep->Loose=iel->susyLoose();
       }
       else if(ID=="SUSYLoose"){
-	iLep->Tight=iel->susyLoose();
-	iLep->Loose=true;
+          iLep->Tight=iel->susyLoose();
+          iLep->Loose=true;
       }
       else if(ID=="SUSYTightRC"){
-	iLep->Tight=iel->susyTightRC();
-	iLep->Loose=iel->susyLooseRC();
+          iLep->Tight=iel->susyTightRC();
+          iLep->Loose=iel->susyLooseRC();
       }      
-    else if(ID=="MVA2017TightRC"){
-      iLep->Tight=iel->mva94XTightV1_Iso_RC();
-      iLep->Loose=iel->mva94XLooseV1_Iso_RC();
-    }
-    else if(ID=="MVA2017TightV2IsoRC"){
-                iLep->Tight=iel->mva94XTightV2_90_Iso_RC();
-                iLep->Loose=iel->mva94XLooseV2_Iso_RC();
-    }
-    else if(ID=="MVA2017TightV2RC"){
-                iLep->Tight=iel->mva94XTightV2_90_RC();
-                iLep->Loose=iel->mva94XLooseV2_RC();
-    }
+      else if(ID=="MVA2017TightRC"){
+          iLep->Tight=iel->mva94XTightV1_Iso_RC();
+          iLep->Loose=iel->mva94XLooseV1_Iso_RC();
+      }
+      else if(ID=="MVA2017TightV2IsoRC"){
+          iLep->Tight=iel->mva94XTightV2_90_Iso_RC();
+          iLep->Loose=iel->mva94XLooseV2_Iso_RC();
+      }
+      else if(ID=="MVA2017TightV2RC"){
+          iLep->Tight=iel->mva94XTightV2_90_RC();
+          iLep->Loose=iel->mva94XLooseV2_RC();
+      }
       
       iLep->isMu = false;
       iLep->isEl = true;
       //save if loose
       if(iLep->Loose){
-	//apply pt cut
+	    //apply pt cut
 		if(isoTrig){
 			if(iLep->pt>30) Leptons.push_back(iLep);
 		}

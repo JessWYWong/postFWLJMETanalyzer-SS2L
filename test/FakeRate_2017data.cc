@@ -41,9 +41,9 @@ int main(int argc, char* argv[]){
 
 
   std::string isoTrig_str = argv[5];
-  if(isoTrig_str=="0") isoTrig = false;
-  else if(isoTrig_str=="1") isoTrig = true;
+  if(isoTrig_str=="1") isoTrig = true;
   std::cout << "isoTrig ="<< isoTrig << std::endl;
+
   std::string isoTrigStr;
   if(isoTrig){
       isoTrigStr = "_isoTrig_forTrilep";
@@ -63,22 +63,25 @@ int main(int argc, char* argv[]){
 
 
   std::cout<<"arg 1: "<<argv1<<" arg2: "<<argv2<<" arg3: "<<ID<<" arg4: "<<argv4<<std::endl;
-    //now get boolean for data or mc
+  //now get boolean for data or mc
   bool data=false;
   if(argv1.find("Data")!=std::string::npos) data=true;
 
   //boolean for channel
   bool MuonChannel=false;
   if(argv2.find("Muons")!=std::string::npos) MuonChannel=true;
-
+  
+  
+  //make output folder
+  TString outdir = "FakeRate"+isoTrigStr;
+  system("mkdir -pv "+outdir);
 
   //make output file
-  std::vector<std::string> outname;
+  std::vector<TString> outname;
   if(data){
-    if(MuonChannel) outname.push_back("FakeRate_Data_"+argv4+"Muons_"+ID+"_2017dataset"+isoTrigStr+".root");
-    else outname.push_back("FakeRate_Data_"+argv4+"Electrons_"+ID+"_2017dataset"+isoTrigStr+".root");
+    if(MuonChannel) outname.push_back(outdir+"/"+"FakeRate_Data_"+argv4+"Muons_"+ID+"_2017dataset"+isoTrigStr+".root");
+    else outname.push_back(outdir+"/"+"FakeRate_Data_"+argv4+"Electrons_"+ID+"_2017dataset"+isoTrigStr+".root");
   }
-
   else{
     if(MuonChannel){
       if(argv1=="WJets-MC") outname.push_back("FakeRate_WJets-MC_Muons"+ID+"_2017dataset.root");
@@ -122,27 +125,25 @@ int main(int argc, char* argv[]){
   //get correct file
   std::vector<std::string> filenames;
   if(argv1.find("Data")!=std::string::npos) {
-
-    //std::string filedir = "LJMet94x_2lepTT_2017datasets_FakeRate_2019_1_10_rizki_hadds";
-    std::string filedir = "LJMet94x_2lepTT_2017datasets_FakeRate_2019_3_15_rizki_hadds";
+  
+    // Input folder 
+    std::string filedir = "FWLJMET102X_2lepFakeRate2017_062719_hadds";
+    
+    // Input files
     if(MuonChannel){
-      if(argv4=="2017B") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRB.root");
-      else if(argv4=="2017C") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRC.root");
-      else if(argv4=="2017D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRD.root");
-      else if(argv4=="2017E") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRE.root");
-      else if(argv4=="2017F_1") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRF_1.root");
-      else if(argv4=="2017F_2_1") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRF_2_1.root");
-      else if(argv4=="2017F_2_2") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRF_2_2.root");
-      else if(argv4=="2017F_2_3") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRF_2_3.root");
-      else if(argv4=="2017F_2_4") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRF_2_4.root");
-      else if(argv4=="2017F_2_5") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_RRF_2_5.root");
+      if(argv4=="2017B") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017B.root");
+      else if(argv4=="2017C") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017C.root");
+      else if(argv4=="2017D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017D.root");
+      else if(argv4=="2017E") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017E.root");
+      //else if(argv4=="2017F") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017F.root");
+      else if(argv4=="2017F") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017F_FakeRate_TEST.root");
     }
     else if(!MuonChannel){
-      if(argv4=="2017B") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRB.root");
-      else if(argv4=="2017C") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRC.root");
-      else if(argv4=="2017D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRD.root");
-      else if(argv4=="2017E") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRE.root");
-      else if(argv4=="2017F") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_RRF.root");
+      if(argv4=="2017B") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_FR_Run2017B.root");
+      else if(argv4=="2017C") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_FR_Run2017C.root");
+      else if(argv4=="2017D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_FR_Run2017D.root");
+      else if(argv4=="2017E") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_FR_Run2017E.root");
+      else if(argv4=="2017F") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_FR_Run2017F.root");
 
     }
     
@@ -168,7 +169,8 @@ int main(int argc, char* argv[]){
 
   for(unsigned int i =0; i<filenames.size(); i++){
     
-    TFile* fout = new TFile(outname.at(i).c_str(),"RECREATE");
+    // Create output file
+    TFile* fout = new TFile(outname.at(i),"RECREATE");
 
     //output tree
     TTree* outTree = new TTree("FakeRate","FakeRate");
@@ -188,7 +190,7 @@ int main(int argc, char* argv[]){
     outTree->Branch("MET",&MET);
 
     //get tree reader to read in data
-    TreeReader* tr= new TreeReader(filenames.at(i).c_str(),!data,false);
+    TreeReader* tr= new TreeReader(filenames.at(i).c_str(),"ljmet/ljmet",!data,false);
     TTree* t=tr->tree;
 
 

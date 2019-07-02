@@ -1,11 +1,11 @@
 #include "../interface/TreeReader.h"
 
-TreeReader::TreeReader(const TString &filename,bool mc,bool latestVers)
+TreeReader::TreeReader(const TString &filename,const TString &treename, bool mc,bool latestVers)
 {
 
   TFile *f = TFile::Open(filename);
   f->cd();
-  TTree *treetemp = (TTree*)gDirectory->Get("ljmet");
+  TTree *treetemp = (TTree*)f->Get(treename);
   isMc=mc;
   latestVersion=latestVers;
   Init(treetemp);
@@ -23,22 +23,27 @@ TreeReader::~TreeReader(){
 }
 //need to actually get the data
 Int_t TreeReader::GetEntry(Long64_t entry){
+
+  bool debug = false;
+  
+  if(debug)
+
   //delete anything hanging out in memory
   for (unsigned int i = 0;i<allMuons.size();++i ) delete allMuons[i];
   for (unsigned int i = 0;i<allElectrons.size();++i ) delete allElectrons[i];
   for (unsigned int i = 0;i<allAK4Jets.size();++i ) delete allAK4Jets[i];
   for (unsigned int i = 0;i<cleanedAK4Jets.size();++i ) delete cleanedAK4Jets[i];
   for (unsigned int i = 0;i<newCleanedAK4Jets.size();++i ) delete newCleanedAK4Jets[i];
-  //std::cout<<"deleting ak8 jets"<<std::endl;
+  if(debug) if(debug) std::cout<<"deleting ak8 jets"<<std::endl;
   for (unsigned int i = 0;i<allAK8Jets.size();++i ) delete allAK8Jets[i];
-  //std::cout<<"deleted ak8 jets"<<std::endl;
+  if(debug) std::cout<<"deleted ak8 jets"<<std::endl;
   for (unsigned int i = 0;i<simpleCleanedAK4Jets.size();++i ) delete simpleCleanedAK4Jets[i];
   if(isMc){
     for (unsigned int i = 0;i<genJets.size();++i ) delete genJets[i];
     for (unsigned int i = 0;i<genParticles.size();++i ) delete genParticles[i];
     for (unsigned int i = 0;i<hadronicGenJets.size();++i ) delete hadronicGenJets[i];
   }
-  ////std::cout<<"clearing collections"<<std::endl;
+  if(debug) std::cout<<"clearing collections"<<std::endl;
   allMuons.clear();
   goodMuons.clear();
   looseMuons.clear();
@@ -61,16 +66,16 @@ Int_t TreeReader::GetEntry(Long64_t entry){
 
   //check to make sure not empty
   if (!tree) return 0;
-  //std::cout<<"getting size of input vectors"<<std::endl;
+  if(debug) std::cout<<"getting size of input vectors"<<std::endl;
   int stat =  tree->GetEntry(entry);
   unsigned int nMuons = muPt->size();
   unsigned int nElectrons = elPt->size();
   unsigned int nAK4Jets = AK4JetPt->size();
   unsigned int nCleanedAK4Jets = cleanedAK4JetPt->size();
-  //std::cout<<"getting number of ak8 jets"<<std::endl;
+  if(debug) std::cout<<"getting number of ak8 jets"<<std::endl;
   unsigned int nAK8Jets = AK8JetPt->size();
-  //std::cout<<"making collections"<<std::endl;
-  //std::cout<<"making electron collections"<<std::endl;
+  if(debug) std::cout<<"making collections"<<std::endl;
+  if(debug) std::cout<<"making electron collections"<<std::endl;
   //make all electrons
   for(unsigned int i=0; i<nElectrons;i++){
   	//NOTE: both mvaValue are the same (elMVAValue_DileptonCalc). -- rizki Mar 27,2019
@@ -114,7 +119,8 @@ Int_t TreeReader::GetEntry(Long64_t entry){
     allElectrons.at(i)->set_mva94XLooseIsoV2((*elIsMVALooseIso)[i]);
 
   }
-  //std::cout<<"making muon collections"<<std::endl;
+
+  if(debug) std::cout<<"making muon collections"<<std::endl;
   //make all muons
   for(unsigned int i=0; i<nMuons;i++){
     allMuons.push_back(new TMuon((*muPt)[i],
@@ -137,11 +143,12 @@ Int_t TreeReader::GetEntry(Long64_t entry){
                                  (*muNTrackerLayers)[i],
                                  (*muRelIso)[i], 
                                  (*muMiniIso)[i], 
-                                 (*muSusyIso)[i]) 
-                                 );
+                                 (*muSusyIso)[i]
+                                 ) 
+                            );
   }
 
-  //std::cout<<"making jet collections"<<std::endl;
+  if(debug) std::cout<<"making jet collections"<<std::endl;
   //make all jets
   for (unsigned int i=0;i<nAK4Jets; i++){
     //require jet to be greater than 30 GeV and eta less than 2.4
@@ -149,14 +156,14 @@ Int_t TreeReader::GetEntry(Long64_t entry){
     allAK4Jets.push_back(new TJet( (*AK4JetPt)[i], (*AK4JetEta)[i], (*AK4JetPhi)[i],(*AK4JetEnergy)[i]) );
   }
 
-  //std::cout<<"making AK8 collections"<<std::endl;
+  if(debug) std::cout<<"making AK8 collections"<<std::endl;
   //make AK8, that is, boosted jets
   for(unsigned int i=0; i<nAK8Jets; i++){
     allAK8Jets.push_back(new TBoostedJet( (*AK8JetPt)[i], (*AK8JetEta)[i], (*AK8JetPhi)[i], (*AK8JetEnergy)[i], 999, (*AK8JetPruneMass)[i], (*AK8JetSDMass)[i], 999, (*AK8JetTau1)[i],(*AK8JetTau2)[i], (*AK8JetTau3)[i], (*AK8JetNSubjets)[i]));
     int firstsub = (*AK8JetSubjetIndex)[i];
     int nsubs = (*AK8JetNSubjets)[i];
     for(int j = firstsub; j< firstsub + nsubs;j++){
-      //std::cout<<"making subjet: "<<j<<" out of: "<<(*AK8JetNSubjets)[i]<<" for ak8 jet number: "<<i<<" and total size of subjet vector is: "<<(*subJetPt).size()<<std::endl;
+      //if(debug) std::cout<<"making subjet: "<<j<<" out of: "<<(*AK8JetNSubjets)[i]<<" for ak8 jet number: "<<i<<" and total size of subjet vector is: "<<(*subJetPt).size()<<std::endl;
       TJet* subjet = new TJet((*subJetPt)[j],(*subJetEta)[j],(*subJetPhi)[j],(*subJetBDisc)[j],(*subJetDeltaR)[j], (*subJetMass)[j], (*subJetBTag)[j]);
       allAK8Jets.at(i)->AddSubJet(subjet);
     }
@@ -219,7 +226,7 @@ Int_t TreeReader::GetEntry(Long64_t entry){
   for(unsigned int imu =0; imu<allMuons.size(); imu++){
     if(allMuons.at(imu)->cutBasedTight()) goodMuons.push_back(allMuons.at(imu));
   }
-  //std::cout<<"making loose muons"<<std::endl;
+  if(debug) std::cout<<"making loose muons"<<std::endl;
   //make loose muons
     for(unsigned int imu =0; imu<allMuons.size(); imu++){
     if(allMuons.at(imu)->cutBasedLooseMiniIso()) looseMuons.push_back(allMuons.at(imu));
@@ -229,7 +236,7 @@ Int_t TreeReader::GetEntry(Long64_t entry){
   for(unsigned int iel=0; iel< allElectrons.size(); iel++){
     if(allElectrons.at(iel)->mva94XTightV2_90_Iso_RC()) goodElectrons.push_back(allElectrons.at(iel));
   }
-  //std::cout<<"making loose electrons"<<std::endl;
+  if(debug) std::cout<<"making loose electrons"<<std::endl;
   //now from allElectrons make looseElectrons
   for(unsigned int iel=0; iel< allElectrons.size(); iel++){
     if(allElectrons.at(iel)->mva94XLooseV2_Iso_RC()) looseElectrons.push_back(allElectrons.at(iel));
@@ -252,31 +259,31 @@ Int_t TreeReader::GetEntry(Long64_t entry){
 
   //make clean jets collection
   for(unsigned int ijet=0; ijet<allAK4Jets.size();ijet++){
-    //std::cout<<"starting to make simple cleaned jet"<<ijet<<std::endl;;
+    if(debug) std::cout<<"starting to make simple cleaned jet"<<ijet<<std::endl;;
     TJet* jet = allAK4Jets.at(ijet);
     TLorentzVector cleanLV= jet->lv;
 
     //clean any tight electrons from the jet
     for(unsigned int iel=0; iel<looseElectrons.size(); iel++){
-      //std::cout<<"doing simple cleaning of jet "<<ijet<<" with electron "<<iel<<std::endl;
+      if(debug) std::cout<<"doing simple cleaning of jet "<<ijet<<" with electron "<<iel<<std::endl;
       TElectron* el = looseElectrons.at(iel);
       float deltaR = pow( pow( jet->eta - el->eta,2) + pow( jet->phi - el->phi,2), 0.5);
       if(deltaR <0.4) cleanLV= cleanLV - el->lv;
     }
     //clean any tight muons from the jet
     for(unsigned int imu=0; imu<looseMuons.size(); imu++){
-      //std::cout<<"doing simple cleaning of jet "<<ijet<<" with muon "<<imu<<std::endl;
+      if(debug) std::cout<<"doing simple cleaning of jet "<<ijet<<" with muon "<<imu<<std::endl;
       TMuon* mu = looseMuons.at(imu);
       float deltaR = pow( pow( jet->eta - mu->eta,2) + pow( jet->phi - mu->phi,2), 0.5);
       if(deltaR <0.4) cleanLV= cleanLV - mu->lv;
     }
-    //std::cout<<"adding simple cleaned jet"<<std::endl;
+    if(debug) std::cout<<"adding simple cleaned jet"<<std::endl;
     //only add if pt still greater than 30
     if(cleanLV.Pt()>30) simpleCleanedAK4Jets.push_back(new TJet(cleanLV.Pt(),cleanLV.Eta(),cleanLV.Phi(),cleanLV.Energy()));
 
   }
 
-  //std::cout<<"finished getting entry"<<std::endl;
+  if(debug) std::cout<<"finished getting entry"<<std::endl;
 
   return stat;
 }
@@ -647,6 +654,7 @@ void TreeReader::Init(TTree *treetemp)
   //double muon
   tree->SetBranchAddress("HLT_Mu37_TkMu27_DileptonCalc",&HLT_Mu37_TkMu27,&b_HLT_Mu37_TkMu27_DileptonCalc);
   tree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_DileptonCalc", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8,&b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_DileptonCalc);
+  tree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_DileptonCalc", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8,&b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_DileptonCalc);
   tree->SetBranchAddress("HLT_DoubleMu8_Mass8_PFHT350_DileptonCalc",&HLT_DoubleMu8_Mass8_PFHT350,&b_HLT_DoubleMu8_Mass8_PFHT350_DileptonCalc);
   tree->SetBranchAddress("HLT_DoubleMu4_Mass8_DZ_PFHT350_DileptonCalc",&HLT_DoubleMu4_Mass8_DZ_PFHT350,&b_HLT_DoubleMu4_Mass8_DZ_PFHT350_DileptonCalc);
 
