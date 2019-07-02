@@ -1,9 +1,54 @@
 #include "../interface/TMuon.h"
 
 
-TMuon::TMuon(double pttemp,double etatemp,double phitemp, double energytemp, int chargetemp, int isLtemp, int isTtemp,bool globaltemp,bool pftemp, bool trackertemp, double chi2temp, int nMuHtemp, int nMatchStattemp, double dxytemp, double dztemp,double siptemp, int ValPixtemp,int nTracktemp, double relIsotemp, double miniIsotemp, double susyisotemp):
-  TLepton(pttemp,etatemp,phitemp,energytemp,chargetemp,relIsotemp,miniIsotemp,susyisotemp),isLoose(isLtemp),isTight(isTtemp),Global(globaltemp),PFMuon(pftemp),Tracker(trackertemp),chi2(chi2temp),
-  nValMuHits(nMuHtemp), nMatchedStations(nMatchStattemp),dxy(dxytemp),dz(dztemp),SIP3d(siptemp),nValPixelHits(ValPixtemp),nTrackerLayers(nTracktemp),relIso(relIsotemp),miniIso(miniIsotemp), susyIso(susyisotemp)
+TMuon::TMuon(
+    double pttemp,
+    double etatemp,
+    double phitemp, 
+    double energytemp, 
+    int chargetemp, 
+    int isLtemp, 
+    int isTtemp,
+    bool globaltemp,
+    bool pftemp, 
+    bool trackertemp, 
+    double chi2temp, 
+    int nMuHtemp, 
+    int nMatchStattemp, 
+    double dxytemp, 
+    double dztemp,
+    double siptemp, 
+    int ValPixtemp,
+    int nTracktemp, 
+    double relIsotemp, 
+    double miniIsotemp, 
+    double susyisotemp
+    ):
+    TLepton(
+        pttemp,
+        etatemp,
+        phitemp,
+        energytemp,
+        chargetemp,
+        relIsotemp,
+        miniIsotemp,
+        susyisotemp
+        ),
+    isLoose(isLtemp),
+    isTight(isTtemp),
+    Global(globaltemp),
+    PFMuon(pftemp),
+    Tracker(trackertemp),
+    chi2(chi2temp),
+    nValMuHits(nMuHtemp), 
+    nMatchedStations(nMatchStattemp),
+    dxy(dxytemp),dz(dztemp),
+    SIP3d(siptemp),
+    nValPixelHits(ValPixtemp),
+    nTrackerLayers(nTracktemp),
+    relIso(relIsotemp),
+    miniIso(miniIsotemp), 
+    susyIso(susyisotemp)
 {
   setLV();
 }
