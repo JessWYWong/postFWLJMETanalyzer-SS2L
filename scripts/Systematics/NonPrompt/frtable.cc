@@ -9,6 +9,7 @@ void frtable(){
 
 
   TFile* f = new TFile("FakeRate_TTbar.root");
+  //TFile* f = new TFile("FakeRate_TTTo2L2Nu.root");
   TH1F* el_all = (TH1F*) f->Get("elNumHist_all");
   TH1F* el_lpt = (TH1F*) f->Get("elNumHist_lpt");
   TH1F* el_hpt = (TH1F*) f->Get("elNumHist_hpt");

@@ -26,6 +26,9 @@ class TreeMaker {
   int run_;
   int lumi_;
   long long event_;
+  double prefireWeight_;
+  double prefireWeightUp_;
+  double prefireWeightDown_;
   int nPrimaryVert_;
   //weight
   float weight_;
@@ -37,7 +40,11 @@ class TreeMaker {
   int nTL_;
   //scale factors for mc
   float trigSF_;
+  float trigSFup_;
+  float trigSFdn_;
   float IDSF_;
+  float IDSFup_;
+  float IDSFdn_;
   float IsoSF_;
   float gsfSF_;
   float JetTaggingSF_;
@@ -45,6 +52,13 @@ class TreeMaker {
   float puweight_;
   float puweightUp_;
   float puweightDown_;
+
+  std::vector<double> pdfweights_;
+  std::vector<double> renormWeights_;
+  std::vector<double> pdfNewWeights_;
+  std::vector<double> pdfWeights4LHC_;
+  std::vector<double> pdfWeightsMSTW_;
+  double pdfNewNominalWeight_;
 
   //variables for tree
   float Lep1Pt_;
@@ -74,10 +88,6 @@ class TreeMaker {
   float Lep2SusyIso_;
 
   int nConst_;
-  int nConstJESup_;
-  int nConstJESdn_;
-  int nConstJERup_;
-  int nConstJERdn_;
   int nAK4Jets_;
   int nNewConst_;
   int nNonSSLeps_;
@@ -259,7 +269,7 @@ class TreeMaker {
   //functions
   //WriteHists(TreeReader* tr, TTree* t, std::vector<TLepton*> vSSLep);
   void InitTree(std::string treename);
-  void FillTree(std::vector<TLepton*> vSSLep, std::vector<TJet*> AK4jets, std::vector<TJet*> cleanAK4jets, std::vector<TJet*> simpleCleanAK4Jets, float HTtemp, float METtemp, float DilepMasstemp, int nMu, float weight,std::vector<TLepton*> vNonSSLep,float mcweight, float NpWeighttemp, float NPaltTemp, float SUSYNPTemp, int nTLtemp,float trSF, float idSF, float isoSF,float gsfSF,float puwtemp,float puUptemp, float puDowntemp,float amasst,std::vector<TBoostedJet*> AK8Jets,std::vector<THadronicGenJet*> hadronicGenJets, bool mc,int run, int lumi, int event,int nPV);
+  void FillTree(std::vector<TLepton*> vSSLep, std::vector<TJet*> AK4jets, std::vector<TJet*> cleanAK4jets, std::vector<TJet*> simpleCleanAK4Jets, float HTtemp, float METtemp, float DilepMasstemp, int nMu, float weight,std::vector<TLepton*> vNonSSLep,float mcweight, float NpWeighttemp, float NPaltTemp, float SUSYNPTemp, int nTLtemp,float trSF,float trSFup,float trSFdn, float idSF, float idSFup, float idSFdn, float isoSF,float gsfSF,float puwtemp,float puUptemp, float puDowntemp, double prefirewtemp, double prefireUptemp, double prefireDowntemp,float amasst,std::vector<TBoostedJet*> AK8Jets,std::vector<THadronicGenJet*> hadronicGenJets, bool mc,int run, int lumi, int event,int nPV, std::vector<double> pdfweightstemp, std::vector<double> renormWeightstemp, std::vector<double> pdfNewWeightstemp, std::vector<double> pdfWeights4LHCtemp, std::vector<double> pdfWeightsMSTWtemp, double pdfNewNominalWeighttemp);
 
 };
 

@@ -1,0 +1,12 @@
+universe = vanilla
+Executable = DIRECTORY/SAMPLENAME.sh
+Requirements   =  OpSys == "LINUX" && (Arch != "DUMMY")
+request_disk = 100000000
+Should_Transfer_Files = YES
+WhenToTransferOutput = ON_EXIT
+Output = DIRECTORY/SAMPLENAME.stdout
+Error = DIRECTORY/SAMPLENAME.stderr
+Log = DIRECTORY/SAMPLENAME.condor.log
+notification = Never
+use_x509userproxy = true
+Queue 1

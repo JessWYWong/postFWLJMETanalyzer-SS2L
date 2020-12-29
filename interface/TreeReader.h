@@ -56,10 +56,16 @@ class TreeReader{
   TBranch* b_lumi_CommonCalc;
   long long event;
   TBranch* b_event_CommonCalc;
+  double prefireWeight;
+  TBranch* b_L1NonPrefiringProb_CommonCalc;
+  double prefireWeightUp;
+  TBranch* b_L1NonPrefiringProbUp_CommonCalc;
+  double prefireWeightDown;
+  TBranch* b_L1NonPrefiringProbDown_CommonCalc;
 
   //pileup
-  double nPU;
-  TBranch* b_nTrueInteractions_PileUpCalc;
+  int nPU;
+  TBranch* b_nTrueInteractions_DileptonCalc;
 
   int nPrimaryVert;
   TBranch* b_nPV_DileptonCalc;
@@ -91,8 +97,8 @@ class TreeReader{
   TBranch        *b_elMHits_DileptonCalc;
   std::vector<int>     *elPassConversionVeto;
   TBranch        *b_elPassConversionVeto_DileptonCalc;
-  std::vector<int>     *elQuality;
-  TBranch        *b_elQuality_DileptonCalc;
+//  std::vector<int>     *elQuality;
+//  TBranch        *b_elQuality_DileptonCalc;
   std::vector<int>     *elVtxFitConv;
   TBranch        *b_elVtxFitConv_DileptonCalc;
   //track quality variables
@@ -373,7 +379,8 @@ class TreeReader{
   TBranch*            b_LHEWeights_DileptonCalc;
   std::vector<int>    *LHEWeightIDs;
   TBranch*            b_LHEWeightIDs_DileptonCalc;
-
+  std::vector<double> *NewPDFweights;
+  TBranch*            b_NewPDFweights_DileptonCalc;
 
   // Trigger Info
 
@@ -451,8 +458,8 @@ class TreeReader{
   bool HLT_DoubleMu4_Mass8_DZ_PFHT350;
 
   TBranch* b_HLT_Mu37_TkMu27_DileptonCalc;
-  TBranch* b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_DileptonCalc;
-  TBranch* b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_DileptonCalc;
+  TBranch* b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v_DileptonCalc;
+  TBranch* b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v_DileptonCalc;
   TBranch* b_HLT_DoubleMu8_Mass8_PFHT350_DileptonCalc;
   TBranch* b_HLT_DoubleMu4_Mass8_DZ_PFHT350_DileptonCalc;
 
@@ -505,10 +512,10 @@ class TreeReader{
 
 
   //hadronic triggers
-  bool HLT_PFHT900;
-  TBranch* b_HLT_PFHT900_DileptonCalc;
-  bool HLT_AK8PFJet360TrimMass30;
-  TBranch* b_HLT_AK8PFJet360TrimMass30_DileptonCalc;
+//  bool HLT_PFHT900;
+//  TBranch* b_HLT_PFHT900_DileptonCalc;
+//  bool HLT_AK8PFJet360TrimMass30;
+//  TBranch* b_HLT_AK8PFJet360TrimMass30_DileptonCalc;
 
 
   //TT signal BR info - added by rizi

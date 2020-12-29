@@ -8,6 +8,8 @@
 #include "../plugins/Sample.cc"
 #include "../plugins/CutClass.cc"
 #include "../interface/TreeReader.h"
+//#include "../interface/PUweights.h"
+//PUweights PUweightsMap;
 #include "TGraphAsymmErrors.h"
 #include "TMath.h"
 #include "Math/ProbFunc.h"
@@ -18,7 +20,15 @@ std::string eosDirector = "root://cmseos.fnal.gov:/";
 // std::string samplesDir = "/store/group/lpcljm/LJMet94x_2lepTT_2017datasets_2019_1_13_rizki_hadds_Analyzer_elID2017_IsoTrig/";
 // std::string samplesDir = "/store/group/lpcljm/LJMet94x_2lepTT_2017datasets_2019_1_13_rizki_hadds_Analyzer_elID2017_NonIsoTrig/";
 // std::string samplesDir = "/store/group/lpcljm/LJMet94x_2lepTT_2017datasets_2019_2_18_rizki_hadds_Analyzer_elID2017_nonIsoHTtrig/";
-std::string samplesDir = "/store/group/lpcljm/LJMet94x_2lepTT_2017datasets_2019_3_15_rizki_hadds_Analyzer_elIDv2_nonIsoHTtrig/";
+//std::string samplesDir = "/store/group/lpcljm/LJMet94x_2lepTT_2017datasets_2019_3_15_rizki_hadds_Analyzer_elIDv2_nonIsoHTtrig/";
+//std::string samplesDir="/store/group/lpcljm/FWLJMET102X_2lep2017_062719_hadds/"; // FWLJMET era.
+//std::string samplesDir = "/store/group/lpcljm/LJMet94x_2lepTT_2017datasets_2019_3_15_rizki_hadds_Analyzer_elIDv2_nonIsoHTtrig/";
+
+
+//std::string samplesDir = "/store/user/wywong/FWLJMET102X_2lep2017_wywong_081319_hadds_postFWLJMETanalyzer_elIDv2_IsoTrig";
+//std::string samplesDir = "/store/user/wywong/FWLJMET102X_2lep2017_wywong_081319_hadds_postFWLJMETanalyzer_elIDv2_IsoTrig_UnityElPR";
+std::string samplesDir = "/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc_nPU";
+//std::string samplesDir = "/store/group/lpcljm/FWLJMET102X_2lep2017_wywong_082020_hadds/";
 
 std::vector<Variable*> getVariableVec(){
 
@@ -418,20 +428,31 @@ std::vector<Sample*> getInclusiveSigTTSampleVecForTable(std::string cut, float l
   //RIZKI: EVENTUALLY NEED TO MODIFY BELO FOR TT BR
   //br is OR of either side decaying to ssdl. BR(ssdl) for one side = BR(W->enu) OR BR(W->munu) **2 where the square comes from AND requiring both to decay leptonically
   //float BRssdl= 2*( pow((.1063 + .1071 + .1138),2)); INCLUSIVE SO NO BRANCHING RATIO
-  std::vector<int> vNEvts;
+  std::vector<float> vNEvts;
+
+  /////////// Value cross checked with 3+L by Jess on 17-12-2019 //////////////
   vSigNames.push_back("TprimeTprime_M-800"); vXsec.push_back(0.196); vNEvts.push_back(795000.);
   vSigNames.push_back("TprimeTprime_M-900"); vXsec.push_back(0.0903); vNEvts.push_back(831200.);
-  vSigNames.push_back("TprimeTprime_M-1000"); vXsec.push_back(0.0440); vNEvts.push_back(829600.);
-  vSigNames.push_back("TprimeTprime_M-1100"); vXsec.push_back(0.0224); vNEvts.push_back(832800.);
-  vSigNames.push_back("TprimeTprime_M-1200"); vXsec.push_back(0.0118); vNEvts.push_back(832600.);
-  vSigNames.push_back("TprimeTprime_M-1300"); vXsec.push_back(0.00639); vNEvts.push_back(831000.);
-  vSigNames.push_back("TprimeTprime_M-1400"); vXsec.push_back(0.00354); vNEvts.push_back(832600.);
-  vSigNames.push_back("TprimeTprime_M-1500"); vXsec.push_back(0.00200); vNEvts.push_back(832800.);
-  vSigNames.push_back("TprimeTprime_M-1600"); vXsec.push_back(0.001148); vNEvts.push_back(832600.);
-  vSigNames.push_back("TprimeTprime_M-1700"); vXsec.push_back(0.000666); vNEvts.push_back(797000.);
-  vSigNames.push_back("TprimeTprime_M-1800"); vXsec.push_back(0.000391); vNEvts.push_back(833000.);
+  //vSigNames.push_back("TprimeTprime_M-1000"); vXsec.push_back(0.0440); vNEvts.push_back(812636.);//829600.);
+  ///vSigNames.push_back("TprimeTprime_M-1100"); vXsec.push_back(0.0224); vNEvts.push_back(707124.);//832800.);
+  //vSigNames.push_back("TprimeTprime_M-1200"); vXsec.push_back(0.0118); vNEvts.push_back(767798.);//832600.);
+  //vSigNames.push_back("TprimeTprime_M-1300"); vXsec.push_back(0.00639); vNEvts.push_back(757036.);//831000.);
+  //vSigNames.push_back("TprimeTprime_M-1400"); vXsec.push_back(0.00354); vNEvts.push_back(693456.);//832600.);
+  //vSigNames.push_back("TprimeTprime_M-1500"); vXsec.push_back(0.00200); vNEvts.push_back(661276.);//832800.);
+  //vSigNames.push_back("TprimeTprime_M-1600"); vXsec.push_back(0.001148); vNEvts.push_back(622818.);//832600.);
+  //vSigNames.push_back("TprimeTprime_M-1700"); vXsec.push_back(0.000666); vNEvts.push_back(542558.);//797000.);
+  //vSigNames.push_back("TprimeTprime_M-1800"); vXsec.push_back(0.000391); vNEvts.push_back(455156.);//833000.);
 
-
+  //////////////////////////////// Updated by Jess (from 3+L analyzer 4LHC) on 6-12-2020 ////////////////////////////////// 
+  vSigNames.push_back("TprimeTprime_M-1000"); vXsec.push_back(0.0440); vNEvts.push_back(1002517.455);
+  vSigNames.push_back("TprimeTprime_M-1100"); vXsec.push_back(0.0224); vNEvts.push_back(895042.045);
+  vSigNames.push_back("TprimeTprime_M-1200"); vXsec.push_back(0.0118); vNEvts.push_back(1003441.777);
+  vSigNames.push_back("TprimeTprime_M-1300"); vXsec.push_back(0.00639); vNEvts.push_back(1026082.979);
+  vSigNames.push_back("TprimeTprime_M-1400"); vXsec.push_back(0.00354); vNEvts.push_back(979603.275);
+  vSigNames.push_back("TprimeTprime_M-1500"); vXsec.push_back(0.00200); vNEvts.push_back(985756.619);
+  vSigNames.push_back("TprimeTprime_M-1600"); vXsec.push_back(0.001148); vNEvts.push_back(989851.281);
+  vSigNames.push_back("TprimeTprime_M-1700"); vXsec.push_back(0.000666); vNEvts.push_back(939135.751);
+  vSigNames.push_back("TprimeTprime_M-1800"); vXsec.push_back(0.000391); vNEvts.push_back(884660.318);
 
   //vector to hold weights
   std::vector<float> vWeights;
@@ -546,19 +567,31 @@ std::vector<Sample*> getInclusiveSigTTSampleVecForTable(std::string cut, float l
   if(sigDecay=="BWBW" || sigDecay=="TZTZ" || sigDecay=="THTH" ) initBR=0.333*0.333;
   if(sigDecay=="THBW" || sigDecay=="TZBW" || sigDecay=="TZTH" ) initBR=0.333*0.333*2;
 
-  std::vector<int> vNEvts;
+  std::vector<float> vNEvts;
   vSigNames.push_back("TprimeTprime_M-800_"+sigDecay); vXsec.push_back(0.196); vNEvts.push_back(795000.);
   vSigNames.push_back("TprimeTprime_M-900_"+sigDecay); vXsec.push_back(0.0903); vNEvts.push_back(831200.);
-  vSigNames.push_back("TprimeTprime_M-1000_"+sigDecay); vXsec.push_back(0.0440); vNEvts.push_back(812636.);
-  vSigNames.push_back("TprimeTprime_M-1100_"+sigDecay); vXsec.push_back(0.0224); vNEvts.push_back(706170.);
-  vSigNames.push_back("TprimeTprime_M-1200_"+sigDecay); vXsec.push_back(0.0118); vNEvts.push_back(767798.);
-  vSigNames.push_back("TprimeTprime_M-1300_"+sigDecay); vXsec.push_back(0.00639); vNEvts.push_back(757036.);
-  vSigNames.push_back("TprimeTprime_M-1400_"+sigDecay); vXsec.push_back(0.00354); vNEvts.push_back(693456.);
-  vSigNames.push_back("TprimeTprime_M-1500_"+sigDecay); vXsec.push_back(0.00200); vNEvts.push_back(661276.);
-  vSigNames.push_back("TprimeTprime_M-1600_"+sigDecay); vXsec.push_back(0.001148); vNEvts.push_back(622818.);
-  vSigNames.push_back("TprimeTprime_M-1700_"+sigDecay); vXsec.push_back(0.000666); vNEvts.push_back(542558.);
-  vSigNames.push_back("TprimeTprime_M-1800_"+sigDecay); vXsec.push_back(0.000391); vNEvts.push_back(455156.);
+  //////////////////////////////// Updated by Jess (from 3+L analyzer) on 18-12-2019 ////////////////////////////////// 
+  //vSigNames.push_back("TprimeTprime_M-1000_"+sigDecay); vXsec.push_back(0.0440); vNEvts.push_back(812636.);
+  //vSigNames.push_back("TprimeTprime_M-1100_"+sigDecay); vXsec.push_back(0.0224); vNEvts.push_back(707124.);
+  //vSigNames.push_back("TprimeTprime_M-1200_"+sigDecay); vXsec.push_back(0.0118); vNEvts.push_back(767798.);
+  //vSigNames.push_back("TprimeTprime_M-1300_"+sigDecay); vXsec.push_back(0.00639); vNEvts.push_back(757036.);
+  //vSigNames.push_back("TprimeTprime_M-1400_"+sigDecay); vXsec.push_back(0.00354); vNEvts.push_back(693456.);
+  //vSigNames.push_back("TprimeTprime_M-1500_"+sigDecay); vXsec.push_back(0.00200); vNEvts.push_back(661276.);
+  //vSigNames.push_back("TprimeTprime_M-1600_"+sigDecay); vXsec.push_back(0.001148); vNEvts.push_back(622818.);
+  //vSigNames.push_back("TprimeTprime_M-1700_"+sigDecay); vXsec.push_back(0.000666); vNEvts.push_back(542558.);
+  //vSigNames.push_back("TprimeTprime_M-1800_"+sigDecay); vXsec.push_back(0.000391); vNEvts.push_back(455156.);
 
+  //////////////////////////////// Updated by Jess (from 3+L analyzer 4LHC) on 6-12-2020 ////////////////////////////////// 
+  vSigNames.push_back("TprimeTprime_M-1000_"+sigDecay); vXsec.push_back(0.0440); vNEvts.push_back(1002517.455);
+  vSigNames.push_back("TprimeTprime_M-1100_"+sigDecay); vXsec.push_back(0.0224); vNEvts.push_back(895042.045);
+  vSigNames.push_back("TprimeTprime_M-1200_"+sigDecay); vXsec.push_back(0.0118); vNEvts.push_back(1003441.777);
+  vSigNames.push_back("TprimeTprime_M-1300_"+sigDecay); vXsec.push_back(0.00639); vNEvts.push_back(1026082.979);
+  vSigNames.push_back("TprimeTprime_M-1400_"+sigDecay); vXsec.push_back(0.00354); vNEvts.push_back(979603.275);
+  vSigNames.push_back("TprimeTprime_M-1500_"+sigDecay); vXsec.push_back(0.00200); vNEvts.push_back(985756.619);
+  vSigNames.push_back("TprimeTprime_M-1600_"+sigDecay); vXsec.push_back(0.001148); vNEvts.push_back(989851.281);
+  vSigNames.push_back("TprimeTprime_M-1700_"+sigDecay); vXsec.push_back(0.000666); vNEvts.push_back(939135.751);
+  vSigNames.push_back("TprimeTprime_M-1800_"+sigDecay); vXsec.push_back(0.000391); vNEvts.push_back(884660.318);
+  //vSigNames.push_back("TprimeTprime_M-700_"+sigDecay); vXsec.push_back(0.455); vNEvts.push_back();
 
 
   //vector to hold weights
@@ -694,20 +727,31 @@ std::vector<Sample*> getInclusiveSigBBSampleVecForTable(std::string cut, float l
   if(sigDecay=="TWTW" || sigDecay=="BZBZ" || sigDecay=="BHBH" ) initBR=0.333*0.333;
   if(sigDecay=="BHTW" || sigDecay=="BZTW" || sigDecay=="BZBH" ) initBR=0.333*0.333*2;
 
-  std::vector<int> vNEvts;
-  vSigNames.push_back("BprimeBprime_M-800_"+sigDecay); vXsec.push_back(0.196); vNEvts.push_back(826200.);
-  vSigNames.push_back("BprimeBprime_M-900_"+sigDecay); vXsec.push_back(0.0903); vNEvts.push_back(799800.);
-  vSigNames.push_back("BprimeBprime_M-1000_"+sigDecay); vXsec.push_back(0.0440); vNEvts.push_back(825600.);
-  vSigNames.push_back("BprimeBprime_M-1100_"+sigDecay); vXsec.push_back(0.0224); vNEvts.push_back(832000.);
-  // vSigNames.push_back("BprimeBprime_M-1200_"+sigDecay); vXsec.push_back(0.0118); vNEvts.push_back(832200.);
-  vSigNames.push_back("BprimeBprime_M-1300_"+sigDecay); vXsec.push_back(0.00639); vNEvts.push_back(807200.);
-  vSigNames.push_back("BprimeBprime_M-1400_"+sigDecay); vXsec.push_back(0.00354); vNEvts.push_back(816800.);
-  vSigNames.push_back("BprimeBprime_M-1500_"+sigDecay); vXsec.push_back(0.00200); vNEvts.push_back(831000.);
-  vSigNames.push_back("BprimeBprime_M-1600_"+sigDecay); vXsec.push_back(0.001148); vNEvts.push_back(696600.);
-  // vSigNames.push_back("BprimeBprime_M-1700_"+sigDecay); vXsec.push_back(0.000666); vNEvts.push_back(832600.);
-  vSigNames.push_back("BprimeBprime_M-1800_"+sigDecay); vXsec.push_back(0.000391); vNEvts.push_back(795400.);
+  std::vector<float> vNEvts;
+  //vSigNames.push_back("BprimeBprime_M-800_"+sigDecay); vXsec.push_back(0.196); vNEvts.push_back(826200.);
+  //////////////////////////////// Updated by Jess (from 3+L analyzer) on 6-12-2020 ////////////////////////////////// 
+  //vSigNames.push_back("BprimeBprime_M-900_"+sigDecay); vXsec.push_back(0.0903); vNEvts.push_back(797908.);
+  //vSigNames.push_back("BprimeBprime_M-1000_"+sigDecay); vXsec.push_back(0.0440); vNEvts.push_back(820584.);
+  //vSigNames.push_back("BprimeBprime_M-1100_"+sigDecay); vXsec.push_back(0.0224); vNEvts.push_back(764836.);
+  //vSigNames.push_back("BprimeBprime_M-1200_"+sigDecay); vXsec.push_back(0.0118); vNEvts.push_back(787014.);
+  //vSigNames.push_back("BprimeBprime_M-1300_"+sigDecay); vXsec.push_back(0.00639); vNEvts.push_back(678472.);
+  //vSigNames.push_back("BprimeBprime_M-1400_"+sigDecay); vXsec.push_back(0.00354); vNEvts.push_back(621522.);
+  //vSigNames.push_back("BprimeBprime_M-1500_"+sigDecay); vXsec.push_back(0.00200); vNEvts.push_back(540748.);
+  //vSigNames.push_back("BprimeBprime_M-1600_"+sigDecay); vXsec.push_back(0.001148); vNEvts.push_back(563314.);
+  //vSigNames.push_back("BprimeBprime_M-1700_"+sigDecay); vXsec.push_back(0.000666); vNEvts.push_back(547430.);
+  //vSigNames.push_back("BprimeBprime_M-1800_"+sigDecay); vXsec.push_back(0.000391); vNEvts.push_back(468500.);
 
-
+  //////////////////////////////// Updated by Jess (from 3+L analyzer 4LHC) on 6-12-2020 ////////////////////////////////// 
+  vSigNames.push_back("BprimeBprime_M-900_"+sigDecay); vXsec.push_back(0.0903); vNEvts.push_back(959939.583 * 687000.0 / 817000.0);
+  vSigNames.push_back("BprimeBprime_M-1000_"+sigDecay); vXsec.push_back(0.0440); vNEvts.push_back(1011510.550);
+  vSigNames.push_back("BprimeBprime_M-1100_"+sigDecay); vXsec.push_back(0.0224); vNEvts.push_back(969137.000);
+  vSigNames.push_back("BprimeBprime_M-1200_"+sigDecay); vXsec.push_back(0.0118); vNEvts.push_back(1027818.122);
+  vSigNames.push_back("BprimeBprime_M-1300_"+sigDecay); vXsec.push_back(0.00639); vNEvts.push_back(917763.768);
+  vSigNames.push_back("BprimeBprime_M-1400_"+sigDecay); vXsec.push_back(0.00354); vNEvts.push_back(877071.614);
+  vSigNames.push_back("BprimeBprime_M-1500_"+sigDecay); vXsec.push_back(0.00200); vNEvts.push_back(804769.156);
+  vSigNames.push_back("BprimeBprime_M-1600_"+sigDecay); vXsec.push_back(0.001148); vNEvts.push_back(895604.498);
+  vSigNames.push_back("BprimeBprime_M-1700_"+sigDecay); vXsec.push_back(0.000666); vNEvts.push_back(946782.494);
+  vSigNames.push_back("BprimeBprime_M-1800_"+sigDecay); vXsec.push_back(0.000391); vNEvts.push_back(915634.724);
 
   //vector to hold weights
   std::vector<float> vWeights;
@@ -724,11 +768,11 @@ std::vector<Sample*> getInclusiveSigBBSampleVecForTable(std::string cut, float l
   //TString action = "ls "+eosDirector+samplesDir+subfolder+"/Bprime*.root";
   //system(action);
 
-  std::string lh800 = eosDirector+samplesDir+subfolder+"/BprimeBprime_M-800_"+sigDecay+"_Mu"+muID+"_El"+elID+"_"+era+".root";
-  TFile* x53x53800Lfile = TFile::Open(lh800.c_str());
-  Sample* x53x53m800L = new Sample(vSigNames.at(i_weight),x53x53800Lfile,vWeights.at(i_weight),vXsec.at(i_weight),cut,kBlue,2);
-  vSigSamples.push_back(x53x53m800L);
-  i_weight=i_weight+1;
+  //std::string lh800 = eosDirector+samplesDir+subfolder+"/BprimeBprime_M-800_"+sigDecay+"_Mu"+muID+"_El"+elID+"_"+era+".root";
+  //TFile* x53x53800Lfile = TFile::Open(lh800.c_str());
+  //Sample* x53x53m800L = new Sample(vSigNames.at(i_weight),x53x53800Lfile,vWeights.at(i_weight),vXsec.at(i_weight),cut,kBlue,2);
+  //vSigSamples.push_back(x53x53m800L);
+  //i_weight=i_weight+1;
 
   std::string lh900 = eosDirector+samplesDir+subfolder+"/BprimeBprime_M-900_"+sigDecay+"_Mu"+muID+"_El"+elID+"_"+era+".root";
   TFile* x53x53900Lfile = TFile::Open(lh900.c_str());
@@ -748,11 +792,11 @@ std::vector<Sample*> getInclusiveSigBBSampleVecForTable(std::string cut, float l
   vSigSamples.push_back(x53x53m1100L);
   i_weight=i_weight+1;
 
-  // std::string lh1200 = eosDirector+samplesDir+subfolder+"/BprimeBprime_M-1200_"+sigDecay+"_Mu"+muID+"_El"+elID+"_"+era+".root";
-  // TFile* x53x531200Lfile = TFile::Open(lh1200.c_str());
-  // Sample* x53x53m1200L = new Sample(vSigNames.at(i_weight),x53x531200Lfile,vWeights.at(i_weight),vXsec.at(i_weight),cut,kOrange,2);
-  // vSigSamples.push_back(x53x53m1200L);
-  // i_weight=i_weight+1;
+  std::string lh1200 = eosDirector+samplesDir+subfolder+"/BprimeBprime_M-1200_"+sigDecay+"_Mu"+muID+"_El"+elID+"_"+era+".root";
+  TFile* x53x531200Lfile = TFile::Open(lh1200.c_str());
+  Sample* x53x53m1200L = new Sample(vSigNames.at(i_weight),x53x531200Lfile,vWeights.at(i_weight),vXsec.at(i_weight),cut,kOrange,2);
+  vSigSamples.push_back(x53x53m1200L);
+  i_weight=i_weight+1;
 
   std::string lh1300 = eosDirector+samplesDir+subfolder+"/BprimeBprime_M-1300_"+sigDecay+"_Mu"+muID+"_El"+elID+"_"+era+".root";
   TFile* x53x531300Lfile = TFile::Open(lh1300.c_str());
@@ -778,11 +822,11 @@ std::vector<Sample*> getInclusiveSigBBSampleVecForTable(std::string cut, float l
   vSigSamples.push_back(x53x53m1600L);
   i_weight=i_weight+1;
 
-  // std::string lh1700 = eosDirector+samplesDir+subfolder+"/BprimeBprime_M-1700_"+sigDecay+"_Mu"+muID+"_El"+elID+"_"+era+".root";
-  // TFile* x53x531700Lfile = TFile::Open(lh1700.c_str());
-  // Sample* x53x53m1700L = new Sample(vSigNames.at(i_weight),x53x531700Lfile,vWeights.at(i_weight),vXsec.at(i_weight),cut,kCyan+2,2);
-  // vSigSamples.push_back(x53x53m1700L);
-  // i_weight=i_weight+1;
+  std::string lh1700 = eosDirector+samplesDir+subfolder+"/BprimeBprime_M-1700_"+sigDecay+"_Mu"+muID+"_El"+elID+"_"+era+".root";
+  TFile* x53x531700Lfile = TFile::Open(lh1700.c_str());
+  Sample* x53x53m1700L = new Sample(vSigNames.at(i_weight),x53x531700Lfile,vWeights.at(i_weight),vXsec.at(i_weight),cut,kCyan+2,2);
+  vSigSamples.push_back(x53x53m1700L);
+  i_weight=i_weight+1;
 
   std::string lh1800 = eosDirector+samplesDir+subfolder+"/BprimeBprime_M-1800_"+sigDecay+"_Mu"+muID+"_El"+elID+"_"+era+".root";
   TFile* x53x531800Lfile = TFile::Open(lh1800.c_str());
@@ -843,20 +887,35 @@ std::vector<Sample*> getBkgSampleVec(std::string cut, float lumi, std::string el
 
   //************** MC *************
  //vBkgNames.push_back("TTbar");  vXsec.push_back(831.76);  vNEvts.push_back(42730273 * 0.331582);
-  vBkgNames.push_back("TTZ");    vXsec.push_back(0.2529);  vNEvts.push_back(398600 * 0.464706);
-  vBkgNames.push_back("TTW");    vXsec.push_back(0.2043);  vNEvts.push_back(252673*0.515587);
-  vBkgNames.push_back("TTH");    vXsec.push_back(0.215);  vNEvts.push_back(9984160 *0.296787);
-  vBkgNames.push_back("TTTT");    vXsec.push_back(0.009103);  vNEvts.push_back(989025 *0.417453);
-  vBkgNames.push_back("WZ");     vXsec.push_back(4.42965); vNEvts.push_back(2000000 * 1);
+  //vBkgNames.push_back("TTZ");    vXsec.push_back(0.2529);  vNEvts.push_back(398600 * 0.464706);
+  //vBkgNames.push_back("TTW");    vXsec.push_back(0.2043);  vNEvts.push_back(252673*0.515587);
+  //vBkgNames.push_back("TTH");    vXsec.push_back(0.215);  vNEvts.push_back(9984160 *0.296787);
+  //vBkgNames.push_back("TTTT");    vXsec.push_back(0.009103);  vNEvts.push_back(989025 *0.417453);
+  //vBkgNames.push_back("WZ");     vXsec.push_back(4.42965); vNEvts.push_back(2000000 * 1);
   //vBkgNames.push_back("WJets");  vXsec.push_back(61526.7); vNEvts.push_back(24151270 * 0.683948);
   //vBkgNames.push_back("DYJets"); vXsec.push_back(6025.2);  vNEvts.push_back(28825132 * 0.6693);
-  vBkgNames.push_back("ZZ");     vXsec.push_back(1.212);  vNEvts.push_back(6638328 * 1);
-  vBkgNames.push_back("VH");     vXsec.push_back(0.952);  vNEvts.push_back(993464 * 1);
-  vBkgNames.push_back("WpWp");   vXsec.push_back(0.03711); vNEvts.push_back( 118350* 1);
-  vBkgNames.push_back("WW-mpi"); vXsec.push_back(1.64);   vNEvts.push_back( 843514* 1);
-  vBkgNames.push_back("WWZ");    vXsec.push_back(0.1651); vNEvts.push_back(249200*0.885963);
-  vBkgNames.push_back("WZZ");    vXsec.push_back(0.05565); vNEvts.push_back(249800*0.876645);
-  vBkgNames.push_back("ZZZ");    vXsec.push_back(0.01398); vNEvts.push_back(250000* 0.8554);
+  //vBkgNames.push_back("ZZ");     vXsec.push_back(1.212);  vNEvts.push_back(6638328 * 1);
+  //vBkgNames.push_back("VH");     vXsec.push_back(0.952);  vNEvts.push_back(993464 * 1);
+  //vBkgNames.push_back("WpWp");   vXsec.push_back(0.03711); vNEvts.push_back( 118350* 1);
+  //vBkgNames.push_back("WW-mpi"); vXsec.push_back(1.64);   vNEvts.push_back( 843514* 1);
+  //vBkgNames.push_back("WWZ");    vXsec.push_back(0.1651); vNEvts.push_back(249200*0.885963);
+  //vBkgNames.push_back("WZZ");    vXsec.push_back(0.05565); vNEvts.push_back(249800*0.876645);
+  //vBkgNames.push_back("ZZZ");    vXsec.push_back(0.01398); vNEvts.push_back(250000* 0.8554);
+
+  /////////////Updated on Dec 18 2019 + Checked on Nov 10 2020 by Jess ////////////////////
+  vBkgNames.push_back("TTZ");    vXsec.push_back(0.2432);  vNEvts.push_back(3745298); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("TTW");    vXsec.push_back(0.2149);  vNEvts.push_back(2716007); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8
+  vBkgNames.push_back("TTH");    vXsec.push_back(0.5638);  vNEvts.push_back(7522972); // obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8
+  vBkgNames.push_back("TTTT");   vXsec.push_back(0.008213);vNEvts.push_back(373734); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTTT_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("WZ");     vXsec.push_back(5.052);   vNEvts.push_back(6820606); // obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8
+  vBkgNames.push_back("ZZ");     vXsec.push_back(1.325);   vNEvts.push_back(15912322); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DZZTo4L_13TeV_powheg_pythia8
+  vBkgNames.push_back("WpWp");   vXsec.push_back(0.04932); vNEvts.push_back(148394); //obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8
+//  vBkgNames.push_back("WJets");  vXsec.push_back(52940.0); vNEvts.push_back(33043732); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8
+//  vBkgNames.push_back("WWW");    vXsec.push_back(0.2086); vNEvts.push_back(203246); //(v14-v1 value for v14-v2 sample) https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWWW_4F_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("WWZ");    vXsec.push_back(0.1651); vNEvts.push_back(219964); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWWZ_4F_TuneCP5_13TeV-amcatnlo-pythia
+  vBkgNames.push_back("WZZ");    vXsec.push_back(0.05565); vNEvts.push_back(219660); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWZZ_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("ZZZ");    vXsec.push_back(0.01398); vNEvts.push_back(214318); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DZZZ_TuneCP5_13TeV-amcatnlo-pythia8
+  ///////////// End updated on Dec 18 2019 by Jess ////////////////////
 
   //******* Non Prompt**********
   //vBkgNames.push_back("NonPromptMC");  vXsec.push_back(831.76);  vNEvts.push_back(42730273 * 0.331582);
@@ -870,9 +929,6 @@ std::vector<Sample*> getBkgSampleVec(std::string cut, float lumi, std::string el
 
   //now make samples and add to vector
   std::vector<Sample*> vSample;
-  //TFile* ttfile = TFile::Open(samplesDir+"test/TTbar.root");
-  //Sample* ttSample = new Sample(vBkgNames.at(0),ttfile, vWeights.at(0),vXsec.at(0),cut,kRed+2);
-  //vSample.push_back(ttSample);
 
   std::string ttZfilename = samplesDir+"test/TTZ_Mu"+muID+"_El"+elID+".root";
   TFile* ttZfile = TFile::Open(ttZfilename.c_str());
@@ -912,7 +968,6 @@ std::vector<Sample*> getBkgSampleVec(std::string cut, float lumi, std::string el
   std::string zzfilename = samplesDir+"test/ZZ_Mu"+muID+"_El"+elID+".root";
   TFile* zzjfile = TFile::Open(zzfilename.c_str());
   Sample* zzjSample = new Sample(vBkgNames.at(5),zzjfile, vWeights.at(5),vXsec.at(5),cut,kOrange+1);
-  //std::cout<<"weight for ZZ is: "<<vWeights.at(5)<<std::endl;
   vSample.push_back(zzjSample);
 
   //std::string vhfilename = samplesDir+"test/VH_Mu"+muID+"_El"+elID+".root";
@@ -923,8 +978,7 @@ std::vector<Sample*> getBkgSampleVec(std::string cut, float lumi, std::string el
 
   std::string wpwpfilename = samplesDir+"test/WpWp_Mu"+muID+"_El"+elID+".root";
   TFile* wpwpfile = TFile::Open(wpwpfilename.c_str());
-  Sample* wpwpSample = new Sample(vBkgNames.at(7),wpwpfile, vWeights.at(7),vXsec.at(7),cut,kGreen+1);
-  //std::cout<<"weight for ZZ is: "<<vWeights.at(5)<<std::endl;
+  Sample* wpwpSample = new Sample(vBkgNames.at(6),wpwpfile, vWeights.at(6),vXsec.at(6),cut,kGreen+1);
   vSample.push_back(wpwpSample);
 
   /*std::string wwmpifilename = samplesDir+"test/WW-mpi_Mu"+muID+"_El"+elID+".root";
@@ -936,20 +990,17 @@ std::vector<Sample*> getBkgSampleVec(std::string cut, float lumi, std::string el
 
   std::string wwzfilename = samplesDir+"test/WWZ_Mu"+muID+"_El"+elID+".root";
   TFile* wwzfile = TFile::Open(wwzfilename.c_str());
-  Sample* wwzSample = new Sample(vBkgNames.at(9),wwzfile, vWeights.at(9),vXsec.at(9),cut,kViolet+1);
-  //std::cout<<"weight for ZZ is: "<<vWeights.at(5)<<std::endl;
+  Sample* wwzSample = new Sample(vBkgNames.at(7),wwzfile, vWeights.at(7),vXsec.at(7),cut,kViolet+1);
   vSample.push_back(wwzSample);
 
   std::string wzzfilename = samplesDir+"test/WZZ_Mu"+muID+"_El"+elID+".root";
   TFile* wzzfile = TFile::Open(wzzfilename.c_str());
-  Sample* wzzSample = new Sample(vBkgNames.at(10),wzzfile, vWeights.at(10),vXsec.at(10),cut,kViolet+3);
-  //std::cout<<"weight for ZZ is: "<<vWeights.at(5)<<std::endl;
+  Sample* wzzSample = new Sample(vBkgNames.at(8),wzzfile, vWeights.at(8),vXsec.at(8),cut,kViolet+3);
   vSample.push_back(wzzSample);
 
   std::string zzzfilename = samplesDir+"test/ZZZ_Mu"+muID+"_El"+elID+".root";
   TFile* zzzfile = TFile::Open(zzzfilename.c_str());
-  Sample* zzzSample = new Sample(vBkgNames.at(11),zzzfile, vWeights.at(11),vXsec.at(11),cut,kViolet);
-  std::cout<<"weight for ZZ is: "<<vWeights.at(5)<<std::endl;
+  Sample* zzzSample = new Sample(vBkgNames.at(9),zzzfile, vWeights.at(9),vXsec.at(9),cut,kViolet);
   vSample.push_back(zzzSample);
 
 
@@ -961,13 +1012,13 @@ std::vector<Sample*> getBkgSampleVec(std::string cut, float lumi, std::string el
 
   std::string npfilename = samplesDir+"test/NonPromptData_Mu"+muID+"_El"+elID+".root";
   TFile* npfile = TFile::Open(npfilename.c_str());
-  Sample* npSample = new Sample(vBkgNames.at(12),npfile,vWeights.at(13),vXsec.at(13),cut,kGray);
+  Sample* npSample = new Sample(vBkgNames.at(10),npfile,vWeights.at(10),vXsec.at(10),cut,kGray);
   vSample.push_back(npSample);
 
   //********ChargeMisID**********
   std::string cmidfilename = samplesDir+"test/ChargeMisID_Mu"+muID+"_El"+elID+".root";
   TFile* cmidfile = TFile::Open(cmidfilename.c_str());
-  Sample* cmidSample = new Sample(vBkgNames.at(13),cmidfile,vWeights.at(13),vXsec.at(13),cut,kGreen); //force charge misID to start here since only at this point do we filter events
+  Sample* cmidSample = new Sample(vBkgNames.at(11),cmidfile,vWeights.at(11),vXsec.at(11),cut,kGreen); //force charge misID to start here since only at this point do we filter events
   vSample.push_back(cmidSample);
 
 
@@ -980,30 +1031,47 @@ std::vector<Sample*> getMCBkgSampleVec(std::string cut, float lumi, std::string 
    //setup info for list of samples, xsec and events run  //make vector of actual number of events run MULTIPLIED BY AMCATNLO WEIGHT
   std::vector<std::string> vBkgNames;  std::vector<float> vXsec;  std::vector<float> vNEvts;
 
-  //************** MC *************
+
+  // ************** MC *************
  //vBkgNames.push_back("TTbar");  vXsec.push_back(831.76);  vNEvts.push_back(42730273 * 0.331582);
-  vBkgNames.push_back("TTZ");    vXsec.push_back(0.2529);  vNEvts.push_back(3570720);
-  vBkgNames.push_back("TTW");    vXsec.push_back(0.2043);  vNEvts.push_back(2678775);
-  vBkgNames.push_back("TTH");    vXsec.push_back(0.215);  vNEvts.push_back( 7522972);
-  vBkgNames.push_back("TTTT");    vXsec.push_back(0.009103);  vNEvts.push_back(373734);
-  vBkgNames.push_back("WZ");     vXsec.push_back(4.42965); vNEvts.push_back(965938);
+  //vBkgNames.push_back("TTZ");    vXsec.push_back(0.2529);  vNEvts.push_back(3570720);
+  //vBkgNames.push_back("TTW");    vXsec.push_back(0.2043);  vNEvts.push_back(2678775);
+  //vBkgNames.push_back("TTH");    vXsec.push_back(0.215);  vNEvts.push_back( 7522972);
+  //vBkgNames.push_back("TTTT");    vXsec.push_back(0.009103);  vNEvts.push_back(373734);
+  //vBkgNames.push_back("WZ");     vXsec.push_back(4.42965); vNEvts.push_back(965938);
   //vBkgNames.push_back("WJets");  vXsec.push_back(61526.7); vNEvts.push_back(24151270 * 0.683948);
   //vBkgNames.push_back("DYJets"); vXsec.push_back(6025.2);  vNEvts.push_back(28825132 * 0.6693);
-  vBkgNames.push_back("ZZ");     vXsec.push_back(1.212);  vNEvts.push_back(6897635);
-  vBkgNames.push_back("VH");     vXsec.push_back(0.952);  vNEvts.push_back(6 * 1);
-  vBkgNames.push_back("WpWp");   vXsec.push_back(0.03711); vNEvts.push_back(148394);
-  vBkgNames.push_back("WW-mpi"); vXsec.push_back(1.64);   vNEvts.push_back( 843514* 1);
-  vBkgNames.push_back("WWZ");    vXsec.push_back(0.1651); vNEvts.push_back(219964);
-  vBkgNames.push_back("WZZ");    vXsec.push_back(0.05565); vNEvts.push_back(219660);
-  vBkgNames.push_back("ZZZ");    vXsec.push_back(0.01398); vNEvts.push_back(214318);
+  //vBkgNames.push_back("ZZ");     vXsec.push_back(1.212);  vNEvts.push_back(6897635);
+  //vBkgNames.push_back("VH");     vXsec.push_back(0.952);  vNEvts.push_back(6 * 1);
+  //vBkgNames.push_back("WpWp");   vXsec.push_back(0.03711); vNEvts.push_back(148394);
+  //vBkgNames.push_back("WW-mpi"); vXsec.push_back(1.64);   vNEvts.push_back( 843514* 1);
+  //vBkgNames.push_back("WWZ");    vXsec.push_back(0.1651); vNEvts.push_back(219964);
+  //vBkgNames.push_back("WZZ");    vXsec.push_back(0.05565); vNEvts.push_back(219660);
+  //vBkgNames.push_back("ZZZ");    vXsec.push_back(0.01398); vNEvts.push_back(214318);
   //vBkgNames.push_back("WWW");    vXsec.push_back(0.01398); vNEvts.push_back(240000* 0.8554);
 
   //ARC review request: dataset with Gamma conversions // added by rizki
-  vBkgNames.push_back("TTGJets");    vXsec.push_back(3.697); vNEvts.push_back(4870911 * 0.325); //prelim estimate: ran 1204482 events, adjusted count 391002. Could assume adjusted = 0.325 * total, from Julie Nov29-2017
-  vBkgNames.push_back("ZGTo2LG");    vXsec.push_back(123.9); vNEvts.push_back(1579452); //ZG: int 2307158, adjusted count 1579452 , from Julie Nov29-2017
-  vBkgNames.push_back("TGJets");    vXsec.push_back(2.967); vNEvts.push_back(58120); //TGJets: integral 292508, adjusted count 58120 , from Julie Nov29-2017
-  vBkgNames.push_back("WGToLNuG");    vXsec.push_back(405.271); vNEvts.push_back( 6103817* 1);
-  vBkgNames.push_back("TTZToLLM1to10");    vXsec.push_back(0.0493); vNEvts.push_back(246792 * 1);
+  //vBkgNames.push_back("TTGJets");    vXsec.push_back(3.697); vNEvts.push_back(4870911 * 0.325); //prelim estimate: ran 1204482 events, adjusted count 391002. Could assume adjusted = 0.325 * total, from Julie Nov29-2017
+  //vBkgNames.push_back("ZGTo2LG");    vXsec.push_back(123.9); vNEvts.push_back(1579452); //ZG: int 2307158, adjusted count 1579452 , from Julie Nov29-2017
+  //vBkgNames.push_back("TGJets");    vXsec.push_back(2.967); vNEvts.push_back(58120); //TGJets: integral 292508, adjusted count 58120 , from Julie Nov29-2017
+  //vBkgNames.push_back("WGToLNuG");    vXsec.push_back(405.271); vNEvts.push_back( 6103817* 1);
+  //vBkgNames.push_back("TTZToLLM1to10");    vXsec.push_back(0.0493); vNEvts.push_back(246792 * 1);
+
+
+  /////////////Updated on Dec 18 2019 + Checked on Nov 10 2020 by Jess ////////////////////
+  vBkgNames.push_back("TTZ");    vXsec.push_back(0.2432);  vNEvts.push_back(3745298); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("TTW");    vXsec.push_back(0.2149);  vNEvts.push_back(2716007); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8
+  vBkgNames.push_back("TTH");    vXsec.push_back(0.5638);  vNEvts.push_back(7522972); // obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8
+  vBkgNames.push_back("TTTT");   vXsec.push_back(0.008213);vNEvts.push_back(373734); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTTT_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("WZ");     vXsec.push_back(5.052);   vNEvts.push_back(6820606); // obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8
+  vBkgNames.push_back("ZZ");     vXsec.push_back(1.325);   vNEvts.push_back(15912322); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DZZTo4L_13TeV_powheg_pythia8
+  vBkgNames.push_back("WpWp");   vXsec.push_back(0.04932); vNEvts.push_back(148394); //obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8
+//  vBkgNames.push_back("WJets");  vXsec.push_back(52940.0); vNEvts.push_back(33043732); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8
+//  vBkgNames.push_back("WWW");    vXsec.push_back(0.2086); vNEvts.push_back(203246); //(v14-v1 value for v14-v2 sample) https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWWW_4F_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("WWZ");    vXsec.push_back(0.1651); vNEvts.push_back(219964); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWWZ_4F_TuneCP5_13TeV-amcatnlo-pythia
+  vBkgNames.push_back("WZZ");    vXsec.push_back(0.05565); vNEvts.push_back(219660); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWZZ_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("ZZZ");    vXsec.push_back(0.01398); vNEvts.push_back(214318); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DZZZ_TuneCP5_13TeV-amcatnlo-pythia8
+  ///////////// End updated on Dec 18 2019 by Jess ////////////////////
 
   //now make vector to hold weights;
   std::vector<float> vWeights;
@@ -1071,8 +1139,8 @@ std::vector<Sample*> getMCBkgSampleVec(std::string cut, float lumi, std::string 
 
   std::string wpwpfilename = eosDirector+samplesDir+"/WpWp_Mu"+muID+"_El"+elID+"_"+era+".root";
   TFile* wpwpfile = TFile::Open(wpwpfilename.c_str());
-  Sample* wpwpSample = new Sample(vBkgNames.at(7),wpwpfile, vWeights.at(7),vXsec.at(7),cut,kGreen+1);
-  std::cout<<"weight for WpWp is: "<<vWeights.at(7)<<std::endl;
+  Sample* wpwpSample = new Sample(vBkgNames.at(6),wpwpfile, vWeights.at(6),vXsec.at(6),cut,kGreen+1);
+  std::cout<<"weight for WpWp is: "<<vWeights.at(6)<<std::endl;
   vSample.push_back(wpwpSample);
 
   /*std::string wwmpifilename = eosDirector+samplesDir+"/WW-mpi_Mu"+muID+"_El"+elID+"_"+era+".root";
@@ -1084,20 +1152,20 @@ std::vector<Sample*> getMCBkgSampleVec(std::string cut, float lumi, std::string 
 
   std::string wwzfilename = eosDirector+samplesDir+"/WWZ_Mu"+muID+"_El"+elID+"_"+era+".root";
   TFile* wwzfile = TFile::Open(wwzfilename.c_str());
-  Sample* wwzSample = new Sample(vBkgNames.at(9),wwzfile, vWeights.at(9),vXsec.at(9),cut,kViolet+1);
-  std::cout<<"weight for WWZ is: "<<vWeights.at(9)<<std::endl;
+  Sample* wwzSample = new Sample(vBkgNames.at(7),wwzfile, vWeights.at(7),vXsec.at(7),cut,kViolet+1);
+  std::cout<<"weight for WWZ is: "<<vWeights.at(7)<<std::endl;
   vSample.push_back(wwzSample);
 
   std::string wzzfilename = eosDirector+samplesDir+"/WZZ_Mu"+muID+"_El"+elID+"_"+era+".root";
   TFile* wzzfile = TFile::Open(wzzfilename.c_str());
-  Sample* wzzSample = new Sample(vBkgNames.at(10),wzzfile, vWeights.at(10),vXsec.at(10),cut,kViolet+3);
-  std::cout<<"weight for WZZ is: "<<vWeights.at(10)<<std::endl;
+  Sample* wzzSample = new Sample(vBkgNames.at(8),wzzfile, vWeights.at(8),vXsec.at(8),cut,kViolet+3);
+  std::cout<<"weight for WZZ is: "<<vWeights.at(8)<<std::endl;
   vSample.push_back(wzzSample);
 
   std::string zzzfilename = eosDirector+samplesDir+"/ZZZ_Mu"+muID+"_El"+elID+"_"+era+".root";
   TFile* zzzfile = TFile::Open(zzzfilename.c_str());
-  Sample* zzzSample = new Sample(vBkgNames.at(11),zzzfile, vWeights.at(11),vXsec.at(11),cut,kViolet);
-  std::cout<<"weight for ZZZ is: "<<vWeights.at(11)<<std::endl;
+  Sample* zzzSample = new Sample(vBkgNames.at(9),zzzfile, vWeights.at(9),vXsec.at(9),cut,kViolet);
+  std::cout<<"weight for ZZZ is: "<<vWeights.at(9)<<std::endl;
   vSample.push_back(zzzSample);
 
   //ARC review request: dataset with Gamma conversions // added by rizki
@@ -1260,6 +1328,7 @@ std::vector<std::string> getCutString_Lep4035(){
   //quarkonia-veto
 //   std::string null = "Lep1Pt>0";
 //   std::string null = "(Lep1Pt>0 && nNonSSLeps==0)"; //added by rizki for orthogonality with trilepton
+  vString.push_back("Lep1Pt > 30 ");
   std::string null = "nNonSSLeps==0"; //added by rizki for orthogonality with trilepton
   vString.push_back(null);
   std::string qv = "("+null+" && (DilepMass>20) )";
@@ -1285,6 +1354,45 @@ std::vector<std::string> getCutString_Lep4035(){
   //HT cut
   std::string htcut = "("+nConstCut+"&& cleanAK4HT > 1200)"; //commented by rizki
 //   std::string htcut = "("+nConstCut+"&& cleanAK4HT > 1100)"; //added by rizki
+  vString.push_back(htcut);
+
+  //std::string centrallepcut =  "("+htcut+"&& TMath::Abs(Lep1Eta) < 0.9)";
+  //vString.push_back(centrallepcut);
+  return vString;
+}
+
+std::vector<std::string> getCutString_Lep4030(){
+
+  std::cout << "calling getCutString_Lep4030()" << std::endl;
+
+  std::vector<std::string> vString;
+  
+  vString.push_back("Lep1Pt > 30 ");
+  std::string null = "nNonSSLeps==0"; //added by rizki for orthogonality with trilepton
+  vString.push_back(null);
+  std::string qv = "("+null+" && (DilepMass>20) )";
+  vString.push_back(qv);
+  //z mass veto for ee channel only
+  std::string zv = "("+qv+" && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) )";
+  vString.push_back(zv);
+  //Leading Lep pT
+  std::string lep1pt = "("+zv+"&& Lep1Pt > 40)" ; //added by rizki. lowering pt cut if using iso trig.
+  vString.push_back(lep1pt);
+  //SubLeadingLep pT
+  std::string lep2pt = "("+lep1pt+"&& Lep2Pt > 30)" ; //because if iso was selected analyzer cuts at 20 GeV
+  vString.push_back(lep2pt);
+  //Leading nJetscut
+  //std::string nConstCut = "("+lep1pt+"&& nConst >= 5)"; //commented by rizki
+  //std::string nConstCut = "("+lep1pt+"&& nConst >= 2)"; //added by rizki
+  std::string nConstCut = "("+lep1pt+"&& nConst >= 4)"; //added by rizki
+  //std::string nConstCut = "("+lep1pt+"&& nConst >= 3)"; //added by rizki
+  vString.push_back(nConstCut);
+  //SubLeading Jet Pt
+  //std::string jet2pt = "("+jet1pt+"&& cleanAK4Jet2Pt > 150)";
+  //vString.push_back(jet2pt);
+  //HT cut
+  std::string htcut = "("+nConstCut+"&& cleanAK4HT > 1200)"; //commented by rizki
+  //std::string htcut = "("+nConstCut+"&& cleanAK4HT > 1100)"; //added by rizki
   vString.push_back(htcut);
 
   //std::string centrallepcut =  "("+htcut+"&& TMath::Abs(Lep1Eta) < 0.9)";
@@ -1366,6 +1474,7 @@ std::vector<std::string> getBoostedCutString(){
 
 
 std::pair<float,float> getNEvtsAndError(Sample* s, std::string cut, int nMu, bool scale_){
+  //std::cout << s->name << std::endl;
   bool scale = scale_;
   TTree* t = s->tree;
   TH1F* hdummy = new TH1F("hdummy","hdummy",1,0,10000);
@@ -1376,8 +1485,9 @@ std::pair<float,float> getNEvtsAndError(Sample* s, std::string cut, int nMu, boo
   else  channel<<"";
 
   //std::string cutstring= " PUWeight* MCWeight*ChargeMisIDWeight * NPWeight* ( "+cut+channel.str()+")";
-  std::string cutstring= " PUWeight * IDSF * IsoSF * trigSF * GsfSF * MCWeight * ChargeMisIDWeight * NPWeight* ( "+cut+channel.str()+")";
-
+  std::string cutstring= " PUWeight * IDSF * IsoSF * trigSF * GsfSF * MCWeight * ChargeMisIDWeight * NPWeight* prefireWeight * ( "+cut+channel.str()+")";
+  if( (s->name).find("Tprime") || (s->name).find("Bprime")  ) cutstring = "pdfWeights4LHC[0] * " + cutstring;
+  else  cutstring = " 1/abs(MCWeight) * " + cutstring;
 
   //draw the last variable to cut on just to be safe though it shouldn't matter
   t->Project("hdummy","AK4HT",cutstring.c_str());
@@ -1924,30 +2034,88 @@ float getGsfSF(TLepton* lep){
 
   float sf=0.0;
   float eta = lep->eta;
-  if(eta<-2.3) sf       =1.00852;
-  else if(eta<-2.2)   sf=1.01047;
-  else if(eta<-2.0)   sf=1.00519;
-  else if(eta<-1.8)   sf=0.997932;
-  else if(eta<-1.63)  sf=0.991701;
-  else if(eta<-1.556) sf=0.986486;
-  else if(eta<-1.2)   sf=0.986667;
-  else if(eta<-1.0)   sf=0.977505;
-  else if(eta<-0.6)   sf=0.969388;
-  else if(eta<-0.4)   sf=0.966361;
-  else if(eta<-0.2)   sf=0.963303;
-  else if(eta<0.0)    sf=0.96;
-  else if(eta<0.2)    sf=0.966189;
-  else if(eta<0.4)    sf=0.979633;
-  else if(eta<0.6)    sf=0.976578;
-  else if(eta<1.0)    sf=0.980652;
-  else if(eta<1.2)    sf=0.986735;
-  else if(eta<1.445)  sf=0.98668;
-  else if(eta<1.63)   sf=0.989669;
-  else if(eta<1.8)    sf=0.995872;
-  else if(eta<2.0)    sf=0.989733;
-  else if(eta<2.2)    sf=0.994861;
-  else if(eta<2.3)    sf=0.992769;
-  else                sf=0.966632;
+  // added by Jess 2017 Gsf Tracking scale factor extracted from https://twiki.cern.ch/twiki/pub/CMS/Egamma2017DataRecommendations/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root
+  if (lep->pt < 45){
+    if( eta < -2.000) sf = 0.977482 ;
+    else if( eta < -1.566) sf = 0.981614 ;
+    else if( eta < -1.444) sf = 0.948352 ;
+    else if( eta < -1.000) sf = 0.969262 ;
+    else if( eta < -0.500) sf = 0.976555 ;
+    else if( eta < 0.000) sf = 0.970378 ;
+    else if( eta < 0.500) sf = 0.970348 ;
+    else if( eta < 1.000) sf = 0.972421 ;
+    else if( eta < 1.444) sf = 0.969917 ;
+    else if( eta < 1.566) sf = 0.957965 ;
+    else if( eta < 2.000) sf = 0.979592 ;
+    else sf = 0.979592 ;
+  }
+  else if (lep->pt < 75){
+    if( eta < -2.000) sf = 0.983673 ;
+    else if( eta < -1.566) sf = 0.981707 ;
+    else if( eta < -1.444) sf = 0.970619 ;
+    else if( eta < -1.000) sf = 0.975535 ;
+    else if( eta < -0.500) sf = 0.979695 ;
+    else if( eta < 0.000) sf = 0.979654 ;
+    else if( eta < 0.500) sf = 0.977620 ;
+    else if( eta < 1.000) sf = 0.978680 ;
+    else if( eta < 1.444) sf = 0.977366 ;
+    else if( eta < 1.566) sf = 0.963945 ;
+    else if( eta < 2.000) sf = 0.982741 ;
+    else sf = 0.983740 ;
+  }
+  else if (lep->pt < 100){
+    if( eta < -2.000) sf = 0.996951 ;
+    else if( eta < -1.566) sf = 0.996954 ;
+    else if( eta < -1.444) sf = 1.003229 ;
+    else if( eta < -1.000) sf = 0.995902 ;
+    else if( eta < -0.500) sf = 0.991895 ;
+    else if( eta < 0.000) sf = 0.991903 ;
+    else if( eta < 0.500) sf = 0.991903 ;
+    else if( eta < 1.000) sf = 0.991895 ;
+    else if( eta < 1.444) sf = 0.995902 ;
+    else if( eta < 1.566) sf = 1.003229 ;
+    else if( eta < 2.000) sf = 0.996954 ;
+    else sf = 0.996951 ;
+  }
+  else{
+    if( eta < -2.000) sf = 0.989909 ;
+    else if( eta < -1.566) sf = 0.989889 ;
+    else if( eta < -1.444) sf = 1.009595 ;
+    else if( eta < -1.000) sf = 0.984725 ;
+    else if( eta < -0.500) sf = 0.987891 ;
+    else if( eta < 0.000) sf = 0.993933 ;
+    else if( eta < 0.500) sf = 0.993933 ;
+    else if( eta < 1.000) sf = 0.987891 ;
+    else if( eta < 1.444) sf = 0.984725 ;
+    else if( eta < 1.566) sf = 1.009595 ;
+    else if( eta < 2.000) sf = 0.989889 ;
+    else sf = 0.989909 ;
+  }
+
+//  if(eta<-2.3) sf       =1.00852;
+//  else if(eta<-2.2)   sf=1.01047;
+//  else if(eta<-2.0)   sf=1.00519;
+//  else if(eta<-1.8)   sf=0.997932;
+//  else if(eta<-1.63)  sf=0.991701;
+//  else if(eta<-1.556) sf=0.986486;
+//  else if(eta<-1.2)   sf=0.986667;
+//  else if(eta<-1.0)   sf=0.977505;
+//  else if(eta<-0.6)   sf=0.969388;
+//  else if(eta<-0.4)   sf=0.966361;
+//  else if(eta<-0.2)   sf=0.963303;
+//  else if(eta<0.0)    sf=0.96;
+//  else if(eta<0.2)    sf=0.966189;
+//  else if(eta<0.4)    sf=0.979633;
+//  else if(eta<0.6)    sf=0.976578;
+//  else if(eta<1.0)    sf=0.980652;
+//  else if(eta<1.2)    sf=0.986735;
+//  else if(eta<1.445)  sf=0.98668;
+//  else if(eta<1.63)   sf=0.989669;
+//  else if(eta<1.8)    sf=0.995872;
+//  else if(eta<2.0)    sf=0.989733;
+//  else if(eta<2.2)    sf=0.994861;
+//  else if(eta<2.3)    sf=0.992769;
+//  else                sf=0.966632;
 
   return sf;
 
@@ -2069,239 +2237,136 @@ float getTrigSF(std::vector<TLepton*> vLep){
   float sf;
   float eta1 = fabs(vLep.at(0)->eta);
   float eta2 = fabs(vLep.at(1)->eta);
+  float pt1  = vLep.at(0)->pt;
+  float pt2  = vLep.at(1)->pt;
 
-  if(vLep.at(0)->isMu && vLep.at(1)->isMu){ //dimuon channel
+  // Trigger Eff. SF (updated by Jess 02/26/2020) from AN2018-280
+  float TrigSFpTbin[8] = {30., 35., 40., 50., 75., 100., 200., 300.};
+  float elTrigSFetabin[4] = {0., 0.8, 1.48, 2.0};
+  float muTrigSFetabin[5] = {0., 0.8, 1.25, 1.6, 2.1};
 
-    //get conditional efficiency
-    float cond_eff = 0.0;
-    float mu17_lep1 = 0.0;
-    float mu17_lep2 = 0.0;
-    if(fabs(vLep.at(0)->phi - vLep.at(1)->phi) > 1 ){
-      mu17_lep1 = getMu17Eff(vLep.at(0));
-      mu17_lep2 = getMu17Eff(vLep.at(1));
-      cond_eff = 1.0 - (1.0 - getMu17Eff(vLep.at(0)))*(1.0 - getMu17Eff(vLep.at(1)));
-    }
-    else {
-      mu17_lep2 = getMu17Eff(vLep.at(1));
-      mu17_lep1 = getMu17Eff(vLep.at(1))*getMu17EffNearbyPhi(vLep.at(0)) +  (1.0 - getMu17Eff(vLep.at(1))) * (getMu17Eff(vLep.at(0)));
-      cond_eff = 1.0 - (1.0 - ( getMu17Eff(vLep.at(1)) * getMu17EffNearbyPhi(vLep.at(0)) + (1 - getMu17Eff(vLep.at(1)) )* getMu17Eff(vLep.at(0)) ) ) * (1.0 - getMu17Eff(vLep.at(1)) ) ;
-    }
-    //std::cout<<"eff1: "<<getMu17Eff(vLep.at(0))<<" eff2: "<<getMu17Eff(vLep.at(1))<<" eff3: "<<getMu17EffNearbyPhi(vLep.at(0))<<std::endl;
-    //std::cout<<"cond_Eff: "<<cond_eff<<" and new condeff: "<< (1.0 - (1.0-mu17_lep1)*(1.0-mu17_lep2))<<std::endl;
-    float soup_eff = 0.0;
+  float eeTrigLead[4][8] = {
+    {0.95,0.95,0.96,0.98,0.98,0.98,0.98,0.99},
+    {0.95,0.97,0.97,0.98,0.99,0.98,0.99,0.99},
+    {0.91,0.96,0.98,0.98,0.98,0.98,0.98,0.98},
+    {0.89,0.94,0.97,0.98,0.98,0.98,0.98,1.00}
+  };
+  float eeTrigTrail[4][8] = {
+    {0.97,0.98,0.98,0.98,0.98,0.98,0.98,0.99},
+    {0.99,0.99,0.99,0.99,0.99,0.98,0.99,0.99},
+    {0.98,0.98,0.99,0.98,0.99,0.99,0.99,0.98},
+    {0.95,0.97,0.98,0.98,0.98,0.98,0.99,1.00}
+  };
 
-    if(eta1 > 2.1){
-      if(eta2>2.1) soup_eff=0.8745;
-      else if(eta2>1.2) soup_eff=0.8961;
-      else if(eta2>0.9) soup_eff=0.8891;
-      else if(eta2>0.4) soup_eff=0.9711;
-      else soup_eff=1.0;
-    }
-    else if(eta1 > 1.2){
-      if(eta2>2.1) soup_eff=0.8955;
-      else if(eta2>1.2) soup_eff=0.9376;
-      else if(eta2>0.9) soup_eff=0.9330;
-      else if(eta2>0.4) soup_eff=0.9565;
-      else soup_eff=0.9446;
-    }
-    else if(eta1 > 0.9){
-      if(eta2>2.1) soup_eff=0.9245;
-      else if(eta2>1.2) soup_eff=0.9577;
-      else if(eta2>0.9) soup_eff=0.9588;
-      else if(eta2>0.4) soup_eff=0.9713;
-      else soup_eff=0.9614;
-    }
-    else if(eta1 > 0.4){
-      if(eta2>2.1) soup_eff=0.9411;
-      else if(eta2>1.2) soup_eff=0.9593;
-      else if(eta2>0.9) soup_eff=0.9558;
-      else if(eta2>0.4) soup_eff=0.9665;
-      else soup_eff=0.9483;
-    }
-    else{
-      if(eta2>2.1) soup_eff=1.0;
-      else if(eta2>1.2) soup_eff=0.9649;
-      else if(eta2>0.9) soup_eff=0.9499;
-      else if(eta2>0.4) soup_eff=0.9658;
-      else soup_eff=0.9503;
-    }
-    sf = cond_eff*soup_eff;
-    //std::cout<<"soup eff for leading lepton with eta: "<<eta1<<" and pt: "<<vLep.at(0)->pt<<"and  for subleading  with eta: "<<eta2<<" and pt: "<<vLep.at(1)->pt<<" is: "<<soup_eff<<" conditional eff is: "<<cond_eff<<"and total sf is: "<<sf<<std::endl;
+  float mmTrigLead[5][8] = {
+    {0.97,0.97,0.97,0.97,0.97,0.96,0.96,0.96},
+    {0.96,0.96,0.96,0.96,0.96,0.95,0.95,0.95},
+    {1.00,1.00,1.00,0.99,0.99,0.99,1.00,0.99},
+    {0.97,0.97,0.97,0.98,0.98,0.97,0.96,0.96},
+    {0.92,0.93,0.94,0.95,0.95,0.96,0.94,0.85}
+  };
+  float mmTrigTrail[5][8] = {
+    {0.97,0.97,0.97,0.97,0.97,0.96,0.96,0.96},
+    {0.96,0.97,0.96,0.96,0.96,0.95,0.95,0.95},
+    {1.00,1.00,1.00,0.99,0.99,0.99,1.00,0.99},
+    {0.98,0.98,0.98,0.98,0.98,0.98,0.98,0.97},
+    {0.98,0.98,0.98,0.98,0.98,0.98,0.96,0.88}
+  };
+
+  float emTrigLead[4][8] = {
+    {0.96,0.97,0.97,0.97,0.97,0.97,0.97,0.97},
+    {0.98,0.98,0.98,0.98,0.97,0.97,0.98,1.00},
+    {0.93,0.96,0.97,0.97,0.97,0.98,0.97,0.98},
+    {0.92,0.95,0.96,0.96,0.97,0.98,0.93,0.94}
+  };
+  float emTrigTrail[5][8] = {
+    {0.98,0.97,0.97,0.97,0.97,0.97,0.96,0.97},
+    {0.97,0.97,0.97,0.96,0.96,0.96,0.95,0.95},
+    {1.00,0.99,0.99,0.99,0.99,0.99,1.02,0.92},
+    {0.98,0.97,0.97,0.97,0.97,0.98,0.99,0.94},
+    {0.99,1.01,0.99,1.00,0.99,1.00,0.92,1.05}
+  };
+
+  float meTrigLead[5][8] = {
+    {0.97,0.97,0.97,0.97,0.97,0.97,0.96,0.98},
+    {0.96,0.96,0.96,0.95,0.95,0.95,0.94,0.95},
+    {1.01,1.01,1.00,0.99,0.99,0.99,1.01,0.87},
+    {0.97,0.96,0.97,0.97,0.96,0.96,0.96,0.91},
+    {0.89,0.95,0.94,0.96,0.98,0.98,0.86,1.08}
+  };
+  float meTrigTrail[4][8] = {
+    {0.96,0.97,0.97,0.97,0.97,0.97,0.98,0.97},
+    {0.98,0.98,0.98,0.98,0.97,0.97,0.98,1.00},
+    {0.96,0.97,0.97,0.98,0.98,0.98,0.97,0.98},
+    {0.95,0.97,0.97,0.97,0.97,0.98,0.93,0.94}
+  };
+  //--- END Trigger Eff. SF ---
+
+  unsigned int pt1Bin  = std::distance(TrigSFpTbin,std::find_if(TrigSFpTbin,TrigSFpTbin+8,[&pt1](float x){return x>pt1;}))-1;
+  unsigned int pt2Bin  = std::distance(TrigSFpTbin,std::find_if(TrigSFpTbin,TrigSFpTbin+8,[&pt2](float x){return x>pt2;}))-1;
+
+  if(vLep.at(0)->isMu && vLep.at(1)->isMu){ //dimuon channel 
+    unsigned int eta1Bin = std::distance(muTrigSFetabin,std::find_if(muTrigSFetabin,muTrigSFetabin+5,[&eta1](float x){return x>eta1;}))-1;
+    unsigned int eta2Bin = std::distance(muTrigSFetabin,std::find_if(muTrigSFetabin,muTrigSFetabin+5,[&eta2](float x){return x>eta2;}))-1;
+    if (pt1>pt2) sf = mmTrigLead[eta1Bin][pt1Bin] * mmTrigTrail[eta2Bin][pt2Bin];
+    else sf = mmTrigLead[eta2Bin][pt2Bin] * mmTrigTrail[eta1Bin][pt1Bin];
   }
-
   else if(vLep.at(0)->isEl && vLep.at(1)->isEl){//dielectron channel
-    float w1 = 0.0;
-    float w2 = 0.0;
-    //do weight for first electron
-    if(eta1<0.8) w1 = 97.97/99.18; //divide by plateau efficiencies
-    else if(eta1<1.5) w1  = 98.60/99.42; //divide by plateau efficiencies
-    else{
-      if(vLep.at(0)->pt<40) w1= 0.9955*( ROOT::Math::normal_cdf(vLep.at(0)->pt-34.157,1.62)); //take from fitted function, but MC is in plateau so divide by that
-      else w1 = 0.996;
-    }
-    //weight for second electron
-    if(eta2<0.8) w2 = 0.980;
-    else if(eta2<1.5) w2  = 0.986;
-    else{
-      if(vLep.at(1)->pt<40) w2= 0.9955*( ROOT::Math::normal_cdf(vLep.at(1)->pt-34.157,1.62)); //take from fitted function
-      else w2 = 0.996;
-    }
-    sf = w1*w2;
-    //std::cout<<"weight for leading lepton with eta: "<<eta1<<" and pt: "<<vLep.at(0)->pt<<" is: "<<w1<<" weight for subleading  with eta: "<<eta2<<" and pt: "<<vLep.at(1)->pt<<" is: "<<w2<<" total sf = "<<sf<<std::endl;
+    unsigned int eta1Bin = std::distance(elTrigSFetabin,std::find_if(elTrigSFetabin,elTrigSFetabin+4,[&eta1](float x){return x>eta1;}))-1;
+    unsigned int eta2Bin = std::distance(elTrigSFetabin,std::find_if(elTrigSFetabin,elTrigSFetabin+4,[&eta2](float x){return x>eta2;}))-1;
+    if (pt1>pt2) sf = eeTrigLead[eta1Bin][pt1Bin] * eeTrigTrail[eta2Bin][pt2Bin];
+    else sf = eeTrigLead[eta2Bin][pt2Bin] * eeTrigTrail[eta1Bin][pt1Bin];
   }
   else{ //cross channel
-
-    float elEff = 0.0;
-    float muEff = 0.0;
     //get efficiency - first check if leading lepton is electron
     if(vLep.at(0)->isEl){
-      //first electron efficiency
-      if(eta1<0.8) elEff = 0.980;
-      else if(eta1<1.5) elEff  = 0.986;
-      else{
-        if(vLep.at(0)->pt<40) elEff= 0.9955*( ROOT::Math::normal_cdf(vLep.at(0)->pt-34.157,1.62)); //take from fitted function
-        else elEff = 0.996;
-      }
-      //now muon efficiency
-      if(eta2>2.1){
-        if(vLep.at(1)->pt>500) muEff = 0.0;
-        else if(vLep.at(1)->pt>300) muEff = 0.7778;
-        else if(vLep.at(1)->pt>200) muEff = 0.7964;
-        else if(vLep.at(1)->pt>150) muEff = 0.8071;
-        else if(vLep.at(1)->pt>100) muEff = 0.7895;
-        else if(vLep.at(1)->pt>60) muEff = 0.8113;
-        else if(vLep.at(1)->pt>50) muEff = 0.7684;
-        else if(vLep.at(1)->pt>40) muEff = 0.7692;
-        else if(vLep.at(1)->pt>35) muEff = 0.7607;
-      }
-      else if(eta2>1.2){
-        if(vLep.at(1)->pt>500) muEff = 0.0;
-        else if(vLep.at(1)->pt>300) muEff = 0.8848;
-        else if(vLep.at(1)->pt>200) muEff = 0.8279;
-        else if(vLep.at(1)->pt>150) muEff = 0.8300;
-        else if(vLep.at(1)->pt>100) muEff = 0.8356;
-        else if(vLep.at(1)->pt>60) muEff = 0.8573;
-        else if(vLep.at(1)->pt>50) muEff = 0.8674;
-        else if(vLep.at(1)->pt>40) muEff = 0.8735;
-        else if(vLep.at(1)->pt>35) muEff = 0.8638;
-      }
-      else if(eta2>0.9){
-        if(vLep.at(1)->pt>500) muEff = 0.0;
-        else if(vLep.at(1)->pt>300) muEff = 0.8627;
-        else if(vLep.at(1)->pt>200) muEff = 0.8776;
-        else if(vLep.at(1)->pt>150) muEff = 0.8986;
-        else if(vLep.at(1)->pt>100) muEff = 0.8949;
-        else if(vLep.at(1)->pt>60) muEff = 0.9025;
-        else if(vLep.at(1)->pt>50) muEff = 0.9165;
-        else if(vLep.at(1)->pt>40) muEff = 0.9097;
-        else if(vLep.at(1)->pt>35) muEff = 0.9080;
-      }
-      else if(eta2>0.4){
-        if(vLep.at(1)->pt>500) muEff = 0.0;
-        else if(vLep.at(1)->pt>300) muEff = 0.9341;
-        else if(vLep.at(1)->pt>200) muEff = 0.9494;
-        else if(vLep.at(1)->pt>150) muEff = 0.9376;
-        else if(vLep.at(1)->pt>100) muEff = 0.9385;
-        else if(vLep.at(1)->pt>60) muEff = 0.9431;
-        else if(vLep.at(1)->pt>50) muEff = 0.9502;
-        else if(vLep.at(1)->pt>40) muEff = 0.9465;
-        else if(vLep.at(1)->pt>35) muEff = 0.9433;
-      }
-      else if(eta2>=0.0){
-        if(vLep.at(1)->pt>500) muEff = 0.0;
-        else if(vLep.at(1)->pt>300) muEff = 0.9433;
-        else if(vLep.at(1)->pt>200) muEff = 0.9076;
-        else if(vLep.at(1)->pt>150) muEff = 0.9175;
-        else if(vLep.at(1)->pt>100) muEff = 0.9106;
-        else if(vLep.at(1)->pt>60) muEff = 0.9141;
-        else if(vLep.at(1)->pt>50) muEff = 0.9156;
-        else if(vLep.at(1)->pt>40) muEff = 0.9081;
-        else if(vLep.at(1)->pt>35) muEff = 0.9111;
-      }
-      //std::cout<<"weight for leading electron with eta: "<<eta1<<" and pt: "<<vLep.at(0)->pt<<" is: "<<elEff<<" weight for subleading muon with eta: "<<eta2<<" and pt: "<<vLep.at(1)->pt<<" is: "<<muEff<<" total sf = "<<sf<<std::endl;
+      unsigned int eta1Bin = std::distance(elTrigSFetabin,std::find_if(elTrigSFetabin,elTrigSFetabin+4,[&eta1](float x){return x>eta1;}))-1;
+      unsigned int eta2Bin = std::distance(muTrigSFetabin,std::find_if(muTrigSFetabin,muTrigSFetabin+5,[&eta2](float x){return x>eta2;}))-1;
+      if (pt1>pt2) sf = emTrigLead[eta1Bin][pt1Bin] * emTrigTrail[eta2Bin][pt2Bin];
+      else sf = meTrigLead[eta2Bin][pt2Bin] * meTrigTrail[eta1Bin][pt1Bin]; 
     }
     else{ //elEff is for subleading
-      if(eta2<0.8) elEff = 0.980;
-      else if(eta2<1.5) elEff  = 0.986;
-      else{
-        if(vLep.at(1)->pt<40) elEff= 0.9955*( ROOT::Math::normal_cdf(vLep.at(1)->pt-34.157,1.62)); //take from fitted function
-        else elEff = 0.996;
-      }
-      //now muon efficiency
-      if(eta1>2.1){
-        if(vLep.at(0)->pt>500) muEff = 0.0;
-        else if(vLep.at(0)->pt>300) muEff = 0.7778;
-        else if(vLep.at(0)->pt>200) muEff = 0.7964;
-        else if(vLep.at(0)->pt>150) muEff = 0.8071;
-        else if(vLep.at(0)->pt>100) muEff = 0.7895;
-        else if(vLep.at(0)->pt>60) muEff = 0.8113;
-        else if(vLep.at(0)->pt>50) muEff = 0.7684;
-        else if(vLep.at(0)->pt>40) muEff = 0.7692;
-        else if(vLep.at(0)->pt>35) muEff = 0.7607;
-      }
-      else if(eta1>1.2){
-        if(vLep.at(0)->pt>500) muEff = 0.0;
-        else if(vLep.at(0)->pt>300) muEff = 0.8848;
-        else if(vLep.at(0)->pt>200) muEff = 0.8279;
-        else if(vLep.at(0)->pt>150) muEff = 0.8300;
-        else if(vLep.at(0)->pt>100) muEff = 0.8356;
-        else if(vLep.at(0)->pt>60) muEff = 0.8573;
-        else if(vLep.at(0)->pt>50) muEff = 0.8674;
-        else if(vLep.at(0)->pt>40) muEff = 0.8735;
-        else if(vLep.at(0)->pt>35) muEff = 0.8638;
-      }
-      else if(eta1>0.9){
-        if(vLep.at(0)->pt>500) muEff = 0.0;
-        else if(vLep.at(0)->pt>300) muEff = 0.8627;
-        else if(vLep.at(0)->pt>200) muEff = 0.8776;
-        else if(vLep.at(0)->pt>150) muEff = 0.8986;
-        else if(vLep.at(0)->pt>100) muEff = 0.8949;
-        else if(vLep.at(0)->pt>60) muEff = 0.9025;
-        else if(vLep.at(0)->pt>50) muEff = 0.9165;
-        else if(vLep.at(0)->pt>40) muEff = 0.9097;
-        else if(vLep.at(0)->pt>35) muEff = 0.9080;
-      }
-      else if(eta1>0.4){
-        if(vLep.at(0)->pt>500) muEff = 0.0;
-        else if(vLep.at(0)->pt>300) muEff = 0.9341;
-        else if(vLep.at(0)->pt>200) muEff = 0.9494;
-        else if(vLep.at(0)->pt>150) muEff = 0.9376;
-        else if(vLep.at(0)->pt>100) muEff = 0.9385;
-        else if(vLep.at(0)->pt>60) muEff = 0.9431;
-        else if(vLep.at(0)->pt>50) muEff = 0.9502;
-        else if(vLep.at(0)->pt>40) muEff = 0.9465;
-        else if(vLep.at(0)->pt>35) muEff = 0.9433;
-      }
-      else if(eta1>=0.0){
-        if(vLep.at(0)->pt>500) muEff = 0.0;
-        else if(vLep.at(0)->pt>300) muEff = 0.9433;
-        else if(vLep.at(0)->pt>200) muEff = 0.9076;
-        else if(vLep.at(0)->pt>150) muEff = 0.9175;
-        else if(vLep.at(0)->pt>100) muEff = 0.9106;
-        else if(vLep.at(0)->pt>60) muEff = 0.9141;
-        else if(vLep.at(0)->pt>50) muEff = 0.9156;
-        else if(vLep.at(0)->pt>40) muEff = 0.9081;
-        else if(vLep.at(0)->pt>35) muEff = 0.9111;
-      }
-      //std::cout<<"weight for leading muon with eta: "<<eta1<<" and pt: "<<vLep.at(0)->pt<<" is: "<<muEff<<" weight for subleading electron with eta: "<<eta2<<" and pt: "<<vLep.at(1)->pt<<" is: "<<elEff<<" total sf = "<<sf<<std::endl;
-
+      unsigned int eta1Bin = std::distance(muTrigSFetabin,std::find_if(muTrigSFetabin,muTrigSFetabin+5,[&eta1](float x){return x>eta1;}))-1;
+      unsigned int eta2Bin = std::distance(elTrigSFetabin,std::find_if(elTrigSFetabin,elTrigSFetabin+4,[&eta2](float x){return x>eta2;}))-1;
+      if (pt1>pt2) sf = meTrigLead[eta1Bin][pt1Bin] * meTrigTrail[eta2Bin][pt2Bin];
+      else sf = emTrigLead[eta2Bin][pt2Bin] * emTrigTrail[eta1Bin][pt1Bin];
     }//end check on electron being subleading or leading
-
-    //scale factor is combined efficiency (AND of reco'ing both el and mu)
-    sf = muEff*elEff;
-
   }//end cross channel
   //std::cout<<"scale factor at end of function: "<<sf<<std::endl;
   return sf;
-
 }
 
 float getLepIDSF(TLepton* lep){
 
   float sf;
 
-  if(lep->isMu){
+  if(lep->isMu){ // added by Jess on 201 Nov 2019. 2017 Cut-based Tight scale factors from https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffs2017
+    if (lep->pt < 40){
+        if( fabs(lep->eta) < 0.900) sf = 0.990775 ;
+        else if( fabs(lep->eta) < 1.200) sf = 0.986536 ;
+        else if( fabs(lep->eta) < 2.100) sf = 0.994647 ;
+        else sf = 0.978741 ;
+    }
+    else if (lep->pt < 50){
+        if( fabs(lep->eta) < 0.900) sf = 0.989248 ;
+        else if( fabs(lep->eta) < 1.200) sf = 0.984913 ;
+        else if( fabs(lep->eta) < 2.100) sf = 0.992653 ;
+        else sf = 0.978189 ;
+    }
+    else if (lep->pt < 60){
+        if( fabs(lep->eta) < 0.900) sf = 0.985555 ;
+        else if( fabs(lep->eta) < 1.200) sf = 0.983906 ;
+        else if( fabs(lep->eta) < 2.100) sf = 0.990636 ;
+        else sf = 0.967357 ;
+    }
+    else{
+        if( fabs(lep->eta) < 0.900) sf = 0.989806 ;
+        else if( fabs(lep->eta) < 1.200) sf = 0.984060 ;
+        else if( fabs(lep->eta) < 2.100) sf = 0.992046 ;
+        else sf = 0.976631 ;
+    }
 
+/*
     if(lep->pt<40){
       if(fabs(lep->eta)>2.1) sf = 0.9778;
       else if(fabs(lep->eta)>1.2) sf = 0.9909;
@@ -2326,11 +2391,84 @@ float getLepIDSF(TLepton* lep){
       else if(fabs(lep->eta)>0.9) sf = 0.9718;
       else sf =0.9744;
     }
-
+*/
   }
   else{//electron
+    // updated for 2017 by Jess on 20 Nov 2019. MVA-based ID scale factors extracted from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaIDRecipesRun2#94X_series_Fall17V2_Scale_factor (WP90 w/out iso)
+    if (lep->pt < 20){
+        if( lep->eta < -2.000) sf = 0.943237 ;
+        else if( lep->eta < -1.566) sf = 0.956818 ;
+        else if( lep->eta < -1.444) sf = 1.000000 ;
+        else if( lep->eta < -0.800) sf = 1.008304 ;
+        else if( lep->eta < 0.000) sf = 0.992727 ;
+        else if( lep->eta < 0.800) sf = 0.991566 ;
+        else if( lep->eta < 1.444) sf = 0.998800 ;
+        else if( lep->eta < 1.566) sf = 1.000000 ;
+        else if( lep->eta < 2.000) sf = 0.978360 ;
+        else sf = 0.930036 ;
+    }
+    else if (lep->pt < 35){
+        if( lep->eta < -2.000) sf = 0.926220 ;
+        else if( lep->eta < -1.566) sf = 0.937431 ;
+        else if( lep->eta < -1.444) sf = 1.000000 ;
+        else if( lep->eta < -0.800) sf = 0.963636 ;
+        else if( lep->eta < 0.000) sf = 0.980527 ;
+        else if( lep->eta < 0.800) sf = 0.980704 ;
+        else if( lep->eta < 1.444) sf = 0.963429 ;
+        else if( lep->eta < 1.566) sf = 1.000000 ;
+        else if( lep->eta < 2.000) sf = 0.942794 ;
+        else sf = 0.918089 ;
+    }
+    else if (lep->pt < 50){
+        if( lep->eta < -2.000) sf = 0.941176 ;
+        else if( lep->eta < -1.566) sf = 0.953241 ;
+        else if( lep->eta < -1.444) sf = 1.000000 ;
+        else if( lep->eta < -0.800) sf = 0.961665 ;
+        else if( lep->eta < 0.000) sf = 0.972467 ;
+        else if( lep->eta < 0.800) sf = 0.973742 ;
+        else if( lep->eta < 1.444) sf = 0.964758 ;
+        else if( lep->eta < 1.566) sf = 1.000000 ;
+        else if( lep->eta < 2.000) sf = 0.955319 ;
+        else sf = 0.932535 ;
+    }
+    else if (lep->pt < 100){
+        if( lep->eta < -2.000) sf = 0.948276 ;
+        else if( lep->eta < -1.566) sf = 0.966562 ;
+        else if( lep->eta < -1.444) sf = 1.000000 ;
+        else if( lep->eta < -0.800) sf = 0.967568 ;
+        else if( lep->eta < 0.000) sf = 0.979348 ;
+        else if( lep->eta < 0.800) sf = 0.975162 ;
+        else if( lep->eta < 1.444) sf = 0.969697 ;
+        else if( lep->eta < 1.566) sf = 1.000000 ;
+        else if( lep->eta < 2.000) sf = 0.970772 ;
+        else sf = 0.937500 ;
+    }
+    else if (lep->pt < 200){
+        if( lep->eta < -2.000) sf = 0.983370 ;
+        else if( lep->eta < -1.566) sf = 0.968750 ;
+        else if( lep->eta < -1.444) sf = 1.000000 ;
+        else if( lep->eta < -0.800) sf = 0.979437 ;
+        else if( lep->eta < 0.000) sf = 0.982628 ;
+        else if( lep->eta < 0.800) sf = 0.988121 ;
+        else if( lep->eta < 1.444) sf = 0.993407 ;
+        else if( lep->eta < 1.566) sf = 1.000000 ;
+        else if( lep->eta < 2.000) sf = 0.989529 ;
+        else sf = 0.939232 ;
+    }
+    else{
+        if( lep->eta < -2.000) sf = 0.921659 ;
+        else if( lep->eta < -1.566) sf = 0.984783 ;
+        else if( lep->eta < -1.444) sf = 1.000000 ;
+        else if( lep->eta < -0.800) sf = 1.006711 ;
+        else if( lep->eta < 0.000) sf = 0.993464 ;
+        else if( lep->eta < 0.800) sf = 0.958643 ;
+        else if( lep->eta < 1.444) sf = 1.013423 ;
+        else if( lep->eta < 1.566) sf = 1.000000 ;
+        else if( lep->eta < 2.000) sf = 0.948875 ;
+        else sf = 1.056671 ;
+    }
 
-
+/*
     if(lep->eta>1.566){
       if(lep->pt>300) sf = 0.9971;
       else if(lep->pt>200) sf = 0.9916;
@@ -2388,8 +2526,8 @@ float getLepIDSF(TLepton* lep){
       else if(lep->pt>30)  sf = 0.9523;
     }
     else sf=0; //lepton eta less than -2.4 shouldn't happen
+*/
   }
-
   return sf;
 }
 
@@ -2406,28 +2544,112 @@ float getLepIDSF(std::vector<TLepton*> vLep){
 float getLepIsoSF(TLepton* lep){
 
   float sf;
-  if(lep->isMu) sf = 1.0; //no scale factor for muon iso
-  else{
-    if(fabs(lep->eta) > 2.0){
-      if(lep->pt>50) sf = 1.02;
-      else if(lep->pt>40) sf = 1.033;
-      else if (lep->pt>30) sf = 1.042;
-    }
-    else if(fabs(lep->eta) > 1.566){
-      if(lep->pt>50) sf = 1.002;
-      else if(lep->pt>40) sf = 1.006;
-      else if (lep->pt>30) sf = 1.011;
-    }
-    else if(fabs(lep->eta) > 0.8){
-      if(lep->pt>50) sf = 0.9982;
-      else if(lep->pt>40) sf = 0.9914;
-      else if (lep->pt>30) sf = 0.9904;
-    }
-    else if(fabs(lep->eta) >= 0.0){
-      if(lep->pt>50) sf = 0.9848;
-      else if(lep->pt>40) sf = 0.9791;
-      else if (lep->pt>30) sf = 0.9794;
-    }
+  if(lep->isMu){ // added by Jess 2017 Muon SF for MiniIso<0.1 by myself from https://wiwong.web.cern.ch/wiwong/Muon_fit_Eff_Plots/2017_Efficiency20_3miniTight_Tight_abseta_mrange83/
+        if (lep->pt < 40){
+            if( fabs(lep->eta) < 0.900) sf = 0.996774 ;
+            else if( fabs(lep->eta) < 1.200) sf = 0.996165 ;
+            else if( fabs(lep->eta) < 2.100) sf = 0.997773 ;
+            else sf = 0.998785 ;
+        }
+        else if (lep->pt < 50){
+            if( fabs(lep->eta) < 0.900) sf = 0.998380 ;
+            else if( fabs(lep->eta) < 1.200) sf = 0.997641 ;
+            else if( fabs(lep->eta) < 2.100) sf = 0.998417 ;
+            else sf = 0.999581 ;
+        }
+        else if (lep->pt < 60){
+            if( fabs(lep->eta) < 0.900) sf = 0.999209 ;
+            else if( fabs(lep->eta) < 1.200) sf = 0.998940 ;
+            else if( fabs(lep->eta) < 2.100) sf = 0.999302 ;
+            else sf = 0.998849 ;
+        }
+        else if (lep->pt < 120){
+            if( fabs(lep->eta) < 0.900) sf = 0.999648 ;
+            else if( fabs(lep->eta) < 1.200) sf = 0.999956 ;
+            else if( fabs(lep->eta) < 2.100) sf = 1.000361 ;
+            else sf = 0.998738 ;
+        }
+        else if (lep->pt < 200){
+            if( fabs(lep->eta) < 0.900) sf = 0.999866 ;
+            else if( fabs(lep->eta) < 1.200) sf = 0.999198 ;
+            else if( fabs(lep->eta) < 2.100) sf = 1.000536 ;
+            else sf = 0.996425 ;
+        }
+        else{
+            if( fabs(lep->eta) < 0.900) sf = 1.000000 ;
+            else if( fabs(lep->eta) < 1.200) sf = 0.994535 ;
+            else if( fabs(lep->eta) < 2.100) sf = 1.000000 ;
+            else sf = 1.000000 ;
+        }
+	//sf = 1.0; //no scale factor for muon iso in 2016
+  }
+  else{ // MiniIsoTight to MVA90, added by Jess 19 Nov 2019, approved by 18 Nov. Reveiw slides in https://indico.cern.ch/event/842068/contributions/3636508/attachments/1943612/3223940/EleSF_review.pdf
+        if(fabs(lep->eta) < 0.800000){ 
+            if (lep->pt < 30) sf = 0.994577 ;
+            else if (lep->pt < 40) sf = 0.995868 ;
+            else if (lep->pt < 50) sf = 0.996954 ;
+            else if (lep->pt < 60) sf = 0.997976 ;
+            else if (lep->pt < 100) sf = 0.997980 ;
+            else if (lep->pt < 200) sf = 0.998993 ;
+            else sf = 1.000000 ;
+        }
+        else if(fabs(lep->eta) < 1.444000){
+            if (lep->pt < 30) sf = 1.001094 ;
+            else if (lep->pt < 40) sf = 0.997919 ;
+            else if (lep->pt < 50) sf = 0.998982 ;
+            else if (lep->pt < 60) sf = 0.998988 ;
+            else if (lep->pt < 100) sf = 1.001010 ;
+            else if (lep->pt < 200) sf = 1.001006 ;
+            else sf = 1.001005 ;
+        }
+        else if(fabs(lep->eta) < 1.566000){
+            if (lep->pt < 30) sf = 1.026918 ;
+            else if (lep->pt < 40) sf = 1.020118 ;
+            else if (lep->pt < 50) sf = 1.008801 ;
+            else if (lep->pt < 60) sf = 1.022396 ;
+            else if (lep->pt < 100) sf = 1.024055 ;
+            else if (lep->pt < 200) sf = 1.020877 ;
+            else sf = 1.008105 ;
+        }
+        else if(fabs(lep->eta) < 2.000000){
+            if (lep->pt < 30) sf = 0.994618 ;
+            else if (lep->pt < 40) sf = 0.996894 ;
+            else if (lep->pt < 50) sf = 0.997965 ;
+            else if (lep->pt < 60) sf = 0.998989 ;
+            else if (lep->pt < 100) sf = 1.001010 ;
+            else if (lep->pt < 200) sf = 1.003015 ;
+            else sf = 1.000000 ;
+        }
+        else{
+            if (lep->pt < 30) sf = 0.996771 ;
+            else if (lep->pt < 40) sf = 0.994819 ;
+            else if (lep->pt < 50) sf = 0.996945 ;
+            else if (lep->pt < 60) sf = 1.000000 ;
+            else if (lep->pt < 100) sf = 1.001007 ;
+            else if (lep->pt < 200) sf = 1.000000 ;
+            else sf = 0.999000 ;
+        }
+
+//    if(fabs(lep->eta) > 2.0){
+//      if(lep->pt>50) sf = 1.02;
+//      else if(lep->pt>40) sf = 1.033;
+//      else if (lep->pt>30) sf = 1.042;
+//    }
+//    else if(fabs(lep->eta) > 1.566){
+//      if(lep->pt>50) sf = 1.002;
+//      else if(lep->pt>40) sf = 1.006;
+//      else if (lep->pt>30) sf = 1.011;
+//    }
+//    else if(fabs(lep->eta) > 0.8){
+//      if(lep->pt>50) sf = 0.9982;
+//      else if(lep->pt>40) sf = 0.9914;
+//      else if (lep->pt>30) sf = 0.9904;
+//    }
+//    else if(fabs(lep->eta) >= 0.0){
+//      if(lep->pt>50) sf = 0.9848;
+//      else if(lep->pt>40) sf = 0.9791;
+//      else if (lep->pt>30) sf = 0.9794;
+//    }
   }
 
   return sf;
@@ -2569,11 +2791,17 @@ std::vector<float> weights_mumu(std::string flavor){
   return weights;
 }
 
-float getPUWeight(TH1F* h, int nPU){
+float getPUWeight(std::string FileName, int index, int shift){
 
-  float weight = -1;
-  weight = h->GetBinContent(nPU+1); // plus one because 1st bin is 0-0.9999 so pilupe of 1 falls in bin 2
-  //std::cout<<"nInteractions: "<<nPU<<" and weight: "<<weight<<std::endl;
+  float weight = 1.0;
+  //if(PUweightsMap.FoundSample(FileName)){
+  //  if (shift==0) weight = PUweightsMap.GetPUcentral(FileName, index);
+  //  else if(shift==1) weight = PUweightsMap.GetPUup(FileName, index);
+  //  else if(shift==-1) weight = PUweightsMap.GetPUdown(FileName, index);
+  //  else std::cout<<"FATAL ERROR!!!! unrecognised shift for file " << FileName <<std::endl;
+  //}
+  //weight = h->GetBinContent(nPU+1); // plus one because 1st bin is 0-0.9999 so pilupe of 1 falls in bin 2
+  
   return weight;
 
 };

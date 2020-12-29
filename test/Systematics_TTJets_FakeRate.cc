@@ -14,6 +14,8 @@
 #include <sstream> 
 #include "../plugins/Macros.cc"
 
+bool debug = true;
+
 //helper functions
 bool matchToGenLep(TMuon* mu, std::vector<TGenParticle*> genParticles);
 bool matchToGenLep(TElectron* el, std::vector<TGenParticle*> genParticles);
@@ -37,7 +39,13 @@ int main(int argc, char* argv[]){
   typedef std::map<std::string,std::string> StringMap;
   
   StringMap samples;
-  std::string eosarea = "root://cmsxrootd.fnal.gov//store/user/lpctlbsm/clint/Spring16/25ns/Jan09/ljmet_trees/";
+  //std::string eosarea = "root://cmsxrootd.fnal.gov//store/user/lpctlbsm/clint/Spring16/25ns/Jan09/ljmet_trees/";
+  std::string eosarea = "/eos/uscms/store/user/lpcljm/FWLJMET102X_2lepFakeRate2017_wywong_082020_hadds/";
+  samples["TTTo2L2Nu"] = eosarea+"TTTo2L2Nu.root";
+  samples["TTToSemiLeptonic"] = eosarea+"TTToSemiLeptonic.root";
+  samples["test"] = "/eos/uscms/store/user/lpcljm/FWLJMET102X_2lepFakeRate2017_wywong_082020/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/diLepFakeRate2017/201125_072328/0000/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8_100.root";
+  samples["TTbar"] = eosarea+"TTToSemiLeptonic.root";
+  /*
   samples["TTbar_pt0"] = eosarea+"ljmet_TTbar_pt0.root";
   samples["TTbar_pt1"] = eosarea+"ljmet_TTbar_pt1.root";
   samples["TTbar_pt2"] = eosarea+"ljmet_TTbar_pt2.root";
@@ -61,16 +69,16 @@ int main(int argc, char* argv[]){
   samples["QCD_Pt-600to800_MuEnrichedPt5"] = eosarea+"ljmet_FakeRate_QCD_Pt-600to800_MuEnrichedPt5.root";
   samples["QCD_Pt-800to1000_MuEnrichedPt5"] = eosarea+"ljmet_FakeRate_QCD_Pt-800to1000_MuEnrichedPt5.root";
   samples["QCD_Pt-1000toInf_MuEnrichedPt5"] = eosarea+"ljmet_FakeRate_QCD_Pt-1000toInf_MuEnrichedPt5.root";
-    
+  */
   if(samples.find(sample)==samples.end()) {std::cout<<"didn't pick a correct sample! Exiting..."<<std::endl; return 0;}
-    
+  
   std::string filename;
   filename = samples.find(sample)->second;
-
+  std::cout << "Running on " << filename <<std::endl;
   
-  TreeReader* tr = new TreeReader(filename.c_str(),mc,false);
-  //TreeReader* tr = new TreeReader("/uscms_data/d3/clint/using_git/T53/ljmet/CMSSW_7_4_14/src/LJMet/Com/python/ljmet_test.root",mc);
+  TreeReader* tr = new TreeReader(filename.c_str(),"ljmet/ljmet",mc,false);
   TTree* t = tr->tree;
+  if(debug) std::cout<< "Get tree from Tree Reader " << t << std::endl;
   std::string outname = "FakeRate_"+sample+".root";
 
   TFile* outfile = new TFile(outname.c_str(),"RECREATE");
@@ -115,6 +123,7 @@ int main(int argc, char* argv[]){
   muNumHist_lpt->GetXaxis()->SetBinLabel(6,"Average");muNumHist_hpt->GetXaxis()->SetBinLabel(6,"Average");muNumHist_all->GetXaxis()->SetBinLabel(6,"Average");
 
   int nEntries = t->GetEntries();
+  if(debug) std::cout<< "nEntries = "<< nEntries<< std::endl;
 
   for(int ient=0; ient < nEntries; ient++){
     //for(int ient=0; ient < 2000; ient++){
@@ -136,13 +145,17 @@ int main(int argc, char* argv[]){
 	loose = iel->mvaJulieLooseRCIso();
 	tight = iel->mva2016TightRCIso();
       }
+      else if(elID=="MVA2017TightV2IsoTightRC"){
+        loose = iel->mva94XLooseV2_Iso_RC();
+        tight = iel->mva94XTightV2_90_IsoTight_RC();
+      }
       else{
 	std::cout<<"Didn't pick analysis ID! Are you sure? Exiting so you can think about it..."<<std::endl;
 	return 0;
       }
 
-      //skip any with pt below 25 GeV
-      if(iel->pt<25) continue;
+      //skip any with pt below 30 GeV
+      if(iel->pt<30) continue;
       //skip if not at least loose
       if(!loose) continue;
       //save variables for tree
@@ -269,8 +282,8 @@ int main(int argc, char* argv[]){
 	return 0;
       }
 
-      //skip any with pt below 25 GeV
-      if(imu->pt<25) continue;
+      //skip any with pt below 30 GeV
+      if(imu->pt<30) continue;
       //skip if not at least loose
       if(!loose) continue;
 

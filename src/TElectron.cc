@@ -69,15 +69,24 @@ TElectron::TElectron(
 {
   setLV();
 
-  //redo effective area
-  if( fabs(eta)<1.0) AEff=0.1752;
-  else if(fabs(eta)<1.479) AEff=0.1862;
-  else if(fabs(eta)<2.0) AEff=0.1411;
-  else if(fabs(eta)<2.2) AEff=0.1534;
-  else if(fabs(eta)<2.3) AEff=0.1903;
-  else if(fabs(eta)<2.4) AEff=0.2243;
-  else if(fabs(eta)<2.5) AEff=0.2687;
+//  //redo effective area (Aeff_Fall15Anal)
+//  if( fabs(eta)<1.0) AEff=0.1752;
+//  else if(fabs(eta)<1.479) AEff=0.1862;
+//  else if(fabs(eta)<2.0) AEff=0.1411;
+//  else if(fabs(eta)<2.2) AEff=0.1534;
+//  else if(fabs(eta)<2.3) AEff=0.1903;
+//  else if(fabs(eta)<2.4) AEff=0.2243;
+//  else if(fabs(eta)<2.5) AEff=0.2687;
 
+  //Aeff_Fall17Anal
+  if( fabs(eta)<1.0) AEff=0.1566;
+  else if(fabs(eta)<1.479) AEff=0.1626;
+  else if(fabs(eta)<2.0) AEff=0.1073;
+  else if(fabs(eta)<2.2) AEff=0.0854;
+  else if(fabs(eta)<2.3) AEff=0.1051;
+  else if(fabs(eta)<2.4) AEff=0.1204;
+  else if(fabs(eta)<2.5) AEff=0.1524;
+  //std::cout<< "AEff updated to 2017" <<std::endl;
 
   relIsoDB = (chIso + std::max(0.0, neutIso + photIso - 0.5*puIso) ) / pt;
   relIsoEA = (chIso + std::max(0.0, neutIso + photIso - AEff*rhoIso) ) / pt; 
@@ -120,7 +129,7 @@ bool TElectron::mva94XTightV2_80_RC(){
 
 bool TElectron::mva94XTightV2_90(){return ISmva94XTightV2_90;}
 bool TElectron::mva94XTightV2_90_Iso(){
-  bool pass = mva94XTightV2_90() && miniIso<0.1;
+  bool pass = mva94XTightV2_90() && miniIso<0.4;
   return pass;
 }
 bool TElectron::mva94XTightV2_90_Iso_RC(){
@@ -128,6 +137,17 @@ bool TElectron::mva94XTightV2_90_Iso_RC(){
   if(pt<100) cc = chargeConsistency< 1 ? false : true;
   else cc = gsfCharge==ctfCharge ? true : false;
   bool pass = mva94XTightV2_90_Iso() && cc;
+  return pass;
+}
+bool TElectron::mva94XTightV2_90_IsoTight(){
+  bool pass = mva94XTightV2_90() && miniIso<0.1;
+  return pass;
+}
+bool TElectron::mva94XTightV2_90_IsoTight_RC(){
+  bool cc;
+  if(pt<100) cc = chargeConsistency< 1 ? false : true;
+  else cc = gsfCharge==ctfCharge ? true : false;
+  bool pass = mva94XTightV2_90_IsoTight() && cc;
   return pass;
 }
 bool TElectron::mva94XTightV2_90_RC(){
@@ -281,6 +301,67 @@ bool TElectron::mva94XLooseV1_RC(){
   bool pass = mva94XLooseV1() && cc;
   return pass;
 }
+
+/// *********************** Custom MVA IDs 94X AN2016-496 ************************ - for testing Custom MVA
+bool TElectron::mva94X2016CustomTight(){
+  // veto gap (always)
+  if(fabs(eta)>1.442 && fabs(eta)<1.556) return false;
+
+  if(fabs(eta)<0.8 && mvaValue > 0.674) return true;
+  else if(fabs(eta)<1.479 && mvaValue > 0.744) return true;
+  else if(fabs(eta)<2.4 && mvaValue > 0.170) return true; 
+  //if none of the above conditions is met return false
+  return false;
+}
+bool TElectron::mva94X2016CustomTight_Iso(){
+  bool pass = mva94X2016CustomTight() && miniIso<0.1;
+  return pass;
+}
+bool TElectron::mva94X2016CustomTight_Iso_RC(){
+  bool cc;
+  if(pt<100) cc = chargeConsistency< 1 ? false : true;
+  else cc = gsfCharge==ctfCharge ? true : false;
+  bool pass = mva94X2016CustomTight_Iso() && cc;
+  return pass;
+}
+bool TElectron::mva94X2016CustomTight_RC(){
+  bool cc;
+  if(pt<100) cc = chargeConsistency< 1 ? false : true;
+  else cc = gsfCharge==ctfCharge ? true : false;
+  bool pass = mva94X2016CustomTight() && cc;
+  return pass;
+}
+
+
+bool TElectron::mva94X2016CustomLoose(){
+  // veto gap (always)
+  if(fabs(eta)>1.442 && fabs(eta)<1.556) return false;
+  
+  if(fabs(eta)<0.8 && mvaValue > -0.041) return true;
+  else if(fabs(eta)<1.479 && mvaValue > 0.383) return true;
+  else if(fabs(eta)<2.4 && mvaValue > -0.515) return true;
+  //if none of the above conditions is met return false
+  return false;
+}
+bool TElectron::mva94X2016CustomLoose_Iso(){
+  bool pass = mva94X2016CustomLoose() && miniIso<0.4;
+  return pass;
+}
+bool TElectron::mva94X2016CustomLoose_Iso_RC(){
+  bool cc;
+  if(pt<100) cc = chargeConsistency< 1 ? false : true;
+  else cc = gsfCharge==ctfCharge ? true : false;
+  bool pass = mva94X2016CustomLoose_Iso() && cc;
+  return pass;
+}
+bool TElectron::mva94X2016CustomLoose_RC(){
+  bool cc;
+  if(pt<100) cc = chargeConsistency< 1 ? false : true;
+  else cc = gsfCharge==ctfCharge ? true : false;
+  bool pass = mva94X2016CustomLoose() && cc;
+  return pass;
+}
+
 
 /// *********************** MVA IDs ************************
 bool TElectron::mvaLoose(){

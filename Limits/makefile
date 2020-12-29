@@ -23,6 +23,9 @@ makeLimitCards_MCVar:
 makeLimitRootFiles:
 	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makeLimitRootFiles.o makeLimitRootFiles.cc
 
+makeLimitRootFiles_Combine:
+	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makeLimitRootFiles_Combine.o makeLimitRootFiles_Combine.cc
+
 makeThetaTemplates:
 	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makeThetaTemplates.o makeThetaTemplates.cc
 

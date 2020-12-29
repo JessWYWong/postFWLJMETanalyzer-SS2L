@@ -16,6 +16,9 @@ void TreeMaker::InitTree(std::string treename){
   tree->Branch("Run",&run_);
   tree->Branch("Lumi",&lumi_);
   tree->Branch("Event",&event_);
+  tree->Branch("prefireWeight",&prefireWeight_);
+  tree->Branch("prefireWeightUp",&prefireWeightUp_);
+  tree->Branch("prefireWeightDown",&prefireWeightDown_);
 
   //weight
   tree->Branch("ChargeMisIDWeight",&weight_);
@@ -28,7 +31,11 @@ void TreeMaker::InitTree(std::string treename){
 
   //scalefactors
   tree->Branch("trigSF",&trigSF_);
+  tree->Branch("trigSFup",&trigSFup_);
+  tree->Branch("trigSFdn",&trigSFdn_);
   tree->Branch("IDSF",&IDSF_);
+  tree->Branch("IDSFup",&IDSFup_);
+  tree->Branch("IDSFdn",&IDSFdn_);
   tree->Branch("IsoSF",&IsoSF_);
   tree->Branch("GsfSF",&gsfSF_);
   tree->Branch("JetTaggingSF",&JetTaggingSF_);
@@ -36,6 +43,13 @@ void TreeMaker::InitTree(std::string treename){
   tree->Branch("PUWeight",&puweight_);
   tree->Branch("PUWeightUp",&puweightUp_);
   tree->Branch("PUWeightDown",&puweightDown_);
+
+  tree->Branch("pdfweights",&pdfweights_);
+  tree->Branch("renormWeights",&renormWeights_);
+  tree->Branch("pdfNewWeights",&pdfNewWeights_);
+  tree->Branch("pdfWeights4LHC",&pdfWeights4LHC_);
+  tree->Branch("pdfWeightsMSTW",&pdfWeightsMSTW_);
+  tree->Branch("pdfNewNominalWeight",&pdfNewNominalWeight_);
 
   tree->Branch("Lep1Eta",&Lep1Eta_);
   tree->Branch("Lep1Phi",&Lep1Phi_);
@@ -64,10 +78,6 @@ void TreeMaker::InitTree(std::string treename){
 
   //number of constiuents, cleaned ak4 jets and non ssdl leptons
   tree->Branch("nConst",&nConst_);
-  tree->Branch("nConstJESup",&nConstJESup_);
-  tree->Branch("nConstJESdn",&nConstJESdn_);
-  tree->Branch("nConstJERup",&nConstJERup_);
-  tree->Branch("nConstJERdn",&nConstJERdn_);
   tree->Branch("nNewConst",&nNewConst_);
   tree->Branch("nNonSSLeps",&nNonSSLeps_);
 
@@ -247,7 +257,9 @@ void TreeMaker::InitTree(std::string treename){
   tree->Branch("nPV",&nPrimaryVert_);
 }
 
-void TreeMaker::FillTree(std::vector<TLepton*> vSSLep, std::vector<TJet*> AK4Jets, std::vector<TJet*> cleanAK4Jets,std::vector<TJet*> simpleCleanAK4Jets, float HTtemp, float METtemp, float DilepMasstemp, int nMu, float weight, std::vector<TLepton*> vNonSSLep,float mcweight, float NPWeighttemp,float NPaltTemp,float SUSYNPTemp, int nTLtemp, float trSF, float idSF, float isoSF,float gsfSF, float puwtemp,float puUptemp, float puDowntemp, float amasst, std::vector<TBoostedJet*> AK8Jets,std::vector<THadronicGenJet*> hadronicGenJets,bool mc,int run, int lumi, int event,int nPV){
+void TreeMaker::FillTree(std::vector<TLepton*> vSSLep, std::vector<TJet*> AK4Jets, std::vector<TJet*> cleanAK4Jets, std::vector<TJet*> simpleCleanAK4Jets, float HTtemp, float METtemp, float DilepMasstemp, int nMu, float weight, std::vector<TLepton*> vNonSSLep,float mcweight, float NPWeighttemp,float NPaltTemp,float SUSYNPTemp, int nTLtemp, float trSF, float trSFup, float trSFdn, float idSF, float idSFup, float idSFdn, float isoSF,float gsfSF, float puwtemp,float puUptemp, float puDowntemp, double prefirewtemp, double prefireUptemp, double prefireDowntemp, float amasst, std::vector<TBoostedJet*> AK8Jets,std::vector<THadronicGenJet*> hadronicGenJets,bool mc,int run, int lumi, int event,int nPV, std::vector<double> pdfweightstemp, std::vector<double> renormWeightstemp, std::vector<double> pdfNewWeightstemp, std::vector<double> pdfWeights4LHCtemp, std::vector<double> pdfWeightsMSTWtemp, double pdfNewNominalWeighttemp){
+
+  bool debug = false;
 
   run_=run;
   lumi_=lumi;
@@ -262,12 +274,27 @@ void TreeMaker::FillTree(std::vector<TLepton*> vSSLep, std::vector<TJet*> AK4Jet
   else MCWeight_=-1;
 
   trigSF_=trSF;
+  trigSFup_=trSFup;
+  trigSFdn_=trSFdn;
   IDSF_ = idSF;
+  IDSFup_ = idSFup;
+  IDSFdn_ = idSFdn;
   IsoSF_ = isoSF;
   gsfSF_ = gsfSF;
   puweight_=puwtemp;
   puweightUp_ = puUptemp;
   puweightDown_ = puDowntemp;
+  prefireWeight_ = prefirewtemp;
+  prefireWeightUp_ = prefireUptemp;
+  prefireWeightDown_ = prefireDowntemp;
+
+  pdfweights_ = pdfweightstemp;
+  renormWeights_ = renormWeightstemp;
+  pdfNewWeights_ = pdfNewWeightstemp;
+  pdfWeights4LHC_ = pdfWeights4LHCtemp;
+  pdfWeightsMSTW_ = pdfWeightsMSTWtemp;
+  pdfNewNominalWeight_ = pdfNewNominalWeighttemp;
+  if(debug) std::cout<< "pdfweights_ size " << pdfweights_.size() << std::endl;
 
   assert(vSSLep.size()>1);
 
@@ -352,6 +379,7 @@ void TreeMaker::FillTree(std::vector<TLepton*> vSSLep, std::vector<TJet*> AK4Jet
     if(cleanAK4Jets.at(i)->smearDownPt > 30){ nCleanAK4JetsSmearDown_++; }
 
   }
+
   for(unsigned int ilep=0; ilep < vNonSSLep.size(); ilep++){
     cleanAK4HT_+=vNonSSLep.at(ilep)->pt;
     cleanAK4HTScaleUp_+=vNonSSLep.at(ilep)->pt;
@@ -1057,10 +1085,6 @@ void TreeMaker::FillTree(std::vector<TLepton*> vSSLep, std::vector<TJet*> AK4Jet
   if(foundW && foundTop) X53mass_ = (wjet+topjet).M();
 
   nConst_=nCleanAK4Jets_+vNonSSLep.size();
-  nConstJESup_=nCleanAK4JetsScaleUp_+vNonSSLep.size();
-  nConstJESdn_=nCleanAK4JetsScaleDown_+vNonSSLep.size();
-  nConstJERup_=nCleanAK4JetsSmearUp_+vNonSSLep.size();
-  nConstJERdn_=nCleanAK4JetsSmearDown_+vNonSSLep.size();
   DilepMass_ = DilepMasstemp;
   AssocMass_ = amasst;
   nMu_= nMu;

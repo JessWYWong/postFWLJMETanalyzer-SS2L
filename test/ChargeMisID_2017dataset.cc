@@ -14,6 +14,7 @@
 #include <sstream>
 #include "../plugins/Macros.cc"
 #include <memory>
+#include <fstream>
 
 //helper functions
 std::vector<TLepton*> makeLeptons(std::vector<TElectron*> electrons, bool mc, bool FiftyNs, std::string ID);
@@ -56,15 +57,21 @@ int main(int argc, char* argv[]){
       data=true; FiftyNS=false;
 
       // Input file folder
-      std::string filedir = "FWLJMET102X_2lep2017_062719_hadds";
+      //std::string filedir = "user/wywong/FWLJMET102X_2lep2017_wywong_012020_hadds";
+      std::string filedir = "group/lpcljm/FWLJMET102X_2lep2017_wywong_082020_hadds";
 
       // Input files
-      if(argv2=="2017B") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017FBroot";
-      else if(argv2=="2017C") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017C.root";
-      else if(argv2=="2017D") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017D.root";
-      else if(argv2=="2017E") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017E.root";
+      //if(argv2=="2017B") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017B.root";
+      //else if(argv2=="2017C") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017C.root";
+      //else if(argv2=="2017D") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017D.root";
+      //else if(argv2=="2017E") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017E.root";
       //else if(argv2=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017F.root";
-      else if(argv2=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017F_TEST.root";
+      //else if(argv2=="2017F_TEST") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017F_TEST.root";
+      if(argv2=="2017B") filename="root://cmseos.fnal.gov//store/"+filedir+"/DoubleEGRun2017B.root";
+      else if(argv2=="2017C") filename="root://cmseos.fnal.gov//store/"+filedir+"/DoubleEGRun2017C.root";
+      else if(argv2=="2017D") filename="root://cmseos.fnal.gov//store/"+filedir+"/DoubleEGRun2017D.root";
+      else if(argv2=="2017E") filename="root://cmseos.fnal.gov//store/"+filedir+"/DoubleEGRun2017E.root";
+      else if(argv2=="2017F") filename="root://cmseos.fnal.gov//store/"+filedir+"/DoubleEGRun2017F.root";
   }
   else if(argv1=="MC" && argv2=="50ns") {filename="root://cmseos.fnal.gov//store/user/clint/PHYS14/50ns/ljmet_trees/ljmet_DYJets.root"; data=false; FiftyNS=true;}
   else if(argv1=="MC" && argv2=="25ns") {filename="root://cmseos.fnal.gov//store/user/lpctlbsm/clint/Spring16/25ns/Feb16/ljmet_trees/ljmet_DYJets.root"; data=false; FiftyNS=false;}
@@ -77,7 +84,7 @@ int main(int argc, char* argv[]){
   }
 
   //make output folder
-  TString outdir = "ChargeMisID";
+  TString outdir = "ChargeMisID_082020";
   system("mkdir -pv "+outdir);
 
 
@@ -99,21 +106,21 @@ int main(int argc, char* argv[]){
   gDirectory->pwd();
 
   //initialize needed histograms
-  TH1F* ptNumHist_all = new TH1F("ptNumHist_all","p_{T} of Same Sign Leptons",20,0,600);
-  TH1F* ptDenHist_all = new TH1F("ptDenHist_all","p_{T} of All Leptons",20,0,600);
+  TH1F* ptNumHist_all = new TH1F("ptNumHist_all","p_{T} of Same Sign Leptons",19,30,600);
+  TH1F* ptDenHist_all = new TH1F("ptDenHist_all","p_{T} of All Leptons",19,30,600);
 
-  TH1F* ptNumHist_lpt = new TH1F("ptNumHist_lpt","p_{T} of Same Sign Leptons",20,0,100);
-  TH1F* ptDenHist_lpt = new TH1F("ptDenHist_lpt","p_{T} of All Leptons",20,0,100);
+  TH1F* ptNumHist_lpt = new TH1F("ptNumHist_lpt","p_{T} of Same Sign Leptons",14,30,100);
+  TH1F* ptDenHist_lpt = new TH1F("ptDenHist_lpt","p_{T} of All Leptons",14,30,100);
 
-  TH1F* ptNumHist_hpt = new TH1F("ptNumHist_hpt","p_{T} of Same Sign Leptons",20,0,600);
-  TH1F* ptDenHist_hpt = new TH1F("ptDenHist_hpt","p_{T} of All Leptons",20,0,600);
+  TH1F* ptNumHist_hpt = new TH1F("ptNumHist_hpt","p_{T} of Same Sign Leptons",19,30,600);
+  TH1F* ptDenHist_hpt = new TH1F("ptDenHist_hpt","p_{T} of All Leptons",19,30,600);
 
-  TH1F* ptNumHist_hhpt = new TH1F("ptNumHist_hhpt","p_{T} of Same Sign Leptons",20,0,600);
-  TH1F* ptDenHist_hhpt = new TH1F("ptDenHist_hhpt","p_{T} of All Leptons",20,0,600);
+  TH1F* ptNumHist_hhpt = new TH1F("ptNumHist_hhpt","p_{T} of Same Sign Leptons",19,30,600);
+  TH1F* ptDenHist_hhpt = new TH1F("ptDenHist_hhpt","p_{T} of All Leptons",19,30,600);
 
-  TH1F* etaAllHist = new TH1F("etaAllHist","#eta of All Leptons",15,-3,3);
-  TH1F* etaNumHist = new TH1F("etaNumHist","#eta of Same Sign Leptons",15,-3,3);
-  TH1F* etaDenHist = new TH1F("etaDenHist","#eta of All Leptons",15,-3,3);
+  TH1F* etaAllHist = new TH1F("etaAllHist","#eta of All Leptons",12,-2.4,2.4);
+  TH1F* etaNumHist = new TH1F("etaNumHist","#eta of Same Sign Leptons",12,-2.4,2.4);
+  TH1F* etaDenHist = new TH1F("etaDenHist","#eta of All Leptons",12,-2.4,2.4);
 
   TH1F* etaNumHist_lpt = new TH1F("etaNumHist_lpt","#eta of low pT Same Sign Leptons",15,-3,3);
   TH1F* etaDenHist_lpt = new TH1F("etaDenHist_lpt","#eta of low pT Leptons",15,-3,3);
@@ -153,6 +160,7 @@ int main(int argc, char* argv[]){
     if(data) weight =1.0;
     else weight = tr->MCWeight >=0 ? 1.0 : -1.0;
     if(ient % 100000 ==0) std::cout<<"Completed "<<ient<<" out of "<<nEntries<<" events"<<std::endl;
+
 
     for(std::vector<TElectron*>::size_type iel=0; iel<tr->goodElectrons.size();iel++){
       etaAllHist->Fill( (tr->goodElectrons).at(iel)->eta,weight);
@@ -329,7 +337,9 @@ int main(int argc, char* argv[]){
 //   fout->Append(massDenHist);
   //make tgraphs for promptrate
   TGraphAsymmErrors* ptGraph = new TGraphAsymmErrors(ptNumHist_all,ptDenHist_all);
+  std::cout<< "ptGraph" <<std::endl;
   TGraphAsymmErrors* etaGraph = new TGraphAsymmErrors(etaNumHist,etaDenHist);
+  std::cout<< "etaGraph" <<std::endl;
   //write the tgraphs
   ptGraph->Write("ptGraph");
   etaGraph->Write("etaGraph");
@@ -339,20 +349,28 @@ int main(int argc, char* argv[]){
   //make hists of rate
   TH1F* rateEta = (TH1F*) etaNumHist->Clone();
   rateEta->Divide(etaDenHist);
+  //std::cout<< "rateEta" <<std::endl;
   TH1F* ratePt_all = (TH1F*) ptNumHist_all->Clone();
   ratePt_all->Divide(ptDenHist_all);
+  //std::cout<< "ratePt_all" <<std::endl;
   TH1F* ratePt_lpt = (TH1F*) ptNumHist_lpt->Clone();
   ratePt_lpt->Divide(ptDenHist_lpt);
+  //std::cout<< "ratePt_lpt" <<std::endl;
   TH1F* ratePt_hpt = (TH1F*) ptNumHist_hpt->Clone();
   ratePt_hpt->Divide(ptDenHist_hpt);
+  //std::cout<< "ratePt_hpt" <<std::endl;
   TH1F* ratePt_hhpt = (TH1F*) ptNumHist_hhpt->Clone();
   ratePt_hhpt->Divide(ptDenHist_hhpt);
+  //std::cout<< "ratePt_hhpt" <<std::endl;
   TH1F* rateEta_lpt = (TH1F*)etaNumHist_lpt->Clone();
   rateEta_lpt->Divide(etaDenHist_lpt);
+  //std::cout<< "rateEta_lpt" <<std::endl;
   TH1F* rateEta_hpt = (TH1F*)etaNumHist_hpt->Clone();
   rateEta_hpt->Divide(etaDenHist_hpt);
+  //std::cout<< "rateEta_hpt" <<std::endl;
   TH1F* rateEta_hhpt = (TH1F*)etaNumHist_hhpt->Clone();
   rateEta_hhpt->Divide(etaDenHist_hhpt);
+  //std::cout<< "rateEta_hhpt" <<std::endl;
 //   fout->Append(rateEta);
 //   fout->Append(rateEta_lpt);
 //   fout->Append(rateEta_hpt);
@@ -498,7 +516,8 @@ std::vector<TLepton*> makeLeptons(std::vector<TElectron*> electrons, bool mc, bo
     //only save if tight
     if(iLep->Tight){
       //apply pt cut
-      if(iLep->pt>20) Leptons.push_back(iLep);
+      //if(iLep->pt>20) Leptons.push_back(iLep);
+      if(iLep->pt>30) Leptons.push_back(iLep);
     }
   }
 

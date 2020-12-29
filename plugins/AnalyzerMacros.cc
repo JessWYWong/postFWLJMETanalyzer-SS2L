@@ -7,6 +7,8 @@
 #include "plugins/Sample.cc"
 #include "plugins/CutClass.cc"
 #include "interface/TreeReader.h"
+#include "interface/PUweights.h"
+PUweights PUweightsMap;
 #include "TGraphAsymmErrors.h"
 #include "TMath.h"
 #include "Math/ProbFunc.h"
@@ -656,7 +658,8 @@ std::vector<Sample*> getBkgSampleVec(std::string cut, float lumi, std::string el
    //setup info for list of samples, xsec and events run  //make vector of actual number of events run MULTIPLIED BY AMCATNLO WEIGHT
   std::vector<std::string> vBkgNames;  std::vector<float> vXsec;  std::vector<float> vNEvts;
 
-  //************** MC *************
+/*
+  // ************** MC *************
  //vBkgNames.push_back("TTbar");  vXsec.push_back(831.76);  vNEvts.push_back(42730273 * 0.331582);
   vBkgNames.push_back("TTZ");    vXsec.push_back(0.2529);  vNEvts.push_back(398600 * 0.464706);
   vBkgNames.push_back("TTW");    vXsec.push_back(0.2043);  vNEvts.push_back(252673*0.515587);
@@ -672,6 +675,22 @@ std::vector<Sample*> getBkgSampleVec(std::string cut, float lumi, std::string el
   vBkgNames.push_back("WWZ");    vXsec.push_back(0.1651); vNEvts.push_back(249200*0.885963);
   vBkgNames.push_back("WZZ");    vXsec.push_back(0.05565); vNEvts.push_back(249800*0.876645);
   vBkgNames.push_back("ZZZ");    vXsec.push_back(0.01398); vNEvts.push_back(250000* 0.8554);
+*/
+
+  /////////////Updated on Dec 18 2019 + Checked on Nov 10 2020 by Jess ////////////////////
+  vBkgNames.push_back("TTZ");    vXsec.push_back(0.2432);  vNEvts.push_back(3745298); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("TTW");    vXsec.push_back(0.2149);  vNEvts.push_back(2716007); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8
+  vBkgNames.push_back("TTH");    vXsec.push_back(0.5638);  vNEvts.push_back(7522972); // obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8
+  vBkgNames.push_back("TTTT");   vXsec.push_back(0.008213);vNEvts.push_back(373734); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTTT_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("WZ");     vXsec.push_back(5.052);   vNEvts.push_back(6820606); // obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8
+  vBkgNames.push_back("ZZ");     vXsec.push_back(1.325);   vNEvts.push_back(15912322); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DZZTo4L_13TeV_powheg_pythia8
+  vBkgNames.push_back("WpWp");   vXsec.push_back(0.04932); vNEvts.push_back(148394); //obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8
+//  vBkgNames.push_back("WJets");  vXsec.push_back(52940.0); vNEvts.push_back(33043732); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8
+//  vBkgNames.push_back("WWW");    vXsec.push_back(0.2086); vNEvts.push_back(203246); //(v14-v1 value for v14-v2 sample) https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWWW_4F_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("WWZ");    vXsec.push_back(0.1651); vNEvts.push_back(219964); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWWZ_4F_TuneCP5_13TeV-amcatnlo-pythia
+  vBkgNames.push_back("WZZ");    vXsec.push_back(0.05565); vNEvts.push_back(219660); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWZZ_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("ZZZ");    vXsec.push_back(0.01398); vNEvts.push_back(214318); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DZZZ_TuneCP5_13TeV-amcatnlo-pythia8
+  ///////////// End updated on Dec 18 2019 by Jess ////////////////////
   
   //******* Non Prompt**********
   //vBkgNames.push_back("NonPromptMC");  vXsec.push_back(831.76);  vNEvts.push_back(42730273 * 0.331582);
@@ -738,7 +757,7 @@ std::vector<Sample*> getBkgSampleVec(std::string cut, float lumi, std::string el
 
   std::string wpwpfilename = MCarea+"test/WpWp_Mu"+muID+"_El"+elID+".root";
   TFile* wpwpfile = new TFile(wpwpfilename.c_str());
-  Sample* wpwpSample = new Sample(vBkgNames.at(7),wpwpfile, vWeights.at(7),vXsec.at(7),cut,kGreen+1);
+  Sample* wpwpSample = new Sample(vBkgNames.at(6),wpwpfile, vWeights.at(6),vXsec.at(6),cut,kGreen+1);
   //std::cout<<"weight for ZZ is: "<<vWeights.at(5)<<std::endl;
   vSample.push_back(wpwpSample);
 
@@ -751,19 +770,19 @@ std::vector<Sample*> getBkgSampleVec(std::string cut, float lumi, std::string el
 
   std::string wwzfilename = MCarea+"test/WWZ_Mu"+muID+"_El"+elID+".root";
   TFile* wwzfile = new TFile(wwzfilename.c_str());
-  Sample* wwzSample = new Sample(vBkgNames.at(9),wwzfile, vWeights.at(9),vXsec.at(9),cut,kViolet+1);
+  Sample* wwzSample = new Sample(vBkgNames.at(7),wwzfile, vWeights.at(7),vXsec.at(7),cut,kViolet+1);
   //std::cout<<"weight for ZZ is: "<<vWeights.at(5)<<std::endl;
   vSample.push_back(wwzSample);
 
   std::string wzzfilename = MCarea+"test/WZZ_Mu"+muID+"_El"+elID+".root";
   TFile* wzzfile = new TFile(wzzfilename.c_str());
-  Sample* wzzSample = new Sample(vBkgNames.at(10),wzzfile, vWeights.at(10),vXsec.at(10),cut,kViolet+3);
+  Sample* wzzSample = new Sample(vBkgNames.at(8),wzzfile, vWeights.at(8),vXsec.at(8),cut,kViolet+3);
   //std::cout<<"weight for ZZ is: "<<vWeights.at(5)<<std::endl;
   vSample.push_back(wzzSample);
 
   std::string zzzfilename = MCarea+"test/ZZZ_Mu"+muID+"_El"+elID+".root";
   TFile* zzzfile = new TFile(zzzfilename.c_str());
-  Sample* zzzSample = new Sample(vBkgNames.at(11),zzzfile, vWeights.at(11),vXsec.at(11),cut,kViolet);
+  Sample* zzzSample = new Sample(vBkgNames.at(9),zzzfile, vWeights.at(9),vXsec.at(9),cut,kViolet);
   std::cout<<"weight for ZZ is: "<<vWeights.at(5)<<std::endl;
   vSample.push_back(zzzSample);
 
@@ -776,13 +795,13 @@ std::vector<Sample*> getBkgSampleVec(std::string cut, float lumi, std::string el
 
   std::string npfilename = area+"test/NonPromptData_Mu"+muID+"_El"+elID+".root";
   TFile* npfile = new TFile(npfilename.c_str());
-  Sample* npSample = new Sample(vBkgNames.at(12),npfile,vWeights.at(13),vXsec.at(13),cut,kGray);
+  Sample* npSample = new Sample(vBkgNames.at(10),npfile,vWeights.at(10),vXsec.at(10),cut,kGray);
   vSample.push_back(npSample);
 
   //********ChargeMisID**********
   std::string cmidfilename = area+"test/ChargeMisID_Mu"+muID+"_El"+elID+".root";
   TFile* cmidfile = new TFile(cmidfilename.c_str());
-  Sample* cmidSample = new Sample(vBkgNames.at(13),cmidfile,vWeights.at(13),vXsec.at(13),cut,kAzure+6); //force charge misID to start here since only at this point do we filter events
+  Sample* cmidSample = new Sample(vBkgNames.at(11),cmidfile,vWeights.at(11),vXsec.at(11),cut,kAzure+6); //force charge misID to start here since only at this point do we filter events
   vSample.push_back(cmidSample);
 
 
@@ -866,7 +885,8 @@ std::pair<float,float> getNEvtsAndError(Sample* s, std::string cut, int nMu, boo
   else  channel<<"";
 
   //std::string cutstring= " PUWeight* MCWeight*ChargeMisIDWeight * NPWeight* ( "+cut+channel.str()+")";
-  std::string cutstring= " PUWeight * IDSF * IsoSF * trigSF * GsfSF * MCWeight * ChargeMisIDWeight * NPWeight* ( "+cut+channel.str()+")";
+  std::string cutstring= " PUWeight * IDSF * IsoSF * trigSF * GsfSF * MCWeight * ChargeMisIDWeight * NPWeight* prefireWeight * ( "+cut+channel.str()+")";
+  if( (s->name).find("Tprime") || (s->name).find("Bprime")  ) cutstring = "pdfWeights4LHC[0] * " + cutstring; 
 
   //draw the last variable to cut on just to be safe though it shouldn't matter
   t->Project("hdummy","AK4HT",cutstring.c_str());
@@ -1011,37 +1031,60 @@ std::vector<float> getEtaWeights_hhpt(TFile* weightfile){
 
 float getEtaWeight_hhpt(float abseta, std::vector<float> etaWeights){
   float weight=0.0;
+  
+  if(abseta<0.4) weight = etaWeights.at(0);
+  else if (abseta<0.8) weight = etaWeights.at(1);
+  else if (abseta<1.442) weight = etaWeights.at(2);
+  else if (abseta<1.556) weight = 0.0;
+  else if (abseta<2.0) weight = etaWeights.at(4);
+  else weight = etaWeights.at(5);
 
+/*
   if(abseta>1.55) weight = etaWeights.at(3);
   else if(abseta>1.442) weight = 0.0;
   else if(abseta>0.8) weight = etaWeights.at(1);
   else weight = etaWeights.at(0);
-
+*/
   return weight;
 }
 
 float getEtaWeight_hpt(float abseta, std::vector<float> etaWeights){
   float weight=0.0;
 
+  if(abseta<0.4) weight = etaWeights.at(0);
+  else if (abseta<0.8) weight = etaWeights.at(1);
+  else if (abseta<1.442) weight = etaWeights.at(2);
+  else if (abseta<1.556) weight = 0.0;
+  else if (abseta<2.0) weight = etaWeights.at(4);
+  else weight = etaWeights.at(5);
+
+/*
   if(abseta>2.0) weight = etaWeights.at(5);
   else if(abseta>1.55) weight = etaWeights.at(4);
   else if(abseta>1.442) weight = 0.0;
   else if(abseta>0.8) weight = etaWeights.at(2);
   else if(abseta>0.4) weight = etaWeights.at(1);
   else weight = etaWeights.at(0);
-
+*/
   return weight;
 }
 
 float getEtaWeight_lpt(float abseta, std::vector<float> etaWeights){
   float weight=0.0;
 
-  if(abseta>2.0) weight = etaWeights.at(5);
-  else if(abseta>1.55) weight = etaWeights.at(4);
-  else if(abseta>1.442) weight = 0.0;
-  else if(abseta>0.8) weight = etaWeights.at(2);
-  else if(abseta>0.4) weight = etaWeights.at(1);
-  else weight = etaWeights.at(0);
+  if(abseta<0.4) weight = etaWeights.at(0);
+  else if (abseta<0.8) weight = etaWeights.at(1);
+  else if (abseta<1.442) weight = etaWeights.at(2);
+  else if (abseta<1.556) weight = 0.0;
+  else if (abseta<2.0) weight = etaWeights.at(4);
+  else weight = etaWeights.at(5);
+
+//  if(abseta>2.0) weight = etaWeights.at(5);
+//  else if(abseta>1.55) weight = etaWeights.at(4);
+//  else if(abseta>1.442) weight = 0.0;
+//  else if(abseta>0.8) weight = etaWeights.at(2);
+//  else if(abseta>0.4) weight = etaWeights.at(1);
+//  else weight = etaWeights.at(0);
 
   return weight;
 }
@@ -1295,6 +1338,65 @@ float getGsfSF(TLepton* lep){
 
   float sf=0.0;
   float eta = lep->eta;
+  // added by Jess 2017 Gsf Tracking scale factor extracted from https://twiki.cern.ch/twiki/pub/CMS/Egamma2017DataRecommendations/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root
+  if (lep->pt < 45){
+    if( eta < -2.000) sf = 0.977482 ;
+    else if( eta < -1.566) sf = 0.981614 ;
+    else if( eta < -1.444) sf = 0.948352 ;
+    else if( eta < -1.000) sf = 0.969262 ;
+    else if( eta < -0.500) sf = 0.976555 ;
+    else if( eta < 0.000) sf = 0.970378 ;
+    else if( eta < 0.500) sf = 0.970348 ;
+    else if( eta < 1.000) sf = 0.972421 ;
+    else if( eta < 1.444) sf = 0.969917 ;
+    else if( eta < 1.566) sf = 0.957965 ;
+    else if( eta < 2.000) sf = 0.979592 ;
+    else sf = 0.979592 ;
+  }
+  else if (lep->pt < 75){
+    if( eta < -2.000) sf = 0.983673 ;
+    else if( eta < -1.566) sf = 0.981707 ;
+    else if( eta < -1.444) sf = 0.970619 ;
+    else if( eta < -1.000) sf = 0.975535 ;
+    else if( eta < -0.500) sf = 0.979695 ;
+    else if( eta < 0.000) sf = 0.979654 ;
+    else if( eta < 0.500) sf = 0.977620 ;
+    else if( eta < 1.000) sf = 0.978680 ;
+    else if( eta < 1.444) sf = 0.977366 ;
+    else if( eta < 1.566) sf = 0.963945 ;
+    else if( eta < 2.000) sf = 0.982741 ;
+    else sf = 0.983740 ;
+  }
+  else if (lep->pt < 100){
+    if( eta < -2.000) sf = 0.996951 ;
+    else if( eta < -1.566) sf = 0.996954 ;
+    else if( eta < -1.444) sf = 1.003229 ;
+    else if( eta < -1.000) sf = 0.995902 ;
+    else if( eta < -0.500) sf = 0.991895 ;
+    else if( eta < 0.000) sf = 0.991903 ;
+    else if( eta < 0.500) sf = 0.991903 ;
+    else if( eta < 1.000) sf = 0.991895 ;
+    else if( eta < 1.444) sf = 0.995902 ;
+    else if( eta < 1.566) sf = 1.003229 ;
+    else if( eta < 2.000) sf = 0.996954 ;
+    else sf = 0.996951 ;
+  }
+  else{
+    if( eta < -2.000) sf = 0.989909 ;
+    else if( eta < -1.566) sf = 0.989889 ;
+    else if( eta < -1.444) sf = 1.009595 ;
+    else if( eta < -1.000) sf = 0.984725 ;
+    else if( eta < -0.500) sf = 0.987891 ;
+    else if( eta < 0.000) sf = 0.993933 ;
+    else if( eta < 0.500) sf = 0.993933 ;
+    else if( eta < 1.000) sf = 0.987891 ;
+    else if( eta < 1.444) sf = 0.984725 ;
+    else if( eta < 1.566) sf = 1.009595 ;
+    else if( eta < 2.000) sf = 0.989889 ;
+    else sf = 0.989909 ;
+  }
+
+/*
   if(eta<-2.3) sf       =1.02463;
   else if(eta<-2.2)   sf=1.01364;
   else if(eta<-2.0)   sf=1.00728;
@@ -1319,7 +1421,7 @@ float getGsfSF(TLepton* lep){
   else if(eta<2.2)    sf=0.99794;
   else if(eta<2.3)    sf=1.00104;
   else                sf=0.989507;
-
+*/
   return sf;
 
 }
@@ -1842,91 +1944,174 @@ float getSubLeadingMuTrigEffCrossTrigger(float pt, float eta, std::string era){
 }
 
 
-float getTrigSF(std::vector<TLepton*> vLep,std::string era){
+std::vector<float> getTrigSF(std::vector<TLepton*> vLep,std::string era){
 
-  float sf=0.0;
+  float sf=0.0, sf_up=0.0, sf_dn=0.0;
   float eta1 = fabs(vLep.at(0)->eta);
   float eta2 = fabs(vLep.at(1)->eta);
   float pt1 = vLep.at(0)->pt;
   float pt2 = vLep.at(1)->pt;
-  float phi1 = vLep.at(0)->phi;
-  float phi2 = vLep.at(1)->phi;
 
-  if(vLep.at(0)->isMu && vLep.at(1)->isMu){ //dimuon channel    
-    sf = getDimuonEff(pt1,eta1,phi1,pt2,eta2,phi2,era);
-    //std::cout<<"soup eff for leading lepton with eta: "<<eta1<<" and pt: "<<vLep.at(0)->pt<<"and  for subleading  with eta: "<<eta2<<" and pt: "<<vLep.at(1)->pt<<" is: "<<soup_eff<<" conditional eff is: "<<cond_eff<<"and total sf is: "<<sf<<std::endl;
+  // Trigger Eff. SF (updated by Jess 02/26/2020) from AN2018-280
+  float TrigSFpTbin[8] = {30., 35., 40., 50., 75., 100., 200., 300.};
+  float elTrigSFetabin[4] = {0., 0.8, 1.48, 2.0};
+  float muTrigSFetabin[5] = {0., 0.8, 1.25, 1.6, 2.1};
+
+  float eeTrigLeadUp[4][8] = {
+    {0.002,0.001,0.003,0.001,0.000,0.000,0.000,0.000},
+    {0.009,0.002,0.002,0.001,0.000,0.000,0.000,0.000},
+    {0.020,0.003,0.001,0.000,0.000,0.000,0.000,0.000},
+    {0.007,0.002,0.001,0.000,0.001,0.001,0.001,0.001}
+  };
+  float eeTrigLeadDn[4][8] = {
+    {0.002,0.001,0.002,0.001,0.000,0.000,0.000,0.000},
+    {0.009,0.001,0.001,0.000,0.000,0.000,0.000,0.000},
+    {0.018,0.002,0.000,0.000,0.000,0.000,0.000,0.000},
+    {0.007,0.002,0.001,0.000,0.000,0.000,0.000,0.000}
+  };
+
+  float eeTrigLead[4][8] = {
+    {0.95,0.95,0.96,0.98,0.98,0.98,0.98,0.99},
+    {0.95,0.97,0.97,0.98,0.99,0.98,0.99,0.99},
+    {0.91,0.96,0.98,0.98,0.98,0.98,0.98,0.98},
+    {0.89,0.94,0.97,0.98,0.98,0.98,0.98,1.00}
+  };
+  float eeTrigTrail[4][8] = {
+    {0.97,0.98,0.98,0.98,0.98,0.98,0.98,0.99},
+    {0.99,0.99,0.99,0.99,0.99,0.98,0.99,0.99},
+    {0.98,0.98,0.99,0.98,0.99,0.99,0.99,0.98},
+    {0.95,0.97,0.98,0.98,0.98,0.98,0.99,1.00}
+  };
+
+  float mmTrigLead[5][8] = {
+    {0.97,0.97,0.97,0.97,0.97,0.96,0.96,0.96},
+    {0.96,0.96,0.96,0.96,0.96,0.95,0.95,0.95},
+    {1.00,1.00,1.00,0.99,0.99,0.99,1.00,0.99},
+    {0.97,0.97,0.97,0.98,0.98,0.97,0.96,0.96},
+    {0.92,0.93,0.94,0.95,0.95,0.96,0.94,0.85}
+  };
+  float mmTrigTrail[5][8] = {
+    {0.97,0.97,0.97,0.97,0.97,0.96,0.96,0.96},
+    {0.96,0.97,0.96,0.96,0.96,0.95,0.95,0.95},
+    {1.00,1.00,1.00,0.99,0.99,0.99,1.00,0.99},
+    {0.98,0.98,0.98,0.98,0.98,0.98,0.98,0.97},
+    {0.98,0.98,0.98,0.98,0.98,0.98,0.96,0.88}
+  };
+
+  float emTrigLead[4][8] = {
+    {0.96,0.97,0.97,0.97,0.97,0.97,0.97,0.97},
+    {0.98,0.98,0.98,0.98,0.97,0.97,0.98,1.00},
+    {0.93,0.96,0.97,0.97,0.97,0.98,0.97,0.98},
+    {0.92,0.95,0.96,0.96,0.97,0.98,0.93,0.94}
+  };
+  float emTrigTrail[5][8] = {
+    {0.98,0.97,0.97,0.97,0.97,0.97,0.96,0.97},
+    {0.97,0.97,0.97,0.96,0.96,0.96,0.95,0.95},
+    {1.00,0.99,0.99,0.99,0.99,0.99,1.02,0.92},
+    {0.98,0.97,0.97,0.97,0.97,0.98,0.99,0.94},
+    {0.99,1.01,0.99,1.00,0.99,1.00,0.92,1.05}
+  };
+
+  float meTrigLead[5][8] = {
+    {0.97,0.97,0.97,0.97,0.97,0.97,0.96,0.98},
+    {0.96,0.96,0.96,0.95,0.95,0.95,0.94,0.95},
+    {1.01,1.01,1.00,0.99,0.99,0.99,1.01,0.87},
+    {0.97,0.96,0.97,0.97,0.96,0.96,0.96,0.91},
+    {0.89,0.95,0.94,0.96,0.98,0.98,0.86,1.08}
+  };
+  float meTrigTrail[4][8] = {
+    {0.96,0.97,0.97,0.97,0.97,0.97,0.98,0.97},
+    {0.98,0.98,0.98,0.98,0.97,0.97,0.98,1.00},
+    {0.96,0.97,0.97,0.98,0.98,0.98,0.97,0.98},
+    {0.95,0.97,0.97,0.97,0.97,0.98,0.93,0.94}
+  };
+  //--- END Trigger Eff. SF ---
+
+  unsigned int pt1Bin  = std::distance(TrigSFpTbin,std::find_if(TrigSFpTbin,TrigSFpTbin+8,[&pt1](float x){return x>pt1;}))-1;
+  unsigned int pt2Bin  = std::distance(TrigSFpTbin,std::find_if(TrigSFpTbin,TrigSFpTbin+8,[&pt2](float x){return x>pt2;}))-1;
+  unsigned int NptBin  = sizeof(TrigSFpTbin) / sizeof(TrigSFpTbin[0]);
+  if((pt1Bin>NptBin-1) || (pt1>TrigSFpTbin[NptBin-1])) pt1Bin = NptBin-1;
+  if((pt2Bin>NptBin-1) || (pt2>TrigSFpTbin[NptBin-1])) pt2Bin = NptBin-1;
+
+  if(vLep.at(0)->isMu && vLep.at(1)->isMu){ //dimuon channel 
+    unsigned int eta1Bin = std::distance(muTrigSFetabin,std::find_if(muTrigSFetabin,muTrigSFetabin+5,[&eta1](float x){return x>eta1;}))-1;
+    unsigned int eta2Bin = std::distance(muTrigSFetabin,std::find_if(muTrigSFetabin,muTrigSFetabin+5,[&eta2](float x){return x>eta2;}))-1;
+    if (pt1>pt2) sf = mmTrigLead[eta1Bin][pt1Bin] * mmTrigTrail[eta2Bin][pt2Bin];
+    else sf = mmTrigLead[eta2Bin][pt2Bin] * mmTrigTrail[eta1Bin][pt1Bin];
+    sf_up = sf + 2*0.01;
+    sf_dn = sf - 2*0.01;
   }
-
   else if(vLep.at(0)->isEl && vLep.at(1)->isEl){//dielectron channel
-    float w1 = 0.0;
-    float w2 = 0.0;
-    if(era=="2016B-D"){
-      //do weight for first electron
-      if(eta1<0.8) w1 = 97.97/99.18; //divide by plateau efficiencies
-      else if(eta1<1.5) w1  =  98.58/99.42; //divide by plateau efficiencies
-      else{
-	if(vLep.at(0)->pt<40) w1= (99.21/99.40)*( ROOT::Math::normal_cdf(vLep.at(0)->pt-33.50,1.524)); //take from fitted function, but divide by mc plateau since mc has turned on
-	else w1 = 99.21/99.40;
-      }
-      //weight for second electron
-      if(eta2<0.8) w2 = 97.97/99.18;
-      else if(eta2<1.5) w2  = 98.58/99.42;
-      else{
-	if(vLep.at(1)->pt<40) w2= (99.21/99.40)*( ROOT::Math::normal_cdf(vLep.at(1)->pt-33.50,1.524)); //take from fitted function
-	else w2 = 99.21/99.40;
-      }
+    unsigned int eta1Bin = std::distance(elTrigSFetabin,std::find_if(elTrigSFetabin,elTrigSFetabin+4,[&eta1](float x){return x>eta1;}))-1;
+    unsigned int eta2Bin = std::distance(elTrigSFetabin,std::find_if(elTrigSFetabin,elTrigSFetabin+4,[&eta2](float x){return x>eta2;}))-1;
+    if (pt1>pt2){
+      sf = eeTrigLead[eta1Bin][pt1Bin] * eeTrigTrail[eta2Bin][pt2Bin];
+      sf_up = sf + eeTrigLeadUp[eta1Bin][pt1Bin]+0.01+0.003;
+      sf_dn = sf - eeTrigLeadDn[eta1Bin][pt1Bin]-0.01-0.003;
     }
-    else{//asymmetric trigger
-      //do weight for first electron - Ele37 leg
-      if(eta1<0.8) w1 = 98.48/99.15; //divide by plateau efficiencies
-      else if(eta1<1.5){
-	w1  =  98.38/99.37; //divide by plateau efficiencies
-      }
-      else{
-	if(vLep.at(0)->pt<45) w1= (98.82/99.44)*( ROOT::Math::normal_cdf(vLep.at(0)->pt-37.55,1.650)); //take from fitted function, but divide by mc plateau since mc has turned on
-	else w1 = 98.82/99.44;
-      }
-      //weight for second electron - ele27 leg
-      if(eta2<0.8) w2 = 98.62/99.20;
-      else if(eta2<1.5){
-	if(vLep.at(1)->pt > 35) w2  = 98.69/99.47;
-	else w2= (98.69/99.47)*( ROOT::Math::normal_cdf(vLep.at(1)->pt-26.91,1.435)); //take from fitted function
-      }
-      else{
-	if(vLep.at(1)->pt<35) w2= (0.9924/0.9940)*( ROOT::Math::normal_cdf(vLep.at(1)->pt-27.60,1.62)); //take from fitted function
-	else w2 = 0.9984;      
-      }
+    else{
+      sf = eeTrigLead[eta2Bin][pt2Bin] * eeTrigTrail[eta1Bin][pt1Bin];
+      sf_up = sf + eeTrigLeadUp[eta2Bin][pt2Bin]+0.01+0.003;
+      sf_dn = sf - eeTrigLeadDn[eta2Bin][pt2Bin]-0.01-0.003;
     }
-    sf = w1*w2;
-    //std::cout<<"weight for leading lepton with eta: "<<eta1<<" and pt: "<<vLep.at(0)->pt<<" is: "<<w1<<" weight for subleading  with eta: "<<eta2<<" and pt: "<<vLep.at(1)->pt<<" is: "<<w2<<" total sf = "<<sf<<std::endl;    
   }
   else{ //cross channel
-
-    float elEff = 0.0;
-    float muEff = 0.0;
     //get efficiency - first check if leading lepton is electron
     if(vLep.at(0)->isEl){
-      elEff = getElTrigEffCrossTrigger(pt1,eta1,era);
-      muEff = getSubLeadingMuTrigEffCrossTrigger(pt2,eta2,era);
+      unsigned int eta1Bin = std::distance(elTrigSFetabin,std::find_if(elTrigSFetabin,elTrigSFetabin+4,[&eta1](float x){return x>eta1;}))-1;
+      unsigned int eta2Bin = std::distance(muTrigSFetabin,std::find_if(muTrigSFetabin,muTrigSFetabin+5,[&eta2](float x){return x>eta2;}))-1;
+      if (pt1>pt2) sf = emTrigLead[eta1Bin][pt1Bin] * emTrigTrail[eta2Bin][pt2Bin];
+      else sf = meTrigLead[eta2Bin][pt2Bin] * meTrigTrail[eta1Bin][pt1Bin];
+      sf_up = sf + 2*0.01;
+      sf_dn = sf - 2*0.01;
     }
     else{ //elEff is for subleading
-      elEff = getSubLeadingElTrigEffCrossTrigger(pt2,eta2,era);
-      muEff = getLeadingMuTrigEffCrossTrigger(pt1,eta1,era);
-    }//end check on electron being subleading or leading    
-    
-    sf = muEff*elEff;
-    
+      unsigned int eta1Bin = std::distance(muTrigSFetabin,std::find_if(muTrigSFetabin,muTrigSFetabin+5,[&eta1](float x){return x>eta1;}))-1;
+      unsigned int eta2Bin = std::distance(elTrigSFetabin,std::find_if(elTrigSFetabin,elTrigSFetabin+4,[&eta2](float x){return x>eta2;}))-1;
+      if (pt1>pt2) sf = meTrigLead[eta1Bin][pt1Bin] * meTrigTrail[eta2Bin][pt2Bin];
+      else sf = emTrigLead[eta2Bin][pt2Bin] * emTrigTrail[eta1Bin][pt1Bin];
+      sf_up = sf + 2*0.01;
+      sf_dn = sf - 2*0.01;
+    }//end check on electron being subleading or leading
   }//end cross channel
-  return sf;
 
+  std::vector<float> return_value;
+  return_value.push_back(sf);
+  return_value.push_back(sf_dn);
+  return_value.push_back(sf_up);
+  return return_value;
 }
 
 float getLepIDSF(TLepton* lep){
 
   float sf=0.;
 
-  if(lep->isMu){
-
+  if(lep->isMu){ // added by Jess on 201 Nov 2019. 2017 Cut-based Tight scale factors from https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffs2017
+    if (lep->pt < 40){
+        if( fabs(lep->eta) < 0.900) sf = 0.990775 ;
+        else if( fabs(lep->eta) < 1.200) sf = 0.986536 ;
+        else if( fabs(lep->eta) < 2.100) sf = 0.994647 ;
+        else sf = 0.978741 ;
+    }
+    else if (lep->pt < 50){
+        if( fabs(lep->eta) < 0.900) sf = 0.989248 ;
+        else if( fabs(lep->eta) < 1.200) sf = 0.984913 ;
+        else if( fabs(lep->eta) < 2.100) sf = 0.992653 ;
+        else sf = 0.978189 ;
+    }
+    else if (lep->pt < 60){
+        if( fabs(lep->eta) < 0.900) sf = 0.985555 ;
+        else if( fabs(lep->eta) < 1.200) sf = 0.983906 ;
+        else if( fabs(lep->eta) < 2.100) sf = 0.990636 ;
+        else sf = 0.967357 ;
+    }
+    else{
+        if( fabs(lep->eta) < 0.900) sf = 0.989806 ;
+        else if( fabs(lep->eta) < 1.200) sf = 0.984060 ;
+        else if( fabs(lep->eta) < 2.100) sf = 0.992046 ;
+        else sf = 0.976631 ;
+    }
+/*
     if(lep->pt<40){
       if(fabs(lep->eta)>2.1) sf = 0.9711;
       else if(fabs(lep->eta)>1.2) sf = 0.9865;
@@ -1957,9 +2142,84 @@ float getLepIDSF(TLepton* lep){
       else if(fabs(lep->eta)>0.9) sf = 0.9917;
       else sf =0.9980;
     }    
-
+*/
   }
   else{//electron
+    // updated for 2017 by Jess on 20 Nov 2019. MVA-based ID scale factors extracted from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaIDRecipesRun2#94X_series_Fall17V2_Scale_factor (WP90 w/out iso)
+    if (lep->pt < 20){
+        if( lep->eta < -2.000) sf = 0.943237 ;
+        else if( lep->eta < -1.566) sf = 0.956818 ;
+        else if( lep->eta < -1.444) sf = 1.000000 ;
+        else if( lep->eta < -0.800) sf = 1.008304 ;
+        else if( lep->eta < 0.000) sf = 0.992727 ;
+        else if( lep->eta < 0.800) sf = 0.991566 ;
+        else if( lep->eta < 1.444) sf = 0.998800 ;
+        else if( lep->eta < 1.566) sf = 1.000000 ;
+        else if( lep->eta < 2.000) sf = 0.978360 ;
+        else sf = 0.930036 ;
+    }
+    else if (lep->pt < 35){
+        if( lep->eta < -2.000) sf = 0.926220 ;
+        else if( lep->eta < -1.566) sf = 0.937431 ;
+        else if( lep->eta < -1.444) sf = 1.000000 ;
+        else if( lep->eta < -0.800) sf = 0.963636 ;
+        else if( lep->eta < 0.000) sf = 0.980527 ;
+        else if( lep->eta < 0.800) sf = 0.980704 ;
+        else if( lep->eta < 1.444) sf = 0.963429 ;
+        else if( lep->eta < 1.566) sf = 1.000000 ;
+        else if( lep->eta < 2.000) sf = 0.942794 ;
+        else sf = 0.918089 ;
+    }
+    else if (lep->pt < 50){
+        if( lep->eta < -2.000) sf = 0.941176 ;
+        else if( lep->eta < -1.566) sf = 0.953241 ;
+        else if( lep->eta < -1.444) sf = 1.000000 ;
+        else if( lep->eta < -0.800) sf = 0.961665 ;
+        else if( lep->eta < 0.000) sf = 0.972467 ;
+        else if( lep->eta < 0.800) sf = 0.973742 ;
+        else if( lep->eta < 1.444) sf = 0.964758 ;
+        else if( lep->eta < 1.566) sf = 1.000000 ;
+        else if( lep->eta < 2.000) sf = 0.955319 ;
+        else sf = 0.932535 ;
+    }
+    else if (lep->pt < 100){
+        if( lep->eta < -2.000) sf = 0.948276 ;
+        else if( lep->eta < -1.566) sf = 0.966562 ;
+        else if( lep->eta < -1.444) sf = 1.000000 ;
+        else if( lep->eta < -0.800) sf = 0.967568 ;
+        else if( lep->eta < 0.000) sf = 0.979348 ;
+        else if( lep->eta < 0.800) sf = 0.975162 ;
+        else if( lep->eta < 1.444) sf = 0.969697 ;
+        else if( lep->eta < 1.566) sf = 1.000000 ;
+        else if( lep->eta < 2.000) sf = 0.970772 ;
+        else sf = 0.937500 ;
+    }
+    else if (lep->pt < 200){
+        if( lep->eta < -2.000) sf = 0.983370 ;
+        else if( lep->eta < -1.566) sf = 0.968750 ;
+        else if( lep->eta < -1.444) sf = 1.000000 ;
+        else if( lep->eta < -0.800) sf = 0.979437 ;
+        else if( lep->eta < 0.000) sf = 0.982628 ;
+        else if( lep->eta < 0.800) sf = 0.988121 ;
+        else if( lep->eta < 1.444) sf = 0.993407 ;
+        else if( lep->eta < 1.566) sf = 1.000000 ;
+        else if( lep->eta < 2.000) sf = 0.989529 ;
+        else sf = 0.939232 ;
+    }
+    else{
+        if( lep->eta < -2.000) sf = 0.921659 ;
+        else if( lep->eta < -1.566) sf = 0.984783 ;
+        else if( lep->eta < -1.444) sf = 1.000000 ;
+        else if( lep->eta < -0.800) sf = 1.006711 ;
+        else if( lep->eta < 0.000) sf = 0.993464 ;
+        else if( lep->eta < 0.800) sf = 0.958643 ;
+        else if( lep->eta < 1.444) sf = 1.013423 ;
+        else if( lep->eta < 1.566) sf = 1.000000 ;
+        else if( lep->eta < 2.000) sf = 0.948875 ;
+        else sf = 1.056671 ;
+    }
+
+/*
     if(fabs(lep->eta)>2.4) sf =0; //shouldn't happen
     if(fabs(lep->eta)>2.0){
       if(lep->pt>200) sf = 0.9714;
@@ -1994,10 +2254,11 @@ float getLepIDSF(TLepton* lep){
       else if(lep->pt>40)  sf = 0.9733;
       else if(lep->pt>30)  sf = 0.9707;
     }
-
+*/
 
   }
 
+/* muon tracking SF = 1 
   //now add tracking SF for muons
   if(lep->isMu){
     if(lep->eta <-2.1) sf= sf*0.991237;
@@ -2016,31 +2277,203 @@ float getLepIDSF(TLepton* lep){
     else if(lep->eta <2.1) sf= sf*0.994919;
     else if(lep->eta <2.4) sf= sf*0.987334;
   }
-
+*/
   return sf;
 }
 
-float getLepIDSF(std::vector<TLepton*> vLep){
+float getLepIDSFunc(TLepton* lep){
+
+  float sf_unc;
+  //added by Jess Nov 2020 MVA90 noiso unc
+  if(lep->isMu){ sf_unc = 0.02; }
+  else{
+    if (lep->pt < 20){
+        if( lep->eta < -2.000) sf_unc = 0.014 ;
+        else if( lep->eta < -1.566) sf_unc = 0.020 ;
+        else if( lep->eta < -1.444) sf_unc = 1.000 ;
+        else if( lep->eta < -0.800) sf_unc = 0.041 ;
+        else if( lep->eta < 0.000) sf_unc = 0.022 ;
+        else if( lep->eta < 0.800) sf_unc = 0.022 ;
+        else if( lep->eta < 1.444) sf_unc = 0.041 ;
+        else if( lep->eta < 1.566) sf_unc = 1.000 ;
+        else if( lep->eta < 2.000) sf_unc = 0.020 ;
+        else sf_unc = 0.014 ;
+    }
+    else if (lep->pt < 35){
+        if( lep->eta < -2.000) sf_unc = 0.018 ;
+        else if( lep->eta < -1.566) sf_unc = 0.020 ;
+        else if( lep->eta < -1.444) sf_unc = 1.000 ;
+        else if( lep->eta < -0.800) sf_unc = 0.028 ;
+        else if( lep->eta < 0.000) sf_unc = 0.019 ;
+        else if( lep->eta < 0.800) sf_unc = 0.019 ;
+        else if( lep->eta < 1.444) sf_unc = 0.028 ;
+        else if( lep->eta < 1.566) sf_unc = 1.000 ;
+        else if( lep->eta < 2.000) sf_unc = 0.020 ;
+        else sf_unc = 0.018 ;
+    }
+    else if (lep->pt < 50){
+        if( lep->eta < -2.000) sf_unc = 0.008 ;
+        else if( lep->eta < -1.566) sf_unc = 0.005 ;
+        else if( lep->eta < -1.444) sf_unc = 1.000 ;
+        else if( lep->eta < -0.800) sf_unc = 0.005 ;
+        else if( lep->eta < 0.000) sf_unc = 0.003 ;
+        else if( lep->eta < 0.800) sf_unc = 0.003 ;
+        else if( lep->eta < 1.444) sf_unc = 0.005 ;
+        else if( lep->eta < 1.566) sf_unc = 1.000 ;
+        else if( lep->eta < 2.000) sf_unc = 0.005 ;
+        else sf_unc = 0.008 ;
+    }
+    else if (lep->pt < 100){
+        if( lep->eta < -2.000) sf_unc = 0.003 ;
+        else if( lep->eta < -1.566) sf_unc = 0.005 ;
+        else if( lep->eta < -1.444) sf_unc = 1.000 ;
+        else if( lep->eta < -0.800) sf_unc = 0.003 ;
+        else if( lep->eta < 0.000) sf_unc = 0.006 ;
+        else if( lep->eta < 0.800) sf_unc = 0.006 ;
+        else if( lep->eta < 1.444) sf_unc = 0.003 ;
+        else if( lep->eta < 1.566) sf_unc = 1.000 ;
+        else if( lep->eta < 2.000) sf_unc = 0.005 ;
+        else sf_unc = 0.003 ;
+    }
+    else if (lep->pt < 200){
+        if( lep->eta < -2.000) sf_unc = 0.034 ;
+        else if( lep->eta < -1.566) sf_unc = 0.045 ;
+        else if( lep->eta < -1.444) sf_unc = 1.000 ;
+        else if( lep->eta < -0.800) sf_unc = 0.011 ;
+        else if( lep->eta < 0.000) sf_unc = 0.010 ;
+        else if( lep->eta < 0.800) sf_unc = 0.010 ;
+        else if( lep->eta < 1.444) sf_unc = 0.011 ;
+        else if( lep->eta < 1.566) sf_unc = 1.000 ;
+        else if( lep->eta < 2.000) sf_unc = 0.045 ;
+        else sf_unc = 0.034 ;
+    }
+    else{
+        if( lep->eta < -2.000) sf_unc = 0.082 ;
+        else if( lep->eta < -1.566) sf_unc = 0.071 ;
+        else if( lep->eta < -1.444) sf_unc = 1.000 ;
+        else if( lep->eta < -0.800) sf_unc = 0.061 ;
+        else if( lep->eta < 0.000) sf_unc = 0.068 ;
+        else if( lep->eta < 0.800) sf_unc = 0.068 ;
+        else if( lep->eta < 1.444) sf_unc = 0.061 ;
+        else if( lep->eta < 1.566) sf_unc = 1.000 ;
+        else if( lep->eta < 2.000) sf_unc = 0.069 ;
+        else sf_unc = 0.086 ;
+    }
+  }
+  return sf_unc;
+}
+
+std::vector<float> getLepIDSF(std::vector<TLepton*> vLep){
 
   float sf1,sf2;
   sf1 = getLepIDSF(vLep.at(0));
   sf2 = getLepIDSF(vLep.at(1));
+  float sf1_unc,sf2_unc;
+  sf1_unc = getLepIDSFunc(vLep.at(0));
+  sf2_unc = getLepIDSFunc(vLep.at(1));
   float sf = sf1*sf2;
-  return sf;
+  float sf_up = (sf1+sf1_unc)*(sf2+sf2_unc);
+  float sf_dn = (sf1-sf1_unc)*(sf2-sf2_unc);
+  std::vector<float> sf_vec{sf, sf_up, sf_dn};
+  return sf_vec;
 
 }
 
 float getLepIsoSF(TLepton* lep){
 
   float sf;
-  if(lep->isMu) sf = 1.0; //no scale factor for muon iso
-  else{
-    if(fabs(lep->eta) > 2.0){
-      if(lep->pt>200) sf = 0.997;
-      else if(lep->pt>40) sf = 1.0;
-      else if (lep->pt>30) sf = 0.9874;
-    }
-    else sf=1.0; //it's one for all other bins
+  //if(lep->isMu) sf = 1.0; //no scale factor for muon iso
+  if(lep->isMu){ // added by Jess 2017 Muon SF for MiniIso<0.1 by myself from https://wiwong.web.cern.ch/wiwong/Muon_fit_Eff_Plots/2017_Efficiency20_3miniTight_Tight_abseta_mrange83/
+        if (lep->pt < 40){
+            if( fabs(lep->eta) < 0.900) sf = 0.996774 ;
+            else if( fabs(lep->eta) < 1.200) sf = 0.996165 ;
+            else if( fabs(lep->eta) < 2.100) sf = 0.997773 ;
+            else sf = 0.998785 ;
+        }
+        else if (lep->pt < 50){
+            if( fabs(lep->eta) < 0.900) sf = 0.998380 ;
+            else if( fabs(lep->eta) < 1.200) sf = 0.997641 ;
+            else if( fabs(lep->eta) < 2.100) sf = 0.998417 ;
+            else sf = 0.999581 ;
+        }
+        else if (lep->pt < 60){
+            if( fabs(lep->eta) < 0.900) sf = 0.999209 ;
+            else if( fabs(lep->eta) < 1.200) sf = 0.998940 ;
+            else if( fabs(lep->eta) < 2.100) sf = 0.999302 ;
+            else sf = 0.998849 ;
+        }
+        else if (lep->pt < 120){
+            if( fabs(lep->eta) < 0.900) sf = 0.999648 ;
+            else if( fabs(lep->eta) < 1.200) sf = 0.999956 ;
+            else if( fabs(lep->eta) < 2.100) sf = 1.000361 ;
+            else sf = 0.998738 ;
+        }
+        else if (lep->pt < 200){
+            if( fabs(lep->eta) < 0.900) sf = 0.999866 ;
+            else if( fabs(lep->eta) < 1.200) sf = 0.999198 ;
+            else if( fabs(lep->eta) < 2.100) sf = 1.000536 ;
+            else sf = 0.996425 ;
+        }
+        else{
+            if( fabs(lep->eta) < 0.900) sf = 1.000000 ;
+            else if( fabs(lep->eta) < 1.200) sf = 0.994535 ;
+            else if( fabs(lep->eta) < 2.100) sf = 1.000000 ;
+            else sf = 1.000000 ;
+        }
+  }
+  else{ // MiniIsoTight to MVA90, added by Jess 19 Nov 2019, approved by 18 Nov. Reveiw slides in https://indico.cern.ch/event/842068/contributions/3636508/attachments/1943612/3223940/EleSF_review.pdf
+        if(fabs(lep->eta) < 0.800000){
+            if (lep->pt < 30) sf = 0.994577 ;
+            else if (lep->pt < 40) sf = 0.995868 ;
+            else if (lep->pt < 50) sf = 0.996954 ;
+            else if (lep->pt < 60) sf = 0.997976 ;
+            else if (lep->pt < 100) sf = 0.997980 ;
+            else if (lep->pt < 200) sf = 0.998993 ;
+            else sf = 1.000000 ;
+        }
+        else if(fabs(lep->eta) < 1.444000){
+            if (lep->pt < 30) sf = 1.001094 ;
+            else if (lep->pt < 40) sf = 0.997919 ;
+            else if (lep->pt < 50) sf = 0.998982 ;
+            else if (lep->pt < 60) sf = 0.998988 ;
+            else if (lep->pt < 100) sf = 1.001010 ;
+            else if (lep->pt < 200) sf = 1.001006 ;
+            else sf = 1.001005 ;
+        }
+        else if(fabs(lep->eta) < 1.566000){
+            if (lep->pt < 30) sf = 1.026918 ;
+            else if (lep->pt < 40) sf = 1.020118 ;
+            else if (lep->pt < 50) sf = 1.008801 ;
+            else if (lep->pt < 60) sf = 1.022396 ;
+            else if (lep->pt < 100) sf = 1.024055 ;
+            else if (lep->pt < 200) sf = 1.020877 ;
+            else sf = 1.008105 ;
+        }
+        else if(fabs(lep->eta) < 2.000000){
+            if (lep->pt < 30) sf = 0.994618 ;
+            else if (lep->pt < 40) sf = 0.996894 ;
+            else if (lep->pt < 50) sf = 0.997965 ;
+            else if (lep->pt < 60) sf = 0.998989 ;
+            else if (lep->pt < 100) sf = 1.001010 ;
+            else if (lep->pt < 200) sf = 1.003015 ;
+            else sf = 1.000000 ;
+        }
+        else{
+            if (lep->pt < 30) sf = 0.996771 ;
+            else if (lep->pt < 40) sf = 0.994819 ;
+            else if (lep->pt < 50) sf = 0.996945 ;
+            else if (lep->pt < 60) sf = 1.000000 ;
+            else if (lep->pt < 100) sf = 1.001007 ;
+            else if (lep->pt < 200) sf = 1.000000 ;
+            else sf = 0.999000 ;
+        }
+
+//    if(fabs(lep->eta) > 2.0){
+//      if(lep->pt>200) sf = 0.997;
+//      else if(lep->pt>40) sf = 1.0;
+//      else if (lep->pt>30) sf = 0.9874;
+//    }
+//    else sf=1.0; //it's one for all other bins
     
   }
 
@@ -2183,10 +2616,15 @@ std::vector<float> weights_mumu(std::string flavor){
   return weights;
 }
 
-float getPUWeight(TH1F* h, int nPU){
+float getPUWeight(std::string FileName, int index, int shift){
 
   float weight = -1;
-  weight = h->GetBinContent(nPU+1); // plus one because 1st bin is 0-0.9999 so pilupe of 1 falls in bin 2
+  //std::cout<<"nInteractions: "<< index <<std::endl;
+  if (shift==0) weight = PUweightsMap.GetPUcentral(FileName, index);
+  else if(shift==1) weight = PUweightsMap.GetPUup(FileName, index);
+  else if(shift==-1) weight = PUweightsMap.GetPUdown(FileName, index);
+  else std::cout<<"FATAL ERROR!!!! unrecognised shift for file " << FileName <<std::endl;
+  //weight = h->GetBinContent(nPU+1); // plus one because 1st bin is 0-0.9999 so pilupe of 1 falls in bin 2
   //std::cout<<"nInteractions: "<<nPU<<" and weight: "<<weight<<std::endl;
   return weight;
 

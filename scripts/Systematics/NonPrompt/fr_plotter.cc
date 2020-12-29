@@ -5,6 +5,7 @@ void fr_plotter(){
 
 
   TFile* f = new TFile("FakeRate_TTbar.root");
+  //TFile* f = new TFile("FakeRate_TTTo2L2Nu.root");
   TTree* t = (TTree*) f->Get("FakeRateByFlavor");
   
   float LepPt,LepEta;

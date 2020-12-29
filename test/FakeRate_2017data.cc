@@ -24,7 +24,7 @@ bool isoTrig=false;
 int main(int argc, char* argv[]){
 
   //example usage: ./FakeRate.o Data Electrons <ID> <era>
-  std::cout<<"dummy"<<std::endl;
+  //std::cout<<"dummy"<<std::endl;
   if(argc<4){
     std::cout<<"Error! You must specify whether running on 'Data' of 'MC' as option as well as electrons or muons and the ID used"<<std::endl;
     return 0;
@@ -73,7 +73,7 @@ int main(int argc, char* argv[]){
   
   
   //make output folder
-  TString outdir = "FakeRate"+isoTrigStr;
+  TString outdir = "FakeRate"+isoTrigStr+"_OneTrig";
   system("mkdir -pv "+outdir);
 
   //make output file
@@ -127,24 +127,33 @@ int main(int argc, char* argv[]){
   if(argv1.find("Data")!=std::string::npos) {
   
     // Input folder 
-    std::string filedir = "FWLJMET102X_2lepFakeRate2017_062719_hadds";
-    
+    //std::string filedir = "FWLJMET102X_2lepFR2017_wywong_102919_hadds";
+    std::string filedir = "FWLJMET102X_2lepFakeRate2017_wywong_082020_hadds";
+    std::string elfiledir = filedir; //"FWLJMET102X_2lepFakeRate2017_062719_hadds";
     // Input files
     if(MuonChannel){
-      if(argv4=="2017B") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017B.root");
-      else if(argv4=="2017C") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017C.root");
-      else if(argv4=="2017D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017D.root");
-      else if(argv4=="2017E") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017E.root");
+      //if(argv4=="2017B") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017B.root");
+      //else if(argv4=="2017C") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017C.root");
+      //else if(argv4=="2017D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017D.root");
+      //else if(argv4=="2017E") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017E.root");
       //else if(argv4=="2017F") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuon_FR_Run2017F.root");
-      else if(argv4=="2017F") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017F_FakeRate_TEST.root");
+      if(argv4=="2017B") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleMuonRun2017B.root");
+      else if(argv4=="2017C") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleMuonRun2017C.root");
+      else if(argv4=="2017D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleMuonRun2017D.root");
+      else if(argv4=="2017E") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleMuonRun2017E.root");
+      else if(argv4=="2017F") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleMuonRun2017F.root");
     }
     else if(!MuonChannel){
-      if(argv4=="2017B") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_FR_Run2017B.root");
-      else if(argv4=="2017C") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_FR_Run2017C.root");
-      else if(argv4=="2017D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_FR_Run2017D.root");
-      else if(argv4=="2017E") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_FR_Run2017E.root");
-      else if(argv4=="2017F") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEG_FR_Run2017F.root");
-
+      //if(argv4=="2017B") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+elfiledir+"/DoubleEG_FR_Run2017B.root");
+      //else if(argv4=="2017C") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+elfiledir+"/DoubleEG_FR_Run2017C.root");
+      //else if(argv4=="2017D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+elfiledir+"/DoubleEG_FR_Run2017D.root");
+      //else if(argv4=="2017E") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+elfiledir+"/DoubleEG_FR_Run2017E.root");
+      //else if(argv4=="2017F") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+elfiledir+"/DoubleEG_FR_Run2017F.root");
+      if(argv4=="2017B") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleElectronRun2017B.root");
+      else if(argv4=="2017C") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleElectronRun2017C.root");
+      else if(argv4=="2017D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleElectronRun2017D.root");
+      else if(argv4=="2017E") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleElectronRun2017E.root");
+      else if(argv4=="2017F") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleElectronRun2017F.root");
     }
     
   }
@@ -190,7 +199,7 @@ int main(int argc, char* argv[]){
     outTree->Branch("MET",&MET);
 
     //get tree reader to read in data
-    TreeReader* tr= new TreeReader(filenames.at(i).c_str(),"ljmet/ljmet",!data,false);
+    TreeReader* tr= new TreeReader(filenames.at(i).c_str(),"ljmet/ljmet",!data,true);
     TTree* t=tr->tree;
 
 
@@ -210,22 +219,30 @@ int main(int argc, char* argv[]){
 
     //get number of entries and start event loop
     int nEntries = t->GetEntries();
+    int n_passTrig = 0, n_pass1Lep = 0, n_passMET =0 , n_passZVeto = 0, n_passAwayJet = 0 , n_passMT = 0;
+    int n_Tight = 0;
     for(int ient=0; ient<nEntries; ient++){
 
       
       tr->GetEntry(ient);
-      
+ 
       if(ient % 100000 ==0) std::cout<<"Completed "<<ient<<" out of "<<nEntries<<" events"<<std::endl;
       
+      if((tr->run==299480 && tr->lumi==7)||(tr->run==301397 && tr->lumi==518)||(tr->run==305366 && tr->lumi==395)) continue;
+
       //make sure correct trigger was fired -- Following AN2018_230 analysis.
       bool muTrig_nonIso = tr->HLT_Mu8;
       bool muTrig_nonIso_2 = tr->HLT_Mu17;
-      bool muTrig_Iso = tr->HLT_Mu8_TrkIsoVVL;
+      //bool muTrig_Iso = tr->HLT_Mu17; 
+      //bool muTrig_Iso = tr->HLT_Mu8_TrkIsoVVL;
+      //bool muTrig_Iso_2 = tr->HLT_Mu20;
+      bool muTrig_Iso = true;
       bool muTrig_Iso_2 = tr->HLT_Mu17_TrkIsoVVL;
       //bool elTrig = tr->HLT_Ele17Iso;
       bool elTrig_nonIso = tr->HLT_Ele8_CaloIdM_TrackIdM_PFJet30_v;
       bool elTrig_nonIso_2 = tr->HLT_Ele17_CaloIdM_TrackIdM_PFJet30_v;
-      bool elTrig_Iso = tr->HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v;
+      //bool elTrig_Iso = tr->HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v;
+      bool elTrig_Iso = true;
       bool elTrig_Iso_2 = tr->HLT_Ele23_CaloIdL_TrackIdL_IsoVL_PFJet30_v;
       bool analyze = false;
       if(data){ 
@@ -241,6 +258,7 @@ int main(int argc, char* argv[]){
             if(
                ( MuonChannel && (muTrig_Iso || muTrig_Iso_2) ) || 
                (!MuonChannel && (elTrig_Iso || elTrig_Iso_2) )  
+               //( MuonChannel && muTrig_Iso_2 ) || (!MuonChannel && elTrig_Iso_2)
             ) analyze = true;
         
         }
@@ -249,6 +267,7 @@ int main(int argc, char* argv[]){
       
 
       if (!analyze) continue;
+      n_passTrig ++;
       //std::cout << "Entry "<< ient << "pass trigger"<< std::endl;
 
       //make vector of leptons
@@ -256,30 +275,34 @@ int main(int argc, char* argv[]){
 
       //veto on events with more than one lepton or no leptons
       if((leptons.size()==0) || (leptons.size() >1) ) continue;      
+      n_pass1Lep++;
       //now just take the lepton remaining
       TLepton* lep = leptons.at(0);
       //skip if not the correct flavor
       if(MuonChannel && !(leptons.at(0)->isMu)) continue;
       if(!MuonChannel && !(leptons.at(0)->isEl)) continue;
       //skip if it has pt not between 25 and 35 - REMOVE THIS TO STUDY FAKE RATE VS PT
-      if(allPt){
-          if( !(lep->pt < 35 && lep->pt>25)) continue;
-      }
+      //if(allPt){
+      //    if( !(lep->pt < 35 && lep->pt>25)) continue;
+      //}
       etaHist_all->Fill(lep->eta);
 
       //make sure not much met in event to veto on leptons from Ws -relaxed for now to do more in depth studies
       if(tr->MET > 25) continue;
+      n_passMET++;
       etaHist_MET->Fill(lep->eta);
       //std::cout<<"lepton eta after MET cut : "<<lep->eta<<std::endl;      
       //check transverse mass is less than 25 GeV
       //search through jet collection to check for jet mass
       bool Zveto = ZVetoCheck(lep,tr->cleanedAK4Jets);
       if(Zveto) continue;
+      n_passZVeto++;
       etaHist_ZVeto->Fill(lep->eta);
 
       //check for away jet
       bool awayJet = AwayJetCheck(lep,tr->cleanedAK4Jets);
       if(!awayJet) continue;
+      n_passAwayJet++;
       etaHist_AwayJet->Fill(lep->eta);
       
       float et = tr->MET+lep->energy;
@@ -299,6 +322,8 @@ int main(int argc, char* argv[]){
       //std::cout<<"Clint mt: "<<mT<<" Aram mt: "<<mt<<std::endl;
 
       if(mt>25) continue; //change to Arams value
+      n_passMT++;
+      if(lep->Tight) n_Tight++;
       etaHist_MT->Fill(lep->eta);      
 
       //Now just fill histograms
@@ -342,16 +367,25 @@ int main(int argc, char* argv[]){
 
     TGraphAsymmErrors* ptgraph = new TGraphAsymmErrors(ptNumHist,ptDenHist);
     TGraphAsymmErrors* etagraph = new TGraphAsymmErrors(etaNumHist,etaDenHist);
-    
+
     fout->Append(ptgraph);
     fout->Append(etagraph);
     fout->Write();
     fout->Close();
 
+    std::cout<< "All Events   " << nEntries << std::endl;
+    std::cout<< "passTrig     " << n_passTrig << std::endl;
+    std::cout<< "pass1Lep     " << n_pass1Lep << std::endl;
+    std::cout<< "passMET      " << n_passMET << std::endl;
+    std::cout<< "passZVeto    " << n_passZVeto << std::endl;
+    std::cout<< "passAwayJet  " << n_passAwayJet << std::endl;
+    std::cout<< "passMT       " << n_passMT << std::endl;
+    std::cout<< "Tight        " << n_Tight << std::endl;
+
     //delete tree reader to free up space
     delete tr;
-
   }//end loop over filenames
+  
 }
 
 std::vector<TLepton*> makeLeptons(std::vector<TMuon*> muons, std::vector<TElectron*> electrons, bool Muons, std::string ID){
@@ -371,8 +405,12 @@ std::vector<TLepton*> makeLeptons(std::vector<TMuon*> muons, std::vector<TElectr
       iLep->Loose=true; //in case 'loose ID' is specified as 'tight', take any muon as loose ID
     }
     else if(ID=="CBTightMiniIso"){
-      iLep->Tight=imu->cutBasedTight_NoIso(); // clint used this, probably there is another script that looks at fakerate as a function if iso
+      iLep->Tight=imu->cutBasedTightMiniIso(); // clint used this, probably there is another script that looks at fakerate as a function if iso
       //iLep->Tight=imu->cutBasedTightMiniIsoTight();
+      iLep->Loose=imu->cutBasedLooseMiniIso();
+    }
+    else if(ID=="CBTightMiniIsoTight"){
+      iLep->Tight=imu->cutBasedTightMiniIsoTight();
       iLep->Loose=imu->cutBasedLooseMiniIso();
     }
     iLep->isMu = true;
@@ -383,7 +421,7 @@ std::vector<TLepton*> makeLeptons(std::vector<TMuon*> muons, std::vector<TElectr
 //       if(iLep->pt>20){ Leptons.push_back(iLep);}
 //       if(iLep->pt>25 && iLep->pt<35) Leptons.push_back(iLep);
       if(allPt){
-          if(iLep->pt>20) Leptons.push_back(iLep);
+          if(iLep->pt>30) Leptons.push_back(iLep);
       }
       else{
       	if(iLep->pt>25 && iLep->pt<35) Leptons.push_back(iLep);
@@ -490,19 +528,27 @@ std::vector<TLepton*> makeLeptons(std::vector<TMuon*> muons, std::vector<TElectr
       iLep->Loose=iel->mva94XLooseV1_Iso_RC();
     }
     else if(ID=="MVA2017TightV2RC"){
-                iLep->Tight=iel->mva94XTightV2_90_RC();
-                iLep->Loose=iel->mva94XLooseV2_Iso_RC(); // following clints def, so that can be processed directly by his scripts consistently, Apr 3, 2019
+      iLep->Tight=iel->mva94XTightV2_90_RC();
+      iLep->Loose=iel->mva94XLooseV2_Iso_RC(); // following clints def, so that can be processed directly by his scripts consistently, Apr 3, 2019
     }
-    
+    else if(ID=="MVA2017TightV2IsoRC"){
+      iLep->Tight=iel->mva94XTightV2_90_Iso_RC();
+      iLep->Loose=iel->mva94XLooseV2_Iso_RC();
+    }
+    else if(ID=="MVA2017TightV2IsoTightRC"){
+      iLep->Tight=iel->mva94XTightV2_90_IsoTight_RC();
+      iLep->Loose=iel->mva94XLooseV2_Iso_RC();
+    }
+ 
     iLep->isMu = false;
     iLep->isEl = true;
     //only save if at least loose
-    if(iLep->Tight || iLep->Loose){
+    if((iLep->Tight || iLep->Loose) && (fabs(iLep->eta)<1.4442 || fabs(iLep->eta)>1.566) ){
       //apply pt cut
 //       if(iLep->pt>25 && iLep->pt<35) Leptons.push_back(iLep); 
 //       if(iLep->pt>20){ Leptons.push_back(iLep);}
       if(allPt){
-          if(iLep->pt>20) Leptons.push_back(iLep);
+          if(iLep->pt>30) Leptons.push_back(iLep);
       }
       else{
       	if(iLep->pt>25 && iLep->pt<35) Leptons.push_back(iLep);
@@ -545,6 +591,7 @@ bool AwayJetCheck(TLepton* lep, std::vector<TJet*> jets){
     TJet* ijet = jets.at(i);
     float dr = pow( pow(lep->eta - ijet->eta,2) + pow(lep->phi - ijet->phi,2) , 0.5);
     if(ijet->pt>40 && dr>1.0){ awayJet=true; break;}
+    //if(ijet->pt>30 && dr>1.0){ awayJet=true; break;}
   }
 
   return awayJet;

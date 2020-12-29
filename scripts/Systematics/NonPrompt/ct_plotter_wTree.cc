@@ -32,7 +32,7 @@ void DrawAndSave(TH1F* h_pred, TH1F* h_obs, std::string pdfname, std::string fla
   //sumw2
   h_obs->Sumw2();
   //h_pred->Sumw2();
-  float lumiweight = 35800*  (831.76 / 115091972);
+  float lumiweight = 41.56*1000 * ( 687.1 / 68595608); // lumi in pb * XSec / NEvts 
   h_pred->Scale(lumiweight);
   h_obs->Scale(lumiweight);
   
@@ -107,7 +107,8 @@ void ct_plotter_wTree(){
   TH1F* h_rate_mu_fake = (TH1F*) fRates->Get("h_rate_mu_f_eta");
 
 
-  TFile* fIn = new TFile("SmartClosure_TTbar.root");
+  //TFile* fIn = new TFile("SmartClosure_TTbar_2L2Nu.root");
+  TFile* fIn = new TFile("SmartClosure_TTTo2L2Nu.root");
   TTree* t = (TTree*) fIn->Get("ClosureTest");
   float HT,LepEta,LepPt;
   int LepFlavor,LepSourceFlavor,Observed;

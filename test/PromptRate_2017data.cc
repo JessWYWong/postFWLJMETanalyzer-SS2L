@@ -109,23 +109,36 @@ int main(int argc, char* argv[]){
     data=true;
     
     // Input folder
-    std::string filedir = "FWLJMET102X_2lep2017_062719_hadds";
+    std::string filedir = "FWLJMET102X_2lep2017_wywong_012020_hadds";
+    std::string EOSarea = "user/wywong/";
 
     // Input files
     if(MuonChannel){
-      if(argv4=="2017B") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017B.root";
-      else if(argv4=="2017C") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017C.root";
-      else if(argv4=="2017D") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017D.root";
-      else if(argv4=="2017E") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017E.root";
-      else if(argv4=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017F.root";
+      if(argv4=="2017B") filename="root://cmseos.fnal.gov//store/"+EOSarea+filedir+"/DoubleMuonRun2017B.root";
+      else if(argv4=="2017C") filename="root://cmseos.fnal.gov//store/"+EOSarea+filedir+"/DoubleMuonRun2017C.root";
+      else if(argv4=="2017D") filename="root://cmseos.fnal.gov//store/"+EOSarea+filedir+"/DoubleMuonRun2017D.root";
+      else if(argv4=="2017E") filename="root://cmseos.fnal.gov//store/"+EOSarea+filedir+"/DoubleMuonRun2017E.root";
+      else if(argv4=="2017F") filename="root://cmseos.fnal.gov//store/"+EOSarea+filedir+"/DoubleMuonRun2017F.root";
+
+      //if(argv4=="2017B") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017B.root";
+      //else if(argv4=="2017C") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017C.root";
+      //else if(argv4=="2017D") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017D.root";
+      //else if(argv4=="2017E") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017E.root";
+      //else if(argv4=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleMuonRun2017F.root";
     }
-    else{            
-      if(argv4=="2017B") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017B.root";
-      else if(argv4=="2017C") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017C.root";
-      else if(argv4=="2017D") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017D.root";
-      else if(argv4=="2017E") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017E.root";
+    else{       
+      if(argv4=="2017B") filename="root://cmseos.fnal.gov//store/"+EOSarea+filedir+"/DoubleEGRun2017B.root";
+      else if(argv4=="2017C") filename="root://cmseos.fnal.gov//store/"+EOSarea+filedir+"/DoubleEGRun2017C.root";
+      else if(argv4=="2017D") filename="root://cmseos.fnal.gov//store/"+EOSarea+filedir+"/DoubleEGRun2017D.root";
+      else if(argv4=="2017E") filename="root://cmseos.fnal.gov//store/"+EOSarea+filedir+"/DoubleEGRun2017E.root";
+      else if(argv4=="2017F") filename="root://cmseos.fnal.gov//store/"+EOSarea+filedir+"/DoubleEGRun2017F.root";
+           
+      //if(argv4=="2017B") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017B.root";
+      //else if(argv4=="2017C") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017C.root";
+      //else if(argv4=="2017D") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017D.root";
+      //else if(argv4=="2017E") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017E.root";
       //else if(argv4=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017F.root";
-      else if(argv4=="2017F") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017F_TEST.root";
+      //else if(argv4=="2017F_TEST") filename="root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/DoubleEGRun2017F_TEST.root";
     }
   }
   else { //MC
@@ -135,7 +148,7 @@ int main(int argc, char* argv[]){
   bool FiftyNs=data; // depracated. -- June 28, 2019.
 
   //make output folder
-  TString outdir = "PromptRate"+isoTrigStr;
+  TString outdir = "PromptRate_012020_"+isoTrigStr;
   system("mkdir -pv "+outdir);
 
   //make filename for output root file
@@ -165,7 +178,7 @@ int main(int argc, char* argv[]){
   TFile* fout= new TFile(outname.c_str(),"RECREATE");
 
   //output tree
-  TTree* outTree = new TTree("FakeRate","FakeRate");
+  TTree* outTree = new TTree("PromptRate","PromptRate");
   float LepPt_,LepEta_,LepPhi_,LepE_,LepMiniIso_,LepMinDR_,LepSusyIso_;
   int LepIsLoose_,LepIsTight_,LepCharge_;
   outTree->Branch("LepPt",&LepPt_);
@@ -178,7 +191,6 @@ int main(int argc, char* argv[]){
   outTree->Branch("LepIsLoose",&LepIsLoose_);
   outTree->Branch("LepIsTight",&LepIsTight_);
   outTree->Branch("LepMinDR",&LepMinDR_);
-
 
   //get tree reader to read in data
   TreeReader* tr= new TreeReader(filename.c_str(),"ljmet/ljmet",!data,false);
@@ -306,6 +318,11 @@ int main(int argc, char* argv[]){
   std::cout<<"Mean of den pt hist is: "<<ptDenHist->GetMean()<<std::endl;
   std::cout<<"Mean of num eta hist is: "<<etaNumHist->GetMean()<<std::endl;
   std::cout<<"Mean of den eta hist is: "<<etaDenHist->GetMean()<<std::endl;
+
+  std::cout<<"NbinsX of num pt hist is: "<<ptNumHist->GetNbinsX()<<std::endl;
+  std::cout<<"NbinsX of den pt hist is: "<<ptDenHist->GetNbinsX()<<std::endl;
+  std::cout<<"NbinsX of num eta hist is: "<<etaNumHist->GetNbinsX()<<std::endl;
+  std::cout<<"NbinsX of den eta hist is: "<<etaDenHist->GetNbinsX()<<std::endl;
 
   //make tgraphs for promptrate
   TGraphAsymmErrors* ptGraph = new TGraphAsymmErrors(ptNumHist,ptDenHist);

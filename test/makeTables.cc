@@ -7,21 +7,21 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TGraphErrors.h"
+#include "../interface/unc.h"
 
 std::string tableHeader(std::vector<std::string> vC, CutClass* c, std::string caption);
 std::stringstream& printTable(std::stringstream& tablestring,std::vector<CutClass*> vCC, std::vector<std::string> vCS, int nmu,bool sig);
-std::stringstream& printFinalTable(std::stringstream& tablestring,std::vector<Sample*> vBkgCF, std::vector<Sample*> vSigCF,std::vector<Sample*> vBkgEH, std::vector<Sample*> vSigEH, Sample* dataSample, std::vector<std::string> vCutString,std::string era);
-std::stringstream& printFinalTable_v2(std::stringstream& tablestring,std::vector<Sample*> vBkgCF, std::vector<Sample*> vSigCF,std::vector<Sample*> vBkgEH, std::vector<Sample*> vSigEH, Sample* dataSample, std::vector<std::string> vCutString,std::string era); //added by rizki
-std::stringstream& printFinalTable_v3(std::stringstream& tablestring,std::vector<Sample*> vBkgCF, std::vector<Sample*> vSigCF, Sample* dataSample, std::vector<std::string> vCutString,std::string era); //added by rizki
-std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector<Sample*> vBkgCF, std::vector<Sample*> vSigCF, Sample* dataSample, std::vector<std::string> vCutString,std::string era); //added by rizki
+std::stringstream& printFinalTable(std::stringstream& tablestring,std::vector<Sample*> vBkgBF, std::vector<Sample*> vSigBF,std::vector<Sample*> vBkgEH, std::vector<Sample*> vSigEH, Sample* dataSample, std::vector<std::string> vCutString,std::string era);
+std::stringstream& printFinalTable_v2(std::stringstream& tablestring,std::vector<Sample*> vBkgBF, std::vector<Sample*> vSigBF,std::vector<Sample*> vBkgEH, std::vector<Sample*> vSigEH, Sample* dataSample, std::vector<std::string> vCutString,std::string era); //added by rizki
+std::stringstream& printFinalTable_v3(std::stringstream& tablestring,std::vector<Sample*> vBkgBF, std::vector<Sample*> vSigBF, Sample* dataSample, std::vector<std::string> vCutString,std::string era); //added by rizki
+std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector<Sample*> vBkgBF, std::vector<Sample*> vSigBF, Sample* dataSample, std::vector<std::string> vCutString,std::string era); //added by rizki
 std::stringstream& printEffTable(std::stringstream& tablestring,std::vector<CutClass*> vCC, std::vector<std::string> vCS, int nmu,bool sig);
 std::stringstream& printEffTable_v2(std::stringstream& tablestring,std::vector<CutClass*> vCC, std::vector<std::string> vCS, int nmu,bool sig, int whichBR); //added by rizki
 std::stringstream& printChargeMisIDTable_lpt(std::stringstream& chargeMisIDTable);
 std::stringstream& printChargeMisIDTable_hpt(std::stringstream& chargeMisIDTable);
 std::stringstream& printChargeMisIDTable_hhpt(std::stringstream& chargeMisIDTable);
 
-//below sys were obtaind from Julie documented in B2G Oct31 presentation
-
+/*
 float uncPU_TTZ=0.06;
 float uncPU_TTW=0.01;
 float uncPU_TTH=0.01;
@@ -87,7 +87,7 @@ float uncJER_WpWp=0.01;
 float uncJER_WWZ=0.1;
 float uncJER_WZZ=0.01; 
 float uncJER_ZZZ=0;
-
+*/
 
 void makeTables(){
 
@@ -99,30 +99,32 @@ void makeTables(){
   // outfile.open("table_miniIsoTight_NonIsoTrigHT_Mar3-2019.txt"); //Check Macros.cc for input folder!! and adjust nonisoTrigHT below
 //   outfile.open("table_miniIsoTight_NonIsoTrigHT_37invfb_Mar27-2019.txt"); //Check Macros.cc for input folder!! and adjust nonisoTrigHT below
 //   outfile.open("table_miniIsoTight_NonIsoTrigHT_41invfb_Mar27-2019.txt"); //Check Macros.cc for input folder!! and adjust nonisoTrigHT below
-  outfile.open("table_miniIsoTight_NonIsoTrigHT_37invfb_lep4035_Mar27-2019.txt"); //Check Macros.cc for input folder!! and adjust nonisoTrigHT below
-  
+  //outfile.open("table_miniIsoTight_IsoTrigHT_ElPRUnity_Jan2-2019.txt"); //Check Macros.cc for input folder!! and adjust nonisoTrigHT below
+  outfile.open("table_miniIsoTight_IsoTrig_Nov-2020.txt");  
+
   //set which cuts for which trigger
-  bool isoTrig = false;
+  bool isoTrig = true; // turned on by Jess
   std::cout << "isoTrig = " << isoTrig << std::endl;
-  bool nonIso_HTtrig =true; // added by rizki
+  bool nonIso_HTtrig =false; // added by rizki, changed to false by Jess
   std::cout << "nonIso_HTtrig = " << nonIso_HTtrig << std::endl;
 
   //set precision
 
   //set desired luminosity
-//   float lumi1 = 41.6; //fb^-1 yr_eras = 2017B-F
-  float lumi1 = 37.6; //fb^-1 yr_eras = 2017C-F
+  float lumi1 = 41.56; //fb^-1 yr_eras = 2017B-F
+//  float lumi1 = 37.6; //fb^-1 yr_eras = 2017C-F
 
   //get list of signal samples starting with ssdl cut
-//   std::vector<Sample*> vSig2017CF = getInclusiveSigSampleVecForTable("sZVeto",lumi1,"MVA2017TightRC","CBTightMiniIsoTight","2017B-F"); //commented out by rizki
+//   std::vector<Sample*> vSig2017BF = getInclusiveSigSampleVecForTable("sZVeto",lumi1,"MVA2017TightRC","CBTightMiniIsoTight","2017B-F"); //commented out by rizki
 //   std::vector<Sample*> vSig2016EH = getInclusiveSigSampleVecForTable("sZVeto",lumi2,"MVA2017TightRC","CBTightMiniIsoTight","2016E-H"); //commented out by rizki
 
   //setting year and era string
-  // std::string yr_eras= "2017B-F";
-  std::string yr_eras = "2017C-F"; //2017B is dropped because no available triggers (as reported by AN2018_280).
+  std::string yr_eras= "2017B-F";
+  //std::string yr_eras= "2017B-F_UnityElPR";
+  //std::string yr_eras = "2017C-F"; //2017B is dropped because no available triggers (as reported by AN2018_280).
 
   //TT SIGNAL <decay> - RIZKI 
-  std::string elID = "MVA2017TightRC";
+  std::string elID = "MVA2017TightV2IsoTightRC";
   std::string muID = "CBTightMiniIsoTight";
   int whichBR = 0;
   std::vector<Sample*> vSigSamples1a = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"BWBW",whichBR);
@@ -131,7 +133,7 @@ void makeTables(){
   std::vector<Sample*> vSigSamples4a = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"TZBW",whichBR);
   std::vector<Sample*> vSigSamples5a = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"TZTH",whichBR);
   std::vector<Sample*> vSigSamples6a = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"TZTZ",whichBR);
-  std::vector<Sample*> vSig2017CF = appendSampleVectors(vSigSamples1a,vSigSamples2a,vSigSamples3a,vSigSamples4a,vSigSamples5a,vSigSamples6a);
+  std::vector<Sample*> vSig2017BF = appendSampleVectors(vSigSamples1a,vSigSamples2a,vSigSamples3a,vSigSamples4a,vSigSamples5a,vSigSamples6a);
 //   std::vector<Sample*> vSigSamples1b = getInclusiveSigTTSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H","BWBW",whichBR);
 //   std::vector<Sample*> vSigSamples2b = getInclusiveSigTTSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H","THBW",whichBR);
 //   std::vector<Sample*> vSigSamples3b = getInclusiveSigTTSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H","THTH",whichBR);
@@ -150,7 +152,7 @@ void makeTables(){
 //   std::vector<Sample*> vSigSamples4a = getInclusiveSigBBSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"BZTW",whichBR);
 //   std::vector<Sample*> vSigSamples5a = getInclusiveSigBBSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"BZBH",whichBR);
 //   std::vector<Sample*> vSigSamples6a = getInclusiveSigBBSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"BZBZ",whichBR);
-//   std::vector<Sample*> vSig2017CF = appendSampleVectors(vSigSamples1a,vSigSamples2a,vSigSamples3a,vSigSamples4a,vSigSamples5a,vSigSamples6a);
+//   std::vector<Sample*> vSig2017BF = appendSampleVectors(vSigSamples1a,vSigSamples2a,vSigSamples3a,vSigSamples4a,vSigSamples5a,vSigSamples6a);
 //   std::vector<Sample*> vSigSamples1b = getInclusiveSigBBSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H","TWTW",whichBR);
 //   std::vector<Sample*> vSigSamples2b = getInclusiveSigBBSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H","BHTW",whichBR);
 //   std::vector<Sample*> vSigSamples3b = getInclusiveSigBBSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H","BHBH",whichBR);
@@ -168,7 +170,7 @@ void makeTables(){
 //   std::vector<Sample*> vSigSamples4a = getInclusiveSigBBSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"BZTW",1);
 //   std::vector<Sample*> vSigSamples5a = getInclusiveSigBBSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"BZBH",1);
 //   std::vector<Sample*> vSigSamples6a = getInclusiveSigBBSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"BZBZ",1);
-//   std::vector<Sample*> vSig2017CF = appendSampleVectors(vSigSamples1a,vSigSamples2a,vSigSamples3a,vSigSamples4a,vSigSamples5a,vSigSamples6a);
+//   std::vector<Sample*> vSig2017BF = appendSampleVectors(vSigSamples1a,vSigSamples2a,vSigSamples3a,vSigSamples4a,vSigSamples5a,vSigSamples6a);
 //   std::vector<Sample*> vSigSamples1b = getInclusiveSigBBSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H","TWTW",1);
 //   std::vector<Sample*> vSigSamples2b = getInclusiveSigBBSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H","BHTW",1);
 //   std::vector<Sample*> vSigSamples3b = getInclusiveSigBBSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H","BHBH",1);
@@ -179,27 +181,27 @@ void makeTables(){
 
 
   //get vector of background samples
-  std::vector<Sample*> vMCBkg2017CF = getMCBkgSampleVec("sZVeto",lumi1,"MVA2017TightRC","CBTightMiniIsoTight", yr_eras);
+  std::vector<Sample*> vMCBkg2017BF = getMCBkgSampleVec("ss",lumi1,elID,muID, yr_eras);
 //   std::vector<Sample*> vMCBkg2016EH = getMCBkgSampleVec("sZVeto",lumi2,"MVA2017TightRC","CBTightMiniIsoTight","2016E-H");
-  std::vector<Sample*> vDDBkg2017CF =  getDDBkgSampleVec("sZVeto",lumi1,"MVA2017TightRC","CBTightMiniIsoTight", yr_eras);
+  std::vector<Sample*> vDDBkg2017BF =  getDDBkgSampleVec("ss",lumi1,elID,muID, yr_eras);
 //   std::vector<Sample*> vDDBkg2016EH =  getDDBkgSampleVec("sZVeto",lumi1,"MVA2017TightRC","CBTightMiniIsoTight","2016E-H");
 
-  std::vector<Sample*> vBkg2017CF = appendSampleVectors(vMCBkg2017CF,vDDBkg2017CF);
+  std::vector<Sample*> vBkg2017BF = appendSampleVectors(vMCBkg2017BF,vDDBkg2017BF);
 //   std::vector<Sample*> vBkg2016EH = appendSampleVectors(vMCBkg2016EH,vDDBkg2016EH);
   //get vector of data
-  Sample* dataSample2017CF = getDataSample("sZVeto","MVA2017TightRC","CBTightMiniIsoTight", yr_eras);
+  Sample* dataSample2017BF = getDataSample("sZVeto",elID,muID, yr_eras);
 //   Sample* dataSample2016EH = getDataSample("sZVeto","MVA2017TightRC","CBTightMiniIsoTight","2016E-H");
-  Sample* dataSampleFull = getDataSample("sZVeto","MVA2017TightRC","CBTightMiniIsoTight", yr_eras);
+  Sample* dataSampleFull = getDataSample("sZVeto",elID,muID, yr_eras);
 
   //now get vector of cuts
   std::vector<std::string> vCutString;
   if(isoTrig){
   	//vCutString = getCutString_isoTrig();
-  	vCutString = getCutString_Lep4035();
+  	vCutString = getCutString_Lep4030();
   }
   else if(nonIso_HTtrig){
   	//vCutString = getCutString_nonIsoHTtrig();
-  	vCutString = getCutString_Lep4035();
+  	vCutString = getCutString_Lep4030();
   }
   else{
   	vCutString = getCutString();
@@ -215,27 +217,27 @@ void makeTables(){
   tables<<std::fixed<<std::setprecision(2);
 
 
-  printFinalTable_v3(tables,vBkg2017CF,vSig2017CF,dataSampleFull,vCutString, yr_eras); //Clints original format but possibly uncertainties are even more outdated here.
-  printFinalTable_v4(tables,vBkg2017CF,vSig2017CF,dataSampleFull,vCutString, yr_eras);
+  printFinalTable_v3(tables,vBkg2017BF,vSig2017BF,dataSampleFull,vCutString, yr_eras); //Clints original format but possibly uncertainties are even more outdated here.
+  printFinalTable_v4(tables,vBkg2017BF,vSig2017BF,dataSampleFull,vCutString, yr_eras);
 
   //set precision
   tables<<std::fixed<<std::setprecision(2);
 //   for(int nmu=-1; nmu<3; nmu++){
   for(int nmu=-1; nmu<0; nmu++){
     //now make a vector of cutClass for bkg
-    std::vector<CutClass*> vCutMCBkg2017CF = getCutClassVector(vMCBkg2017CF,vCutString,nmu);
-    std::vector<CutClass*> vCutDDBkg2017CF = getCutClassVector(vDDBkg2017CF,vCutString,nmu);
-    std::vector<CutClass*> vCutBkg2017CF = appendCutClassVectors(vCutMCBkg2017CF,vCutDDBkg2017CF);
+    std::vector<CutClass*> vCutMCBkg2017BF = getCutClassVector(vMCBkg2017BF,vCutString,nmu);
+    std::vector<CutClass*> vCutDDBkg2017BF = getCutClassVector(vDDBkg2017BF,vCutString,nmu);
+    std::vector<CutClass*> vCutBkg2017BF = appendCutClassVectors(vCutMCBkg2017BF,vCutDDBkg2017BF);
 
 //     std::vector<CutClass*> vCutMCBkg2016EH = getCutClassVector(vMCBkg2016EH,vCutString,nmu);
 //     std::vector<CutClass*> vCutDDBkg2016EH = getCutClassVector(vDDBkg2016EH,vCutString,nmu);
 //     std::vector<CutClass*> vCutBkg2016EH = appendCutClassVectors(vCutMCBkg2016EH,vCutDDBkg2016EH);
 
-    std::vector<CutClass*> vCutBkg = vCutBkg2017CF;
+    std::vector<CutClass*> vCutBkg = vCutBkg2017BF;
     //now make a vector of cutClass for sig
-    std::vector<CutClass*> vCutSig2017CF = getCutClassVector(vSig2017CF,vCutString,nmu);
+    std::vector<CutClass*> vCutSig2017BF = getCutClassVector(vSig2017BF,vCutString,nmu);
 //     std::vector<CutClass*> vCutSig2016EH = getCutClassVector(vSig2016EH,vCutString,nmu);
-    std::vector<CutClass*> vCutSig = vCutSig2017CF;
+    std::vector<CutClass*> vCutSig = vCutSig2017BF;
     //now print background table
     tables<<std::fixed<<std::setprecision(2);
     printTable(tables,vCutBkg,vCutString,nmu,Bkg);
@@ -320,8 +322,8 @@ std::stringstream& printTable(std::stringstream& tablestring,std::vector<CutClas
   for(size_t i=0; i < vCC.size(); i++){
     std::cout<<"sample:		"<<vCC.at(i)->samplename<<" evts at min cut		:"<<vCC.at(i)->nEvents.at(0)<<std::endl;
     float sys=0;
-    if(vCC.at(i)->samplename=="NonPrompt") sys= pow(0.5, 2);
-    else if(vCC.at(i)->samplename=="ChargeMisID") sys= pow(0.3, 2);
+    if(vCC.at(i)->samplename=="NonPrompt") sys= pow(unc_NP, 2);
+    else if(vCC.at(i)->samplename=="ChargeMisID") sys= pow(unc_CMID, 2);
     
     //CONTINUE HERE - Oct19-2017
 
@@ -346,13 +348,24 @@ std::stringstream& printTable(std::stringstream& tablestring,std::vector<CutClas
     else if(vCC.at(i)->samplename=="WWZ") sys= pow(uncPDF_WWZ, 2) + pow(uncSCALE_WWZ, 2) + pow(uncJES_WWZ,2) + pow(uncJER_WWZ,2) + pow(uncPU_WWZ,2);
     else if(vCC.at(i)->samplename=="WZZ") sys= pow(uncPDF_WZZ, 2) + pow(uncSCALE_WZZ, 2) + pow(uncJES_WZZ,2) + pow(uncJER_WZZ,2) + pow(uncPU_WZZ,2);
     else if(vCC.at(i)->samplename=="ZZZ") sys= pow(uncPDF_ZZZ, 2) + pow(uncSCALE_ZZZ, 2) + pow(uncJES_ZZZ,2) + pow(uncJER_ZZZ,2) + pow(uncPU_ZZZ,2);
-
-
 //     else if(vCC.at(i)->samplename.find("X53X53")!=std::string::npos) sys = pow(0.03,2)+ pow(0.01,2) + pow(0.01,2); //jes, jer, pu
-    else if(vCC.at(i)->samplename.find("prime")!=std::string::npos) sys = pow(0.01,2)+ pow(0.02,2) + pow(0.01,2); //jes, jer, pu
+    else if(vCC.at(i)->samplename.find("prime")!=std::string::npos) sys =  pow(uncPDF_sig, 2) + pow(uncSCALE_sig, 2) + pow(uncJES_sig,2)+ pow(uncJER_sig,2) + pow(uncPU_sig,2) ; //jes, jer, pu
     else sys = pow(0.5,2);
+
+    if(vCC.at(i)->samplename=="TTZ") sys= sys + pow(uncTrigSF_TTZ,2) + pow(uncIDSF_TTZ,2); // trig plus id
+    else if(vCC.at(i)->samplename=="TTW") sys= sys + pow(uncTrigSF_TTW,2) + pow(uncIDSF_TTW,2);
+    else if(vCC.at(i)->samplename=="TTH") sys= sys + pow(uncTrigSF_TTH,2) + pow(uncIDSF_TTH,2);
+    else if(vCC.at(i)->samplename=="TTTT") sys= sys + pow(uncTrigSF_TTTT,2) + pow(uncIDSF_TTTT,2);
+    else if(vCC.at(i)->samplename=="WZ") sys= sys + pow(uncTrigSF_WZ,2) + pow(uncIDSF_WZ,2);
+    else if(vCC.at(i)->samplename=="ZZ") sys= sys + pow(uncTrigSF_ZZ,2) + pow(uncIDSF_ZZ,2);
+    else if(vCC.at(i)->samplename=="WpWp") sys= sys + pow(uncTrigSF_WpWp,2) + pow(uncIDSF_WpWp,2);
+    else if(vCC.at(i)->samplename=="WWZ") sys= sys + pow(uncTrigSF_WWZ,2) + pow(uncIDSF_WWZ,2);
+    else if(vCC.at(i)->samplename=="WZZ") sys= sys + pow(uncTrigSF_WZZ,2) + pow(uncIDSF_WZZ,2);
+    else if(vCC.at(i)->samplename=="ZZZ") sys= sys + pow(uncTrigSF_ZZZ,2) + pow(uncIDSF_ZZZ,2);
+    else if(vCC.at(i)->samplename.find("prime")!=std::string::npos) sys = sys + pow(uncTrigSF_sig,2) + pow(uncIDSF_sig,2);
+
     if(! (vCC.at(i)->samplename=="NonPrompt" || vCC.at(i)->samplename=="ChargeMisID")){
-      sys = sys + 2*pow(0.02,2) + pow(0.03,2) + pow(.025,2); //id iso and trigger  plus lumi 
+      sys = sys + pow(uncIsoSF,2) + pow(uncLumi,2); //iso plus lumi 
     }
     tablestring<<vCC.at(i)->samplename;
     for(size_t j =0; j < (vCC.at(i)->nEvents).size(); j++){
@@ -464,7 +477,7 @@ std::stringstream& printEffTable_v2(std::stringstream& tablestring,std::vector<C
     tablestring<<vCC.at(i)->samplename;
     for(size_t j =0; j < (vCC.at(i)->nEvents).size(); j++){
     
-      float lumi = 35867.; // inv pb
+      float lumi = 41.56*1000.; // inv pb
 
 	  float BR=0.;
 	
@@ -549,29 +562,29 @@ std::stringstream& printEffTable_v2(std::stringstream& tablestring,std::vector<C
 
       float nSigEvts=0;
       float Xsec=0;
-      if(vCC.at(i)->samplename.find("TprimeTprime_M-800")!=std::string::npos){ nSigEvts = 795000.; Xsec=0.196 ;}       
-      if(vCC.at(i)->samplename.find("TprimeTprime_M-900")!=std::string::npos){ nSigEvts = 831200.; Xsec=0.0903 ;}
-      if(vCC.at(i)->samplename.find("TprimeTprime_M-1000")!=std::string::npos){ nSigEvts = 829600.; Xsec=0.0440 ;}
-      if(vCC.at(i)->samplename.find("TprimeTprime_M-1100")!=std::string::npos){ nSigEvts = 832800.; Xsec=0.0224 ;}
-      if(vCC.at(i)->samplename.find("TprimeTprime_M-1200")!=std::string::npos){ nSigEvts = 832600.; Xsec=0.0118 ;}
-      if(vCC.at(i)->samplename.find("TprimeTprime_M-1300")!=std::string::npos){ nSigEvts = 831000.; Xsec=0.00639 ;}
-      if(vCC.at(i)->samplename.find("TprimeTprime_M-1400")!=std::string::npos){ nSigEvts = 832600.; Xsec=0.00354 ;}
-      if(vCC.at(i)->samplename.find("TprimeTprime_M-1500")!=std::string::npos){ nSigEvts = 832800.; Xsec=0.00200 ;}
-      if(vCC.at(i)->samplename.find("TprimeTprime_M-1600")!=std::string::npos){ nSigEvts = 832600.; Xsec=0.001148 ;}
-      if(vCC.at(i)->samplename.find("TprimeTprime_M-1700")!=std::string::npos){ nSigEvts = 797000.; Xsec=0.000666 ;}
-      if(vCC.at(i)->samplename.find("TprimeTprime_M-1800")!=std::string::npos){ nSigEvts = 833000.; Xsec=0.000391 ;}
+      //if(vCC.at(i)->samplename.find("TprimeTprime_M-800")!=std::string::npos){ nSigEvts = 795000.; Xsec=0.196 ;}       
+      //if(vCC.at(i)->samplename.find("TprimeTprime_M-900")!=std::string::npos){ nSigEvts = 831200.; Xsec=0.0903 ;}
+      if(vCC.at(i)->samplename.find("TprimeTprime_M-1000")!=std::string::npos){ nSigEvts = 1002517.455; Xsec=0.0440 ;}
+      if(vCC.at(i)->samplename.find("TprimeTprime_M-1100")!=std::string::npos){ nSigEvts = 895042.045; Xsec=0.0224 ;}
+      if(vCC.at(i)->samplename.find("TprimeTprime_M-1200")!=std::string::npos){ nSigEvts = 1003441.777; Xsec=0.0118 ;}
+      if(vCC.at(i)->samplename.find("TprimeTprime_M-1300")!=std::string::npos){ nSigEvts = 1026082.979; Xsec=0.00639 ;}
+      if(vCC.at(i)->samplename.find("TprimeTprime_M-1400")!=std::string::npos){ nSigEvts = 979603.275; Xsec=0.00354 ;}
+      if(vCC.at(i)->samplename.find("TprimeTprime_M-1500")!=std::string::npos){ nSigEvts = 985756.619; Xsec=0.00200 ;}
+      if(vCC.at(i)->samplename.find("TprimeTprime_M-1600")!=std::string::npos){ nSigEvts = 989851.281; Xsec=0.001148 ;}
+      if(vCC.at(i)->samplename.find("TprimeTprime_M-1700")!=std::string::npos){ nSigEvts = 939135.751; Xsec=0.000666 ;}
+      if(vCC.at(i)->samplename.find("TprimeTprime_M-1800")!=std::string::npos){ nSigEvts = 884660.318; Xsec=0.000391 ;}
 
-      if(vCC.at(i)->samplename.find("BprimeBprime_M-800")!=std::string::npos){ nSigEvts = 826200.; Xsec=0.196 ;}
-      if(vCC.at(i)->samplename.find("BprimeBprime_M-900")!=std::string::npos){ nSigEvts = 799800.; Xsec=0.0903 ;}
-      if(vCC.at(i)->samplename.find("BprimeBprime_M-1000")!=std::string::npos){ nSigEvts = 825600.; Xsec=0.0440 ;}
-      if(vCC.at(i)->samplename.find("BprimeBprime_M-1100")!=std::string::npos){ nSigEvts = 832000.; Xsec=0.0224 ;}
-      if(vCC.at(i)->samplename.find("BprimeBprime_M-1200")!=std::string::npos){ nSigEvts = 832200.; Xsec=0.0118 ;}
-      if(vCC.at(i)->samplename.find("BprimeBprime_M-1300")!=std::string::npos){ nSigEvts = 807200.; Xsec=0.00639 ;}
-      if(vCC.at(i)->samplename.find("BprimeBprime_M-1400")!=std::string::npos){ nSigEvts = 816800.; Xsec=0.00354 ;}
-      if(vCC.at(i)->samplename.find("BprimeBprime_M-1500")!=std::string::npos){ nSigEvts = 831000.; Xsec=0.00200 ;}
-      if(vCC.at(i)->samplename.find("BprimeBprime_M-1600")!=std::string::npos){ nSigEvts = 696600.; Xsec=0.001148 ;}
-      if(vCC.at(i)->samplename.find("BprimeBprime_M-1700")!=std::string::npos){ nSigEvts = 832600.; Xsec=0.000666 ;}
-      if(vCC.at(i)->samplename.find("BprimeBprime_M-1800")!=std::string::npos){ nSigEvts = 795400.; Xsec=0.000666 ;}
+      //if(vCC.at(i)->samplename.find("BprimeBprime_M-800")!=std::string::npos){ nSigEvts = 826200.; Xsec=0.196 ;}
+      if(vCC.at(i)->samplename.find("BprimeBprime_M-900")!=std::string::npos){ nSigEvts = 959939.583 * 687000.0 / 817000.0; Xsec=0.0903 ;}
+      if(vCC.at(i)->samplename.find("BprimeBprime_M-1000")!=std::string::npos){ nSigEvts = 1011510.550; Xsec=0.0440 ;}
+      if(vCC.at(i)->samplename.find("BprimeBprime_M-1100")!=std::string::npos){ nSigEvts = 969137.000; Xsec=0.0224 ;}
+      if(vCC.at(i)->samplename.find("BprimeBprime_M-1200")!=std::string::npos){ nSigEvts = 1027818.122; Xsec=0.0118 ;}
+      if(vCC.at(i)->samplename.find("BprimeBprime_M-1300")!=std::string::npos){ nSigEvts = 917763.768; Xsec=0.00639 ;}
+      if(vCC.at(i)->samplename.find("BprimeBprime_M-1400")!=std::string::npos){ nSigEvts = 877071.614; Xsec=0.00354 ;}
+      if(vCC.at(i)->samplename.find("BprimeBprime_M-1500")!=std::string::npos){ nSigEvts = 804769.156; Xsec=0.00200 ;}
+      if(vCC.at(i)->samplename.find("BprimeBprime_M-1600")!=std::string::npos){ nSigEvts = 895604.498; Xsec=0.001148 ;}
+      if(vCC.at(i)->samplename.find("BprimeBprime_M-1700")!=std::string::npos){ nSigEvts = 946782.494; Xsec=0.000666 ;}
+      if(vCC.at(i)->samplename.find("BprimeBprime_M-1800")!=std::string::npos){ nSigEvts = 915634.724; Xsec=0.000666 ;}
       //std::cout << "samplename: "<< vCC.at(i)->samplename << "	nSigEvts = " << nSigEvts << "	selected Evts = "<< vCC.at(i)->nEvents.at(j) <<std::endl;
 
       float weight = lumi * ( (Xsec*BR) / (nSigEvts* initBR) ); 
@@ -606,7 +619,8 @@ std::stringstream& printChargeMisIDTable_lpt(std::stringstream& table){
 
   table<<"Electron $\\eta$ & Charge MisID Rate\\\\\n\\hline\n";
 
-  TFile* weightfile = new TFile("../scripts/ChargeMisID/ChargeMisID_Data_All_Electrons_MVA2017TightIsoRC_corrected.root");
+  //TFile* weightfile = new TFile("../scripts/ChargeMisID/ChargeMisID_Data_All_Electrons_MVA2017TightIsoRC_corrected.root");
+  TFile* weightfile = new TFile("../scripts/ChargeMisID/ChargeMisID_Data_2017All_Electrons_MVA2017TightV2IsoRC_corrected.root");
 
   TH1F* h = (TH1F*) weightfile->Get("h_num_lpt");
   //TH1F* den = (TH1F*) weightfile->Get("etaDenHist_lpt");
@@ -646,8 +660,8 @@ std::stringstream& printChargeMisIDTable_hpt(std::stringstream& table){
 
   table<<"Electron $\\eta$ & Charge MisID Rate\\\\\n\\hline\n";
 
-  TFile* weightfile = new TFile("../scripts/ChargeMisID/ChargeMisID_Data_All_Electrons_MVA2017TightIsoRC_corrected.root");
-
+  //TFile* weightfile = new TFile("../scripts/ChargeMisID/ChargeMisID_Data_All_Electrons_MVA2017TightIsoRC_corrected.root");
+  TFile* weightfile = new TFile("../scripts/ChargeMisID/ChargeMisID_Data_2017All_Electrons_MVA2017TightV2IsoRC_corrected.root");
 
   TH1F* h = (TH1F*) weightfile->Get("hpt_final");
   //TH1F* den = (TH1F*) weightfile->Get("etaDenHist_hpt");
@@ -688,8 +702,8 @@ std::stringstream& printChargeMisIDTable_hhpt(std::stringstream& table){
 
   table<<"Electron $\\eta$ & Charge MisID Rate\\\\\n\\hline\n";
 
-  TFile* weightfile = new TFile("../scripts/ChargeMisID/ChargeMisID_Data_All_Electrons_MVA2017TightIsoRC_corrected.root");
-
+  //TFile* weightfile = new TFile("../scripts/ChargeMisID/ChargeMisID_Data_All_Electrons_MVA2017TightIsoRC_corrected.root");
+  TFile* weightfile = new TFile("../scripts/ChargeMisID/ChargeMisID_Data_2017All_Electrons_MVA2017TightV2IsoRC_corrected.root");
 
   TH1F* h = (TH1F*) weightfile->Get("hhpt_final");
   //TH1F* den = (TH1F*) weightfile->Get("etaDenHist_hpt");
@@ -714,7 +728,7 @@ std::stringstream& printChargeMisIDTable_hhpt(std::stringstream& table){
 
 }
 
-std::stringstream& printFinalTable(std::stringstream& tablestring,std::vector<Sample*> vBkgCF, std::vector<Sample*> vSigCF,std::vector<Sample*> vBkgEH, std::vector<Sample*> vSigEH, Sample* dataSample, std::vector<std::string> vCutString,std::string era){
+std::stringstream& printFinalTable(std::stringstream& tablestring,std::vector<Sample*> vBkgBF, std::vector<Sample*> vSigBF,std::vector<Sample*> vBkgEH, std::vector<Sample*> vSigEH, Sample* dataSample, std::vector<std::string> vCutString,std::string era){
 
   std::cout << "--------> printing Final Table ("  << era <<  ")" << std::endl; //added by rizki
 
@@ -735,9 +749,9 @@ std::stringstream& printFinalTable(std::stringstream& tablestring,std::vector<Sa
 	std::cout << "--------> channel # of mu: " << nmu << std::endl; //added by rizki
 
     //now make a vector of cutClass for bkg
-    std::vector<CutClass*> vCutBkgCF = getCutClassVector(vBkgCF,vCutString,nmu);
+    std::vector<CutClass*> vCutBkgBF = getCutClassVector(vBkgBF,vCutString,nmu);
     //now make a vector of cutClass for sig
-    std::vector<CutClass*> vCutSigCF = getCutClassVector(vSigCF,vCutString,nmu);
+    std::vector<CutClass*> vCutSigBF = getCutClassVector(vSigBF,vCutString,nmu);
     //now make a vector of cutClass for bkg
     std::vector<CutClass*> vCutBkgEH = getCutClassVector(vBkgEH,vCutString,nmu);
     //now make a vector of cutClass for sig
@@ -748,13 +762,13 @@ std::stringstream& printFinalTable(std::stringstream& tablestring,std::vector<Sa
 
     //now pick based on era
     std::vector<CutClass*> vCutBkg;
-    if(era=="2017CF") vCutBkg = vCutBkgCF;
-    else if(era=="2016EH") vCutBkg = vCutBkgEH;
-    else{ vCutBkg = addCutClassVectors(vCutBkgCF,vCutBkgEH);} //else full era
+    if(era.find("2017B-F")) vCutBkg = vCutBkgBF;
+    else if(era.find("2016EH")) vCutBkg = vCutBkgEH;
+    else{ vCutBkg = addCutClassVectors(vCutBkgBF,vCutBkgEH);} //else full era
     std::vector<CutClass*> vCutSig;
-    if(era=="2017CF") vCutSig = vCutSigCF;
-    else if(era=="2016EH") vCutSig = vCutSigEH;
-    else{ vCutSig = addCutClassVectors(vCutSigCF,vCutSigEH); }//else full era
+    if(era.find("2017B-F")) vCutSig = vCutSigBF;
+    else if(era.find("2016EH")) vCutSig = vCutSigEH;
+    else{ vCutSig = addCutClassVectors(vCutSigBF,vCutSigEH); }//else full era
 
 
     for(unsigned int j=0; j<vCutSig.size();j++){
@@ -784,8 +798,8 @@ std::stringstream& printFinalTable(std::stringstream& tablestring,std::vector<Sa
       //std::cout << "	" << vCutBkg.at(i)->samplename << std::endl; //added by rizki
       float sys=0;
 
-      if(vCutBkg.at(i)->samplename=="NonPrompt") sys= pow(0.5, 2);
-      else if(vCutBkg.at(i)->samplename=="ChargeMisID") sys= pow(0.3, 2);
+      if(vCutBkg.at(i)->samplename=="NonPrompt") sys= pow(unc_NP, 2);
+      else if(vCutBkg.at(i)->samplename=="ChargeMisID") sys= pow(unc_CMID, 2);
       
       else if(vCutBkg.at(i)->samplename=="TTW") sys= pow(uncPDF_TTW, 2) + pow(uncSCALE_TTW, 2) + pow(uncJES_TTW,2) + pow(uncJER_TTW,2) + pow(uncPU_TTW,2); //pdf,scale,jes,jer,pu
       else if(vCutBkg.at(i)->samplename=="TTZ") sys= pow(uncPDF_TTZ, 2) + pow(uncSCALE_TTZ, 2) + pow(uncJES_TTZ,2) + pow(uncJER_TTZ,2) + pow(uncPU_TTZ,2);
@@ -799,11 +813,25 @@ std::stringstream& printFinalTable(std::stringstream& tablestring,std::vector<Sa
       else if(vCutBkg.at(i)->samplename=="ZZZ") sys= pow(uncPDF_ZZZ, 2) + pow(uncSCALE_ZZZ, 2) + pow(uncJES_ZZZ,2) + pow(uncJER_ZZZ,2) + pow(uncPU_ZZZ,2);
 
 //       else if(vCutBkg.at(i)->samplename.find("X53X53")!=std::string::npos) sys = pow(0.03,2) + pow(0.01,2) + pow(0.01,2); //jes, jer, pu
-      else if(vCutSig.at(i)->samplename.find("prime")!=std::string::npos) sys = pow(0.01,2)+ pow(0.02,2) + pow(0.01,2); //jes, jer, pu
+      else if(vCutSig.at(i)->samplename.find("prime")!=std::string::npos) sys = pow(uncPDF_sig, 2) + pow(uncSCALE_sig, 2) + pow(uncJES_sig,2)+ pow(uncJER_sig,2) + pow(uncPU_sig,2) ; //jes, jer, pu
       else sys = pow(0.5,2);
+
+      if(vCutBkg.at(i)->samplename=="TTZ") sys= sys + pow(uncTrigSF_TTZ,2) + pow(uncIDSF_TTZ,2); // trig plus id
+      else if(vCutBkg.at(i)->samplename=="TTW") sys= sys + pow(uncTrigSF_TTW,2) + pow(uncIDSF_TTW,2);
+      else if(vCutBkg.at(i)->samplename=="TTH") sys= sys + pow(uncTrigSF_TTH,2) + pow(uncIDSF_TTH,2);
+      else if(vCutBkg.at(i)->samplename=="TTTT") sys= sys + pow(uncTrigSF_TTTT,2) + pow(uncIDSF_TTTT,2);
+      else if(vCutBkg.at(i)->samplename=="WZ") sys= sys + pow(uncTrigSF_WZ,2) + pow(uncIDSF_WZ,2);
+      else if(vCutBkg.at(i)->samplename=="ZZ") sys= sys + pow(uncTrigSF_ZZ,2) + pow(uncIDSF_ZZ,2);
+      else if(vCutBkg.at(i)->samplename=="WpWp") sys= sys + pow(uncTrigSF_WpWp,2) + pow(uncIDSF_WpWp,2);
+      else if(vCutBkg.at(i)->samplename=="WWZ") sys= sys + pow(uncTrigSF_WWZ,2) + pow(uncIDSF_WWZ,2);
+      else if(vCutBkg.at(i)->samplename=="WZZ") sys= sys + pow(uncTrigSF_WZZ,2) + pow(uncIDSF_WZZ,2);
+      else if(vCutBkg.at(i)->samplename=="ZZZ") sys= sys + pow(uncTrigSF_ZZZ,2) + pow(uncIDSF_ZZZ,2);
+      else if(vCutBkg.at(i)->samplename.find("prime")!=std::string::npos) sys = sys + pow(uncTrigSF_sig,2) + pow(uncIDSF_sig,2);
+
       if(! (vCutBkg.at(i)->samplename=="NonPrompt" || vCutBkg.at(i)->samplename=="ChargeMisID")){
-		sys = sys + 2*pow(0.02,2) + pow(0.03,2) + pow(.025,2); //id iso and trigger  plus lumi  plus pileup plus 
+        sys = sys + pow(uncIsoSF,2) + pow(uncLumi,2); //iso plus lumi 
       }
+
       std::cout<<"sample: "<<vCutBkg.at(i)->samplename<<" and total systematic: "<<pow(sys,0.5)<<std::endl;
       
       for(size_t j =0; j < (vCutBkg.at(i)->nEvents).size(); j++){
@@ -821,13 +849,13 @@ std::stringstream& printFinalTable(std::stringstream& tablestring,std::vector<Sa
 		else if(vCutBkg.at(i)->samplename!="NonPrompt" && vCutBkg.at(i)->samplename=="ChargeMisID"){ //only add together if MC background
 		  events_tot = events_tot + (vCutBkg.at(i)->nEvents).at(j);
 		  errors_tot = errors_tot + err;
-		  events_cmtot = (vCutBkg.at(i)->nEvents).at(j);
+		  events_cmtot = events_cmtot + (vCutBkg.at(i)->nEvents).at(j);
 		  errors_cmtot = err;	  
 		}
 		else if(vCutBkg.at(i)->samplename=="NonPrompt" && vCutBkg.at(i)->samplename!="ChargeMisID"){ //only add together if MC background
 		  events_tot = events_tot + (vCutBkg.at(i)->nEvents).at(j);
 		  errors_tot = errors_tot + err;
-		  events_nptot = (vCutBkg.at(i)->nEvents).at(j);
+		  events_nptot = events_nptot + (vCutBkg.at(i)->nEvents).at(j);
 		  errors_nptot = err;	  
 		}
 
@@ -863,7 +891,7 @@ std::stringstream& printFinalTable(std::stringstream& tablestring,std::vector<Sa
    else if(nmu==2) tablestring<<"Di-muon&";
    else tablestring<<"All&";
     //now write table line -- BLIND FOR NOW
-   tablestring<<"$"<<events_mctot<<"\\pm"<<pow(errors_mctot,0.5)<<"$&$"<<events_nptot<<"\\pm"<<pow(errors_nptot,0.5)<<"$&$"<<events_cmtot<<"\\pm"<<pow(errors_cmtot,0.5)<<"$ &$ "<<events_tot<<"\\pm"<<pow(errors_tot,0.5)<<"$&"<<sig<<"\\pm"<<pow(errors_sig,0.5)<<" & "<<obs<< " & " << sig / sqrt(sig+events_tot) <<"\\\\\n";  //added by rizki
+   tablestring<<"$"<<events_mctot<<"\\pm"<<pow(errors_mctot,0.5)<<"$ & $"<<events_nptot<<"\\pm"<<pow(errors_nptot,0.5)<<"$ & $"<<events_cmtot<<"\\pm"<<pow(errors_cmtot,0.5)<<"$ &$ "<<events_tot<<"\\pm"<<pow(errors_tot,0.5)<<"$&"<<sig<<"\\pm"<<pow(errors_sig,0.5)<<" & "<<obs<< " & " << sig / sqrt(sig+events_tot) <<"\\\\\n";  //added by rizki
    //tablestring<<"$"<<events_mctot<<"\\pm"<<pow(errors_mctot,0.5)<<"$&$"<<events_nptot<<"\\pm"<<pow(errors_nptot,0.5)<<"$&$"<<events_cmtot<<"\\pm"<<pow(errors_cmtot,0.5)<<"$ &$ "<<events_tot<<"\\pm"<<pow(errors_tot,0.5)<<"$&"<<sig<<" & "<<obs<<"\\\\\n"; //commented by rizki 
    //tablestring<<"$"<<events_mctot<<"\\pm"<<pow(errors_mctot,0.5)<<"$&$"<<events_nptot<<"\\pm"<<pow(errors_nptot,0.5)<<"$&$"<<events_cmtot<<"\\pm"<<pow(errors_cmtot,0.5)<<"$ &$ "<<events_tot<<"\\pm"<<pow(errors_tot,0.5)<<"$&"<<sig<<" & XXX\\\\\n"; 
   }//end loop over channels
@@ -877,7 +905,7 @@ std::stringstream& printFinalTable(std::stringstream& tablestring,std::vector<Sa
 }
 
 //added by rizki
-std::stringstream& printFinalTable_v2(std::stringstream& tablestring,std::vector<Sample*> vBkgCF, std::vector<Sample*> vSigCF,std::vector<Sample*> vBkgEH, std::vector<Sample*> vSigEH, Sample* dataSample, std::vector<std::string> vCutString,std::string era){
+std::stringstream& printFinalTable_v2(std::stringstream& tablestring,std::vector<Sample*> vBkgBF, std::vector<Sample*> vSigBF,std::vector<Sample*> vBkgEH, std::vector<Sample*> vSigEH, Sample* dataSample, std::vector<std::string> vCutString,std::string era){
 
   std::cout << "--------> printing Final Table ("  << era <<  ")" << std::endl; //added by rizki
 
@@ -942,9 +970,9 @@ std::stringstream& printFinalTable_v2(std::stringstream& tablestring,std::vector
 	std::cout << "--------> channel # of mu: " << nmu << std::endl; //added by rizki
 
     //now make a vector of cutClass for bkg
-    std::vector<CutClass*> vCutBkgCF = getCutClassVector(vBkgCF,vCutString,nmu);
+    std::vector<CutClass*> vCutBkgBF = getCutClassVector(vBkgBF,vCutString,nmu);
     //now make a vector of cutClass for sig
-    std::vector<CutClass*> vCutSigCF = getCutClassVector(vSigCF,vCutString,nmu);
+    std::vector<CutClass*> vCutSigBF = getCutClassVector(vSigBF,vCutString,nmu);
     //now make a vector of cutClass for bkg
     std::vector<CutClass*> vCutBkgEH = getCutClassVector(vBkgEH,vCutString,nmu);
     //now make a vector of cutClass for sig
@@ -956,13 +984,13 @@ std::stringstream& printFinalTable_v2(std::stringstream& tablestring,std::vector
 
     //now pick based on era
     std::vector<CutClass*> vCutBkg;
-    if(era=="2017CF") vCutBkg = vCutBkgCF;
-    else if(era=="2016EH") vCutBkg = vCutBkgEH;
-    else{ vCutBkg = addCutClassVectors(vCutBkgCF,vCutBkgEH);} //else full era
+    if(era.find("2017B-F")) vCutBkg = vCutBkgBF;
+    else if(era.find("2016EH")) vCutBkg = vCutBkgEH;
+    else{ vCutBkg = addCutClassVectors(vCutBkgBF,vCutBkgEH);} //else full era
     std::vector<CutClass*> vCutSig;
-    if(era=="2017CF") vCutSig = vCutSigCF;
-    else if(era=="2016EH") vCutSig = vCutSigEH;
-    else{ vCutSig = addCutClassVectors(vCutSigCF,vCutSigEH); }//else full era
+    if(era.find("2017B-F")) vCutSig = vCutSigBF;
+    else if(era.find("2016EH")) vCutSig = vCutSigEH;
+    else{ vCutSig = addCutClassVectors(vCutSigBF,vCutSigEH); }//else full era
 
 
     for(unsigned int j=0; j<vCutSig.size();j++){
@@ -991,8 +1019,8 @@ std::stringstream& printFinalTable_v2(std::stringstream& tablestring,std::vector
       //std::cout << "	" << vCutBkg.at(i)->samplename << std::endl; //added by rizki
       float sys=0;
 
-      if(vCutBkg.at(i)->samplename=="NonPrompt") sys= pow(0.5, 2);
-      else if(vCutBkg.at(i)->samplename=="ChargeMisID") sys= pow(0.3, 2);
+      if(vCutBkg.at(i)->samplename=="NonPrompt") sys= pow(unc_NP, 2);
+      else if(vCutBkg.at(i)->samplename=="ChargeMisID") sys= pow(unc_CMID, 2);
       
       else if(vCutBkg.at(i)->samplename=="TTW") sys= pow(uncPDF_TTW, 2) + pow(uncSCALE_TTW, 2) + pow(uncJES_TTW,2) + pow(uncJER_TTW,2) + pow(uncPU_TTW,2); //pdf,scale,jes,jer,pu
       else if(vCutBkg.at(i)->samplename=="TTZ") sys= pow(uncPDF_TTZ, 2) + pow(uncSCALE_TTZ, 2) + pow(uncJES_TTZ,2) + pow(uncJER_TTZ,2) + pow(uncPU_TTZ,2);
@@ -1006,11 +1034,26 @@ std::stringstream& printFinalTable_v2(std::stringstream& tablestring,std::vector
       else if(vCutBkg.at(i)->samplename=="ZZZ") sys= pow(uncPDF_ZZZ, 2) + pow(uncSCALE_ZZZ, 2) + pow(uncJES_ZZZ,2) + pow(uncJER_ZZZ,2) + pow(uncPU_ZZZ,2);
 
 //       else if(vCutBkg.at(i)->samplename.find("X53X53")!=std::string::npos) sys = pow(0.03,2) + pow(0.01,2) + pow(0.01,2); //jes, jer, pu
-      else if(vCutSig.at(i)->samplename.find("prime")!=std::string::npos) sys = pow(0.01,2)+ pow(0.02,2) + pow(0.01,2); //jes, jer, pu
-      else sys = pow(0.5,2);
+      else if(vCutBkg.at(i)->samplename.find("prime")!=std::string::npos) sys = pow(uncPDF_sig, 2) + pow(uncSCALE_sig, 2) + pow(uncJES_sig,2)+ pow(uncJER_sig,2) + pow(uncPU_sig,2) ; //jes, jer, pu
+      //else if(vCutSig.at(i)->samplename.find("prime")!=std::string::npos) sys = pow(0.01,2)+ pow(0.02,2) + pow(0.01,2); //jes, jer, pu
+      //else sys = pow(0.5,2);
+ 
+      if(vCutBkg.at(i)->samplename=="TTZ") sys= sys + pow(uncTrigSF_TTZ,2) + pow(uncIDSF_TTZ,2); // trig plus id
+      else if(vCutBkg.at(i)->samplename=="TTW") sys= sys + pow(uncTrigSF_TTW,2) + pow(uncIDSF_TTW,2);
+      else if(vCutBkg.at(i)->samplename=="TTH") sys= sys + pow(uncTrigSF_TTH,2) + pow(uncIDSF_TTH,2);
+      else if(vCutBkg.at(i)->samplename=="TTTT") sys= sys + pow(uncTrigSF_TTTT,2) + pow(uncIDSF_TTTT,2);
+      else if(vCutBkg.at(i)->samplename=="WZ") sys= sys + pow(uncTrigSF_WZ,2) + pow(uncIDSF_WZ,2);
+      else if(vCutBkg.at(i)->samplename=="ZZ") sys= sys + pow(uncTrigSF_ZZ,2) + pow(uncIDSF_ZZ,2);
+      else if(vCutBkg.at(i)->samplename=="WpWp") sys= sys + pow(uncTrigSF_WpWp,2) + pow(uncIDSF_WpWp,2);
+      else if(vCutBkg.at(i)->samplename=="WWZ") sys= sys + pow(uncTrigSF_WWZ,2) + pow(uncIDSF_WWZ,2);
+      else if(vCutBkg.at(i)->samplename=="WZZ") sys= sys + pow(uncTrigSF_WZZ,2) + pow(uncIDSF_WZZ,2);
+      else if(vCutBkg.at(i)->samplename=="ZZZ") sys= sys + pow(uncTrigSF_ZZZ,2) + pow(uncIDSF_ZZZ,2);
+      else if(vCutBkg.at(i)->samplename.find("prime")!=std::string::npos) sys = sys + pow(uncTrigSF_sig,2) + pow(uncIDSF_sig,2);
+
       if(! (vCutBkg.at(i)->samplename=="NonPrompt" || vCutBkg.at(i)->samplename=="ChargeMisID")){
-		sys = sys + 2*pow(0.02,2) + pow(0.03,2) + pow(.025,2); //id iso and trigger  plus lumi  plus pileup plus 
+        sys = sys + pow(uncIsoSF,2) + pow(uncLumi,2); //iso plus lumi 
       }
+
       std::cout<<"sample: "<<vCutBkg.at(i)->samplename<<" and total systematic: "<<pow(sys,0.5)<<std::endl;
       
       for(size_t j =0; j < (vCutBkg.at(i)->nEvents).size(); j++){
@@ -1125,14 +1168,14 @@ std::stringstream& printFinalTable_v2(std::stringstream& tablestring,std::vector
    }
   }//end loop over channels
   
-  tablestring<<"T$\\bar{T}$ (1.0) &$"<<sig_ee<<"\\pm"<<sigErr_ee<<"$&$"<<sig_em<<"\\pm"<<sigErr_em<<"$&$"<<sig_mm<<"\\pm"<<sigErr_mm<<"$ \\\\\n";  //added by rizki  
-  tablestring<<"T$\\bar{T}$ (1.2) &$"<<sig2_ee<<"\\pm"<<sig2Err_ee<<"$&$"<<sig2_em<<"\\pm"<<sig2Err_em<<"$&$"<<sig2_mm<<"\\pm"<<sig2Err_mm<<"$  \\\\ \\hline\n";  //added by rizki  
-  tablestring<<"MC &$"<<mcbkg_ee<<"\\pm"<<mcbkgErr_ee<<"$&$"<<mcbkg_em<<"\\pm"<<mcbkgErr_em<<"$&$"<<mcbkg_mm<<"\\pm"<<mcbkgErr_mm<<"$ \\\\\n";  //added by rizki
-  tablestring<<"Non-prompt &$"<<np_ee<<"\\pm"<<npErr_ee<<"$&$"<<np_em<<"\\pm"<<npErr_em<<"$&$"<<np_mm<<"\\pm"<<npErr_mm<<"$ \\\\\n";  //added by rizki
-  tablestring<<"Chargemis-ID &$"<<chmid_ee<<"\\pm"<<chmidErr_ee<<"$&$"<<chmid_em<<"\\pm"<<chmidErr_em<<"$&$"<<chmid_mm<<"\\pm"<<chmidErr_mm<<"$ \\\\ \\hline\n";  //added by rizki
-  tablestring<<"Total Bkg &$"<<totalbkg_ee<<"\\pm"<<totalbkgErr_ee<<"$&$"<<totalbkg_em<<"\\pm"<<totalbkgErr_em<<"$&$"<<totalbkg_mm<<"\\pm"<<totalbkgErr_mm<<"$ \\\\\n";  //added by rizki
-  tablestring<<"Data &$"<<data_ee<<"$&$"<<data_em<<"$&$"<<data_mm<<"$ \\\\ \\hline\n";  //added by rizki
-  tablestring<<"Data/Bkg &$"<<data_ee/totalbkg_ee<<"\\pm"<<data_ee/totalbkg_ee*pow( (1/data_ee) + pow(totalbkgErr_ee/totalbkg_ee,2),0.5)<<"$&$"<<data_em/totalbkg_em<<"\\pm"<<data_em/totalbkg_em*pow((1/data_em)+pow(totalbkgErr_em/totalbkg_em,2),0.5)<<"$&$"<<data_mm/totalbkg_mm<<"\\pm"<<data_mm/totalbkg_mm*pow((1/data_mm)+pow(totalbkgErr_mm/totalbkg_mm,2),0.5)<<"$ \\\\\n";  //added by rizki
+  tablestring<<"T$\\bar{T}$ (1.0) &$"<<sig_ee<<"\\pm"<<sigErr_ee<<"$ & $"<<sig_em<<"\\pm"<<sigErr_em<<"$ & $"<<sig_mm<<"\\pm"<<sigErr_mm<<"$ \\\\\n";  //added by rizki  
+  tablestring<<"T$\\bar{T}$ (1.2) &$"<<sig2_ee<<"\\pm"<<sig2Err_ee<<"$ & $"<<sig2_em<<"\\pm"<<sig2Err_em<<"$ & $"<<sig2_mm<<"\\pm"<<sig2Err_mm<<"$  \\\\ \\hline\n";  //added by rizki  
+  tablestring<<"MC &$"<<mcbkg_ee<<"\\pm"<<mcbkgErr_ee<<"$ & $"<<mcbkg_em<<"\\pm"<<mcbkgErr_em<<"$ & $"<<mcbkg_mm<<"\\pm"<<mcbkgErr_mm<<"$ \\\\\n";  //added by rizki
+  tablestring<<"Non-prompt &$"<<np_ee<<"\\pm"<<npErr_ee<<"$ & $"<<np_em<<"\\pm"<<npErr_em<<"$ & $"<<np_mm<<"\\pm"<<npErr_mm<<"$ \\\\\n";  //added by rizki
+  tablestring<<"Chargemis-ID &$"<<chmid_ee<<"\\pm"<<chmidErr_ee<<"$ & $"<<chmid_em<<"\\pm"<<chmidErr_em<<"$ & $"<<chmid_mm<<"\\pm"<<chmidErr_mm<<"$ \\\\ \\hline\n";  //added by rizki
+  tablestring<<"Total Bkg &$"<<totalbkg_ee<<"\\pm"<<totalbkgErr_ee<<"$ & $"<<totalbkg_em<<"\\pm"<<totalbkgErr_em<<"$ & $"<<totalbkg_mm<<"\\pm"<<totalbkgErr_mm<<"$ \\\\\n";  //added by rizki
+  tablestring<<"Data &$"<<data_ee<<"$ & $"<<data_em<<"$ & $"<<data_mm<<"$ \\\\ \\hline\n";  //added by rizki
+  tablestring<<"Data/Bkg &$"<<data_ee/totalbkg_ee<<"\\pm"<<data_ee/totalbkg_ee*pow( (1/data_ee) + pow(totalbkgErr_ee/totalbkg_ee,2),0.5)<<"$ & $"<<data_em/totalbkg_em<<"\\pm"<<data_em/totalbkg_em*pow((1/data_em)+pow(totalbkgErr_em/totalbkg_em,2),0.5)<<"$ & $"<<data_mm/totalbkg_mm<<"\\pm"<<data_mm/totalbkg_mm*pow((1/data_mm)+pow(totalbkgErr_mm/totalbkg_mm,2),0.5)<<"$ \\\\\n";  //added by rizki
 
   tablestring<<"\\hline \n\\end{tabular} \n"<<label<<'\n'<<"\\end{table} \n\n";
 
@@ -1143,7 +1186,7 @@ std::stringstream& printFinalTable_v2(std::stringstream& tablestring,std::vector
 }
 
 //added by rizki
-std::stringstream& printFinalTable_v3(std::stringstream& tablestring,std::vector<Sample*> vBkgCF, std::vector<Sample*> vSigCF, Sample* dataSample, std::vector<std::string> vCutString,std::string era){
+std::stringstream& printFinalTable_v3(std::stringstream& tablestring,std::vector<Sample*> vBkgBF, std::vector<Sample*> vSigBF, Sample* dataSample, std::vector<std::string> vCutString,std::string era){
 
   std::cout << "--------> printing Final Table ("  << era <<  ")" << std::endl; //added by rizki
 
@@ -1164,17 +1207,17 @@ std::stringstream& printFinalTable_v3(std::stringstream& tablestring,std::vector
 	std::cout << "--------> channel # of mu: " << nmu << std::endl; //added by rizki
 
     //now make a vector of cutClass for bkg
-    std::vector<CutClass*> vCutBkgCF = getCutClassVector(vBkgCF,vCutString,nmu);
+    std::vector<CutClass*> vCutBkgBF = getCutClassVector(vBkgBF,vCutString,nmu);
     //now make a vector of cutClass for sig
-    std::vector<CutClass*> vCutSigCF = getCutClassVector(vSigCF,vCutString,nmu);
+    std::vector<CutClass*> vCutSigBF = getCutClassVector(vSigBF,vCutString,nmu);
     CutClass* cutSig = 0;
     std::vector<CutClass*> cutSig_M1000; //added by rizki
 
 
     std::vector<CutClass*> vCutBkg;
-    vCutBkg = vCutBkgCF;
+    vCutBkg = vCutBkgBF;
     std::vector<CutClass*> vCutSig;
-    vCutSig = vCutSigCF;
+    vCutSig = vCutSigBF;
 
 
     for(unsigned int j=0; j<vCutSig.size();j++){
@@ -1204,8 +1247,8 @@ std::stringstream& printFinalTable_v3(std::stringstream& tablestring,std::vector
       //std::cout << "	" << vCutBkg.at(i)->samplename << std::endl; //added by rizki
       float sys=0;
 
-      if(vCutBkg.at(i)->samplename=="NonPrompt") sys= pow(0.5, 2);
-      else if(vCutBkg.at(i)->samplename=="ChargeMisID") sys= pow(0.3, 2);
+      if(vCutBkg.at(i)->samplename=="NonPrompt") sys= pow(unc_NP, 2);
+      else if(vCutBkg.at(i)->samplename=="ChargeMisID") sys= pow(unc_CMID, 2);
       
       else if(vCutBkg.at(i)->samplename=="TTW") sys= pow(uncPDF_TTW, 2) + pow(uncSCALE_TTW, 2) + pow(uncJES_TTW,2) + pow(uncJER_TTW,2) + pow(uncPU_TTW,2); //pdf,scale,jes,jer,pu
       else if(vCutBkg.at(i)->samplename=="TTZ") sys= pow(uncPDF_TTZ, 2) + pow(uncSCALE_TTZ, 2) + pow(uncJES_TTZ,2) + pow(uncJER_TTZ,2) + pow(uncPU_TTZ,2);
@@ -1219,11 +1262,25 @@ std::stringstream& printFinalTable_v3(std::stringstream& tablestring,std::vector
       else if(vCutBkg.at(i)->samplename=="ZZZ") sys= pow(uncPDF_ZZZ, 2) + pow(uncSCALE_ZZZ, 2) + pow(uncJES_ZZZ,2) + pow(uncJER_ZZZ,2) + pow(uncPU_ZZZ,2);
 
 //       else if(vCutBkg.at(i)->samplename.find("X53X53")!=std::string::npos) sys = pow(0.03,2) + pow(0.01,2) + pow(0.01,2); //jes, jer, pu
-      else if(vCutSig.at(i)->samplename.find("prime")!=std::string::npos) sys = pow(0.01,2)+ pow(0.02,2) + pow(0.01,2); //jes, jer, pu
-      else sys = pow(0.5,2);
+      else if(vCutSig.at(i)->samplename.find("prime")!=std::string::npos) sys =  pow(uncPDF_sig, 2) + pow(uncSCALE_sig, 2) + pow(uncJES_sig,2)+ pow(uncJER_sig,2) + pow(uncPU_sig,2); //jes, jer, pu
+      //else sys = pow(0.5,2);
+
+      if(vCutBkg.at(i)->samplename=="TTZ") sys= sys + pow(uncTrigSF_TTZ,2) + pow(uncIDSF_TTZ,2); // trig plus id
+      else if(vCutBkg.at(i)->samplename=="TTW") sys= sys + pow(uncTrigSF_TTW,2) + pow(uncIDSF_TTW,2);
+      else if(vCutBkg.at(i)->samplename=="TTH") sys= sys + pow(uncTrigSF_TTH,2) + pow(uncIDSF_TTH,2);
+      else if(vCutBkg.at(i)->samplename=="TTTT") sys= sys + pow(uncTrigSF_TTTT,2) + pow(uncIDSF_TTTT,2);
+      else if(vCutBkg.at(i)->samplename=="WZ") sys= sys + pow(uncTrigSF_WZ,2) + pow(uncIDSF_WZ,2);
+      else if(vCutBkg.at(i)->samplename=="ZZ") sys= sys + pow(uncTrigSF_ZZ,2) + pow(uncIDSF_ZZ,2);
+      else if(vCutBkg.at(i)->samplename=="WpWp") sys= sys + pow(uncTrigSF_WpWp,2) + pow(uncIDSF_WpWp,2);
+      else if(vCutBkg.at(i)->samplename=="WWZ") sys= sys + pow(uncTrigSF_WWZ,2) + pow(uncIDSF_WWZ,2);
+      else if(vCutBkg.at(i)->samplename=="WZZ") sys= sys + pow(uncTrigSF_WZZ,2) + pow(uncIDSF_WZZ,2);
+      else if(vCutBkg.at(i)->samplename=="ZZZ") sys= sys + pow(uncTrigSF_ZZZ,2) + pow(uncIDSF_ZZZ,2);
+      else if(vCutSig.at(i)->samplename.find("prime")!=std::string::npos) sys = sys + pow(uncTrigSF_sig,2) + pow(uncIDSF_sig,2);
+
       if(! (vCutBkg.at(i)->samplename=="NonPrompt" || vCutBkg.at(i)->samplename=="ChargeMisID")){
-		sys = sys + 2*pow(0.02,2) + pow(0.03,2) + pow(.025,2); //id iso and trigger  plus lumi  plus pileup plus 
+        sys = sys + pow(uncIsoSF,2) + pow(uncLumi,2); //iso plus lumi 
       }
+
       std::cout<<"sample: "<<vCutBkg.at(i)->samplename<<" and total systematic: "<<pow(sys,0.5)<<std::endl;
       
       for(size_t j =0; j < (vCutBkg.at(i)->nEvents).size(); j++){
@@ -1241,14 +1298,14 @@ std::stringstream& printFinalTable_v3(std::stringstream& tablestring,std::vector
 		else if(vCutBkg.at(i)->samplename!="NonPrompt" && vCutBkg.at(i)->samplename=="ChargeMisID"){ //only add together if MC background
 		  events_tot = events_tot + (vCutBkg.at(i)->nEvents).at(j);
 		  errors_tot = errors_tot + err;
-		  events_cmtot = (vCutBkg.at(i)->nEvents).at(j);
-		  errors_cmtot = err;	  
+		  events_cmtot += (vCutBkg.at(i)->nEvents).at(j);
+		  errors_cmtot += err;	  
 		}
 		else if(vCutBkg.at(i)->samplename=="NonPrompt" && vCutBkg.at(i)->samplename!="ChargeMisID"){ //only add together if MC background
 		  events_tot = events_tot + (vCutBkg.at(i)->nEvents).at(j);
 		  errors_tot = errors_tot + err;
-		  events_nptot = (vCutBkg.at(i)->nEvents).at(j);
-		  errors_nptot = err;	  
+		  events_nptot += (vCutBkg.at(i)->nEvents).at(j);
+		  errors_nptot += err;	  
 		}
 
       }
@@ -1283,7 +1340,7 @@ std::stringstream& printFinalTable_v3(std::stringstream& tablestring,std::vector
    else if(nmu==2) tablestring<<"Di-muon&";
    else tablestring<<"All&";
     //now write table line -- BLIND FOR NOW
-   tablestring<<"$"<<events_mctot<<"\\pm"<<pow(errors_mctot,0.5)<<"$&$"<<events_nptot<<"\\pm"<<pow(errors_nptot,0.5)<<"$&$"<<events_cmtot<<"\\pm"<<pow(errors_cmtot,0.5)<<"$ &$ "<<events_tot<<"\\pm"<<pow(errors_tot,0.5)<<"$&"<<sig<<"\\pm"<<pow(errors_sig,0.5)<<" & "<<obs<< " & " << sig / sqrt(sig+events_tot) <<"\\\\\n";  //added by rizki
+   tablestring<<"$"<<events_mctot<<"\\pm"<<pow(errors_mctot,0.5)<<"$ & $"<<events_nptot<<"\\pm"<<pow(errors_nptot,0.5)<<"$ & $"<<events_cmtot<<"\\pm"<<pow(errors_cmtot,0.5)<<"$ & $ "<<events_tot<<"\\pm"<<pow(errors_tot,0.5)<<"$ & $"<<sig<<"\\pm"<<pow(errors_sig,0.5)<<"$ & "<<obs<< " & " << sig / sqrt(sig+events_tot) <<"\\\\\n";  //added by rizki
    //tablestring<<"$"<<events_mctot<<"\\pm"<<pow(errors_mctot,0.5)<<"$&$"<<events_nptot<<"\\pm"<<pow(errors_nptot,0.5)<<"$&$"<<events_cmtot<<"\\pm"<<pow(errors_cmtot,0.5)<<"$ &$ "<<events_tot<<"\\pm"<<pow(errors_tot,0.5)<<"$&"<<sig<<" & "<<obs<<"\\\\\n"; //commented by rizki 
    //tablestring<<"$"<<events_mctot<<"\\pm"<<pow(errors_mctot,0.5)<<"$&$"<<events_nptot<<"\\pm"<<pow(errors_nptot,0.5)<<"$&$"<<events_cmtot<<"\\pm"<<pow(errors_cmtot,0.5)<<"$ &$ "<<events_tot<<"\\pm"<<pow(errors_tot,0.5)<<"$&"<<sig<<" & XXX\\\\\n"; 
   }//end loop over channels
@@ -1297,7 +1354,7 @@ std::stringstream& printFinalTable_v3(std::stringstream& tablestring,std::vector
 }
 
 //added by rizki
-std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector<Sample*> vBkgCF, std::vector<Sample*> vSigCF,Sample* dataSample, std::vector<std::string> vCutString,std::string era){
+std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector<Sample*> vBkgBF, std::vector<Sample*> vSigBF,Sample* dataSample, std::vector<std::string> vCutString,std::string era){
 
   std::cout << "--------> printing Final Table ("  << era <<  ")" << std::endl; //added by rizki
 
@@ -1362,18 +1419,18 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
 	std::cout << "--------> channel # of mu: " << nmu << std::endl; //added by rizki
 
     //now make a vector of cutClass for bkg
-    std::vector<CutClass*> vCutBkgCF = getCutClassVector(vBkgCF,vCutString,nmu);
+    std::vector<CutClass*> vCutBkgBF = getCutClassVector(vBkgBF,vCutString,nmu);
     //now make a vector of cutClass for sig
-    std::vector<CutClass*> vCutSigCF = getCutClassVector(vSigCF,vCutString,nmu);
+    std::vector<CutClass*> vCutSigBF = getCutClassVector(vSigBF,vCutString,nmu);
     CutClass* cutSig = 0;
     std::vector<CutClass*> cutSig_M1000; //added by rizki
     std::vector<CutClass*> cutSig_M1200; //added by rizki
 
 
     std::vector<CutClass*> vCutBkg;
-    vCutBkg = vCutBkgCF;
+    vCutBkg = vCutBkgBF;
     std::vector<CutClass*> vCutSig;
-    vCutSig = vCutSigCF;
+    vCutSig = vCutSigBF;
 
     for(unsigned int j=0; j<vCutSig.size();j++){
       if(vCutSig.at(j)->samplename.find("1000")!=std::string::npos) cutSig_M1000.push_back(vCutSig.at(j)); //edited by rizki
@@ -1401,8 +1458,8 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
       //std::cout << "	" << vCutBkg.at(i)->samplename << std::endl; //added by rizki
       float sys=0;
 
-      if(vCutBkg.at(i)->samplename=="NonPrompt") sys= pow(0.5, 2);
-      else if(vCutBkg.at(i)->samplename=="ChargeMisID") sys= pow(0.3, 2);
+      if(vCutBkg.at(i)->samplename=="NonPrompt") sys= pow(unc_NP, 2);
+      else if(vCutBkg.at(i)->samplename=="ChargeMisID") sys= pow(unc_CMID, 2);
       
       else if(vCutBkg.at(i)->samplename=="TTW") sys= pow(uncPDF_TTW, 2) + pow(uncSCALE_TTW, 2) + pow(uncJES_TTW,2) + pow(uncJER_TTW,2) + pow(uncPU_TTW,2); //pdf,scale,jes,jer,pu
       else if(vCutBkg.at(i)->samplename=="TTZ") sys= pow(uncPDF_TTZ, 2) + pow(uncSCALE_TTZ, 2) + pow(uncJES_TTZ,2) + pow(uncJER_TTZ,2) + pow(uncPU_TTZ,2);
@@ -1416,10 +1473,23 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
       else if(vCutBkg.at(i)->samplename=="ZZZ") sys= pow(uncPDF_ZZZ, 2) + pow(uncSCALE_ZZZ, 2) + pow(uncJES_ZZZ,2) + pow(uncJER_ZZZ,2) + pow(uncPU_ZZZ,2);
 
 //       else if(vCutBkg.at(i)->samplename.find("X53X53")!=std::string::npos) sys = pow(0.03,2) + pow(0.01,2) + pow(0.01,2); //jes, jer, pu
-      else if(vCutSig.at(i)->samplename.find("prime")!=std::string::npos) sys = pow(0.01,2)+ pow(0.02,2) + pow(0.01,2); //jes, jer, pu
+      else if(vCutSig.at(i)->samplename.find("prime")!=std::string::npos) sys = pow(uncPDF_sig, 2) + pow(uncSCALE_sig, 2) + pow(uncJES_sig,2)+ pow(uncJER_sig,2) + pow(uncPU_sig,2) ; //jes, jer, pu
       else sys = pow(0.5,2);
+
+      if(vCutBkg.at(i)->samplename=="TTZ") sys= sys + pow(uncTrigSF_TTZ,2) + pow(uncIDSF_TTZ,2); // trig plus id
+      else if(vCutBkg.at(i)->samplename=="TTW") sys= sys + pow(uncTrigSF_TTW,2) + pow(uncIDSF_TTW,2);
+      else if(vCutBkg.at(i)->samplename=="TTH") sys= sys + pow(uncTrigSF_TTH,2) + pow(uncIDSF_TTH,2);
+      else if(vCutBkg.at(i)->samplename=="TTTT") sys= sys + pow(uncTrigSF_TTTT,2) + pow(uncIDSF_TTTT,2);
+      else if(vCutBkg.at(i)->samplename=="WZ") sys= sys + pow(uncTrigSF_WZ,2) + pow(uncIDSF_WZ,2);
+      else if(vCutBkg.at(i)->samplename=="ZZ") sys= sys + pow(uncTrigSF_ZZ,2) + pow(uncIDSF_ZZ,2);
+      else if(vCutBkg.at(i)->samplename=="WpWp") sys= sys + pow(uncTrigSF_WpWp,2) + pow(uncIDSF_WpWp,2);
+      else if(vCutBkg.at(i)->samplename=="WWZ") sys= sys + pow(uncTrigSF_WWZ,2) + pow(uncIDSF_WWZ,2);
+      else if(vCutBkg.at(i)->samplename=="WZZ") sys= sys + pow(uncTrigSF_WZZ,2) + pow(uncIDSF_WZZ,2);
+      else if(vCutBkg.at(i)->samplename=="ZZZ") sys= sys + pow(uncTrigSF_ZZZ,2) + pow(uncIDSF_ZZZ,2);
+      else if(vCutBkg.at(i)->samplename.find("prime")!=std::string::npos) sys = sys + pow(uncTrigSF_sig,2) + pow(uncIDSF_sig,2);
+
       if(! (vCutBkg.at(i)->samplename=="NonPrompt" || vCutBkg.at(i)->samplename=="ChargeMisID")){
-		sys = sys + 2*pow(0.02,2) + pow(0.03,2) + pow(.025,2); //id iso and trigger  plus lumi  plus pileup plus 
+        sys = sys + pow(uncIsoSF,2) + pow(uncLumi,2); //iso plus lumi 
       }
       std::cout<<"sample: "<<vCutBkg.at(i)->samplename<<" and total systematic: "<<pow(sys,0.5)<<std::endl;
       
@@ -1438,14 +1508,14 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
 		else if(vCutBkg.at(i)->samplename!="NonPrompt" && vCutBkg.at(i)->samplename=="ChargeMisID"){ //only add together if MC background
 		  events_tot = events_tot + (vCutBkg.at(i)->nEvents).at(j);
 		  errors_tot = errors_tot + err;
-		  events_cmtot = (vCutBkg.at(i)->nEvents).at(j);
-		  errors_cmtot = err;	  
+		  events_cmtot += (vCutBkg.at(i)->nEvents).at(j);
+		  errors_cmtot += err;	  
 		}
 		else if(vCutBkg.at(i)->samplename=="NonPrompt" && vCutBkg.at(i)->samplename!="ChargeMisID"){ //only add together if MC background
 		  events_tot = events_tot + (vCutBkg.at(i)->nEvents).at(j);
 		  errors_tot = errors_tot + err;
-		  events_nptot = (vCutBkg.at(i)->nEvents).at(j);
-		  errors_nptot = err;	  
+		  events_nptot += (vCutBkg.at(i)->nEvents).at(j);
+		  errors_nptot += err;	  
 		}
 
       }
@@ -1535,14 +1605,14 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
    }
   }//end loop over channels
   
-  tablestring<<"T$\\bar{T}$ (1.0) &$"<<sig_ee<<"\\pm"<<sigErr_ee<<"$&$"<<sig_em<<"\\pm"<<sigErr_em<<"$&$"<<sig_mm<<"\\pm"<<sigErr_mm<<"$ \\\\\n";  //added by rizki  
-  tablestring<<"T$\\bar{T}$ (1.2) &$"<<sig2_ee<<"\\pm"<<sig2Err_ee<<"$&$"<<sig2_em<<"\\pm"<<sig2Err_em<<"$&$"<<sig2_mm<<"\\pm"<<sig2Err_mm<<"$  \\\\ \\hline\n";  //added by rizki  
-  tablestring<<"MC &$"<<mcbkg_ee<<"\\pm"<<mcbkgErr_ee<<"$&$"<<mcbkg_em<<"\\pm"<<mcbkgErr_em<<"$&$"<<mcbkg_mm<<"\\pm"<<mcbkgErr_mm<<"$ \\\\\n";  //added by rizki
-  tablestring<<"Non-prompt &$"<<np_ee<<"\\pm"<<npErr_ee<<"$&$"<<np_em<<"\\pm"<<npErr_em<<"$&$"<<np_mm<<"\\pm"<<npErr_mm<<"$ \\\\\n";  //added by rizki
-  tablestring<<"Chargemis-ID &$"<<chmid_ee<<"\\pm"<<chmidErr_ee<<"$&$"<<chmid_em<<"\\pm"<<chmidErr_em<<"$&$"<<chmid_mm<<"\\pm"<<chmidErr_mm<<"$ \\\\ \\hline\n";  //added by rizki
-  tablestring<<"Total Bkg &$"<<totalbkg_ee<<"\\pm"<<totalbkgErr_ee<<"$&$"<<totalbkg_em<<"\\pm"<<totalbkgErr_em<<"$&$"<<totalbkg_mm<<"\\pm"<<totalbkgErr_mm<<"$ \\\\\n";  //added by rizki
-  tablestring<<"Data &$"<<data_ee<<"$&$"<<data_em<<"$&$"<<data_mm<<"$ \\\\ \\hline\n";  //added by rizki
-  tablestring<<"Data/Bkg &$"<<data_ee/totalbkg_ee<<"\\pm"<<data_ee/totalbkg_ee*pow( (1/data_ee) + pow(totalbkgErr_ee/totalbkg_ee,2),0.5)<<"$&$"<<data_em/totalbkg_em<<"\\pm"<<data_em/totalbkg_em*pow((1/data_em)+pow(totalbkgErr_em/totalbkg_em,2),0.5)<<"$&$"<<data_mm/totalbkg_mm<<"\\pm"<<data_mm/totalbkg_mm*pow((1/data_mm)+pow(totalbkgErr_mm/totalbkg_mm,2),0.5)<<"$ \\\\\n";  //added by rizki
+  tablestring<<"T$\\bar{T}$ (1.0) &$"<<sig_ee<<"\\pm"<<sigErr_ee<<"$ & $"<<sig_em<<"\\pm"<<sigErr_em<<"$ & $"<<sig_mm<<"\\pm"<<sigErr_mm<<"$ \\\\\n";  //added by rizki  
+  tablestring<<"T$\\bar{T}$ (1.2) &$"<<sig2_ee<<"\\pm"<<sig2Err_ee<<"$ & $"<<sig2_em<<"\\pm"<<sig2Err_em<<"$ & $"<<sig2_mm<<"\\pm"<<sig2Err_mm<<"$  \\\\ \\hline\n";  //added by rizki  
+  tablestring<<"MC &$"<<mcbkg_ee<<"\\pm"<<mcbkgErr_ee<<"$ & $"<<mcbkg_em<<"\\pm"<<mcbkgErr_em<<"$ & $"<<mcbkg_mm<<"\\pm"<<mcbkgErr_mm<<"$ \\\\\n";  //added by rizki
+  tablestring<<"Non-prompt &$"<<np_ee<<"\\pm"<<npErr_ee<<"$ & $"<<np_em<<"\\pm"<<npErr_em<<"$ & $"<<np_mm<<"\\pm"<<npErr_mm<<"$ \\\\\n";  //added by rizki
+  tablestring<<"Chargemis-ID &$"<<chmid_ee<<"\\pm"<<chmidErr_ee<<"$ & $"<<chmid_em<<"\\pm"<<chmidErr_em<<"$ & $"<<chmid_mm<<"\\pm"<<chmidErr_mm<<"$ \\\\ \\hline\n";  //added by rizki
+  tablestring<<"Total Bkg &$"<<totalbkg_ee<<"\\pm"<<totalbkgErr_ee<<"$ & $"<<totalbkg_em<<"\\pm"<<totalbkgErr_em<<"$ & $"<<totalbkg_mm<<"\\pm"<<totalbkgErr_mm<<"$ \\\\\n";  //added by rizki
+  tablestring<<"Data &$"<<data_ee<<"$ & $"<<data_em<<"$ & $"<<data_mm<<"$ \\\\ \\hline\n";  //added by rizki
+  tablestring<<"Data/Bkg &$"<<data_ee/totalbkg_ee<<"\\pm"<<data_ee/totalbkg_ee*pow( (1/data_ee) + pow(totalbkgErr_ee/totalbkg_ee,2),0.5)<<"$ & $"<<data_em/totalbkg_em<<"\\pm"<<data_em/totalbkg_em*pow((1/data_em)+pow(totalbkgErr_em/totalbkg_em,2),0.5)<<"$ & $"<<data_mm/totalbkg_mm<<"\\pm"<<data_mm/totalbkg_mm*pow((1/data_mm)+pow(totalbkgErr_mm/totalbkg_mm,2),0.5)<<"$ \\\\\n";  //added by rizki
 
   tablestring<<"\\hline \n\\end{tabular} \n"<<label<<'\n'<<"\\end{table} \n\n";
 

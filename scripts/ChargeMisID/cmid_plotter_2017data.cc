@@ -30,12 +30,12 @@ int getEtaBin(float abseta){
 }
 
 
-void cmid_plotter_2017data(){
+void cmid_plotter_2017data_test(){
   //turn of stats
   gStyle->SetOptStat(kFALSE);
   setTDRStyle();
   gStyle->SetStripDecimals(kTRUE);
-  TGaxis::SetMaxDigits(2);
+  //TGaxis::SetMaxDigits(2);
 
   TLatex* text1 = new TLatex(3.570061,23.08044,"CMS Preliminary");
   text1->SetNDC();
@@ -44,8 +44,8 @@ void cmid_plotter_2017data(){
   text1->SetTextFont(42);
   text1->SetTextSizePixels(24);
 
-//   TString lumiStr = "41.6 fb^{-1} (13 TeV)";
-  TString lumiStr = "37.6 fb^{-1} (13 TeV)";
+  TString lumiStr = "41.6 fb^{-1} (13 TeV)";
+  //TString lumiStr = "37.6 fb^{-1} (13 TeV)";
   TLatex* text2 = new TLatex(3.570061,23.08044, lumiStr);
   text2->SetNDC();
   text2->SetTextAlign(13);
@@ -60,14 +60,14 @@ void cmid_plotter_2017data(){
 //   eras.push_back("2017C");
 //   eras.push_back("2017D");
 //   eras.push_back("2017E");
-  eras.push_back("2017F");
-//   eras.push_back("All");
+//  eras.push_back("2017F");
+   eras.push_back("2017All");
   std::vector<TString> IDs; 
   IDs.push_back("MVA2017TightV2IsoRC");
   
   
   // create output directory
-  TString dir = "CMID_06282019_TEST/";
+  TString dir = "CMID_082020/";
   system("mkdir -pv "+dir);
 
   for(unsigned int k=0; k<IDs.size();k++){ TString elID = IDs.at(k);
@@ -75,13 +75,14 @@ void cmid_plotter_2017data(){
   for(unsigned int l=0; l< eras.size();l++){
 
     //input folder
-    TString indir = "ChargeMisID";
+    TString indir = "ChargeMisID_082020";
 
     //open file
     TFile* f = new TFile("../../test/"+indir+"/ChargeMisID_Data_"+eras.at(l)+"_Electrons_"+elID+".root");
 
     //outfile
-    TFile* fout = new TFile(dir+"ChargeMisID_Data_"+eras.at(l)+"_Electrons_"+elID+"_corrected.root","RECREATE");
+    //TFile* fout = new TFile(dir+"ChargeMisID_Data_"+eras.at(l)+"_Electrons_"+elID+"_corrected.root","RECREATE");
+    TFile* fout = new TFile("ChargeMisID_pTgt30_Data_"+eras.at(l)+"_Electrons_"+elID+"_corrected.root","RECREATE");
 
     //get tree
     TTree* t = (TTree*) f->Get("ChargeMisID");
@@ -107,77 +108,87 @@ void cmid_plotter_2017data(){
     TH1F* h_num_lpt = new TH1F("h_num_lpt","Charge MisID Rate - Electrons with p_{T} < 100 GeV",6, abseta_bins);
     TH1F* h_den_lpt = new TH1F("h_den_lpt","Den Low pt",6, abseta_bins);
     float nSS_lpt=0.0;
-    float nAll_lpt=0.0;
-    
-    int lep1etabin, lep2etabin;
+float nAll_lpt=0.0;
 
-    for(int i=0; i< nEntries; i++){
-      t->GetEntry(i);
-      if( (fabs(lep1eta)> 1.44 && fabs(lep1eta) < 1.56) || (fabs(lep2eta)> 1.44 && fabs(lep2eta) < 1.56) ) continue;
-      //only consider low pt electrons in same |eta| bin
-      lep1etabin=getEtaBin(fabs(lep1eta));
-      lep2etabin=getEtaBin(fabs(lep2eta));
-      if(lep1pt < 100 && lep2pt<100 && lep1etabin==lep2etabin ){
-		nAll_lpt+=1.0;
-		//fill denominator - in same eta bin so only use eta from one
-		h_den_lpt->Fill(fabs(lep1eta));      
-		//check charge
-		if(lep1ch==lep2ch){
-		  nSS_lpt+=1.0;
-		  h_num_lpt->Fill(fabs(lep1eta));
-		}      
-      }//end check on low pT
-    }//end loop over tree
-    float cmid_lpt = 0.5*nSS_lpt / nAll_lpt;
-    //now divide to get rate and scale by 0.5
-    h_num_lpt->Sumw2();
-    h_num_lpt->Divide(h_den_lpt);
-    h_num_lpt->Scale(0.5);
-    
-    TCanvas* c = new TCanvas();
-    
-    // ***** NOW WE HAVE LOW PT CHARGE MISID RATE AND NEED TO UNPACK FOR HIGHER PT ELECTRONS *******
-    //2D plots
-    TH2F* h_num2d_hpt = new TH2F("h_num2d_hpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",6, abseta_bins, 6, abseta_bins);
-    h_num2d_hpt->Sumw2();
-    TH2F* h_den2d_hpt = new TH2F("h_den2d_hpt","Den2d hpt",6, abseta_bins, 6, abseta_bins);
-    //eta plots for hpt
-    TH1F* h_num_hpt = new TH1F("h_num_hpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",6, abseta_bins);
-    h_num_hpt->Sumw2();
-    TH1F* h_weight_hpt = new TH1F("h_weight_hpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",6, abseta_bins);
-    h_weight_hpt->Sumw2();
-    TH1F* h_den_hpt = new TH1F("h_den_hpt","Den Low pt",6, abseta_bins);
-    float xbins[6]= {0,100,150,200,300,500};
-    TH1F* h_numpt_hpt = new TH1F("h_numpt_hpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",5, xbins);
-    TH1F* h_denpt_hpt = new TH1F("h_denpt_hpt","Den Low pt",5, xbins);
-    TH1F* h_weightpt_hpt = new TH1F("h_weightpt_hpt","weightLow pt",5, xbins);
-    
-    //TH1F* h_num_hpt_corr = new TH1F("h_num_hpt_corr","Charge MisID Rate - Electrons with p_{T} > 100 GeV - corrected",6, abseta_bins);  
-    // h_num_hpt_corr->Sumw2();
-    
-    //2d plots high pt pair
-    TH2F* h_num2d_hhpt = new TH2F("h_num2d_hhpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",6, abseta_bins, 6, abseta_bins);
-    h_num2d_hhpt->Sumw2();
-    TH2F* h_den2d_hhpt = new TH2F("h_den2d_hhpt","Den2d hhpt",6, abseta_bins, 6, abseta_bins);
-    //eta plots
-    float abseta_bins_hhpt[5] = {0.0,0.8,1.44,1.56,2.4};
-    TH1F* h_num_hhpt = new TH1F("h_num_hhpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",4, abseta_bins_hhpt);
-    h_num_hhpt->Sumw2();
-    TH1F* h_weight_hhpt = new TH1F("h_weight_hhpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",4, abseta_bins_hhpt);
-    h_weight_hhpt->Sumw2();
-    TH1F* h_den_hhpt = new TH1F("h_den_hhpt","Den Low pt",4, abseta_bins_hhpt);
-    TH1F* h_numpt_hhpt = new TH1F("h_numpt_hhpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",5, xbins);
-    TH1F* h_denpt_hhpt = new TH1F("h_denpt_hhpt","Den Low pt",5, xbins);
-    TH1F* h_weightpt_hhpt = new TH1F("h_weightpt_hhpt","weight pt",5, xbins);
-    
-    //TH1F* h_num_hhpt_corr = new TH1F("h_num_hhpt_corr","Charge MisID Rate - Electrons with p_{T} > 100 GeV - corrected",4, abseta_bins_hhpt);  
-    //h_num_hhpt_corr->Sumw2();
-    
-    for(int j=0; j<nEntries;j++){
-      t->GetEntry(j);
-      //only consider electrons with one low pT and one high pT
-      if( (fabs(lep1eta)> 1.44 && fabs(lep1eta) < 1.56) || (fabs(lep2eta)> 1.44 && fabs(lep2eta) < 1.56) ) continue;
-      if( (lep1pt<100 && lep2pt>100) || (lep1pt>100 && lep2pt<100)){
+int lep1etabin, lep2etabin;
+
+for(int i=0; i< nEntries; i++){
+t->GetEntry(i);
+if( (fabs(lep1eta)> 1.44 && fabs(lep1eta) < 1.56) || (fabs(lep2eta)> 1.44 && fabs(lep2eta) < 1.56) ) continue;
+//only consider low pt electrons in same |eta| bin
+lep1etabin=getEtaBin(fabs(lep1eta));
+lep2etabin=getEtaBin(fabs(lep2eta));
+if(lep1pt < 100 && lep2pt<100 && lep1etabin==lep2etabin ){
+	nAll_lpt+=1.0;
+	//fill denominator - in same eta bin so only use eta from one
+	h_den_lpt->Fill(fabs(lep1eta));
+        //h_den_lpt->Fill(fabs(lep2eta));
+	//check charge
+	if(lep1ch==lep2ch){
+	  nSS_lpt+=1.0;
+	  h_num_lpt->Fill(fabs(lep1eta));
+          //h_num_lpt->Fill(fabs(lep2eta));
+	}      
+}//end check on low pT
+}//end loop over tree
+//float cmid_lpt = 0.5*nSS_lpt / nAll_lpt;
+float cmid_lpt = nSS_lpt / nAll_lpt;
+//now divide to get rate and scale by 0.5
+h_num_lpt->Sumw2();
+//h_num_lpt->Scale(0.5);
+h_num_lpt->Divide(h_den_lpt);
+//h_num_lpt->Scale(0.5);
+
+TCanvas* c = new TCanvas();
+
+// ***** NOW WE HAVE LOW PT CHARGE MISID RATE AND NEED TO UNPACK FOR HIGHER PT ELECTRONS *******
+//2D plots
+TH2F* h_num2d_hpt = new TH2F("h_num2d_hpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",6, abseta_bins, 6, abseta_bins);
+h_num2d_hpt->Sumw2();
+TH2F* h_den2d_hpt = new TH2F("h_den2d_hpt","Den2d hpt",6, abseta_bins, 6, abseta_bins);
+//eta plots for hpt
+TH1F* h_num_hpt = new TH1F("h_num_hpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",6, abseta_bins);
+h_num_hpt->Sumw2();
+TH1F* h_num_hpt_l1 = new TH1F("h_num_hpt_l1","Charge MisID Rate - Electrons with p_{T} > 100 GeV",6, abseta_bins);
+h_num_hpt_l1->Sumw2();
+TH1F* h_weight_hpt = new TH1F("h_weight_hpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",6, abseta_bins);
+h_weight_hpt->Sumw2();
+TH1F* h_den_hpt = new TH1F("h_den_hpt","Den Low pt",6, abseta_bins);
+TH1F* h_den_hpt_l1 = new TH1F("h_den_hpt_l1","Den Low pt",6, abseta_bins);
+float xbins[6]= {0,100,150,200,300,500};
+TH1F* h_numpt_hpt = new TH1F("h_numpt_hpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",5, xbins);
+TH1F* h_denpt_hpt = new TH1F("h_denpt_hpt","Den Low pt",5, xbins);
+TH1F* h_weightpt_hpt = new TH1F("h_weightpt_hpt","weightLow pt",5, xbins);
+
+//TH1F* h_num_hpt_corr = new TH1F("h_num_hpt_corr","Charge MisID Rate - Electrons with p_{T} > 100 GeV - corrected",6, abseta_bins);  
+// h_num_hpt_corr->Sumw2();
+
+//2d plots high pt pair
+TH2F* h_num2d_hhpt = new TH2F("h_num2d_hhpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",6, abseta_bins, 6, abseta_bins);
+h_num2d_hhpt->Sumw2();
+TH2F* h_den2d_hhpt = new TH2F("h_den2d_hhpt","Den2d hhpt",6, abseta_bins, 6, abseta_bins);
+//eta plots
+float abseta_bins_hhpt[5] = {0.0,0.8,1.44,1.56,2.4};
+TH1F* h_num_hhpt = new TH1F("h_num_hhpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",4, abseta_bins_hhpt);
+h_num_hhpt->Sumw2();
+TH1F* h_num_hhpt_l1 = new TH1F("h_num_hhpt_l1","Charge MisID Rate - Electrons with p_{T} > 100 GeV",4, abseta_bins_hhpt);
+h_num_hhpt_l1->Sumw2();
+TH1F* h_weight_hhpt = new TH1F("h_weight_hhpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",4, abseta_bins_hhpt);
+h_weight_hhpt->Sumw2();
+TH1F* h_den_hhpt = new TH1F("h_den_hhpt","Den Low pt",4, abseta_bins_hhpt);
+TH1F* h_den_hhpt_l1 = new TH1F("h_den_hhpt_l1","Den Low pt",4, abseta_bins_hhpt);
+TH1F* h_numpt_hhpt = new TH1F("h_numpt_hhpt","Charge MisID Rate - Electrons with p_{T} > 100 GeV",5, xbins);
+TH1F* h_denpt_hhpt = new TH1F("h_denpt_hhpt","Den Low pt",5, xbins);
+TH1F* h_weightpt_hhpt = new TH1F("h_weightpt_hhpt","weight pt",5, xbins);
+
+//TH1F* h_num_hhpt_corr = new TH1F("h_num_hhpt_corr","Charge MisID Rate - Electrons with p_{T} > 100 GeV - corrected",4, abseta_bins_hhpt);  
+//h_num_hhpt_corr->Sumw2();
+
+for(int j=0; j<nEntries;j++){
+t->GetEntry(j);
+//only consider electrons with one low pT and one high pT
+if( (fabs(lep1eta)> 1.44 && fabs(lep1eta) < 1.56) || (fabs(lep2eta)> 1.44 && fabs(lep2eta) < 1.56) ) continue;
+if( (lep1pt<100 && lep2pt>100) || (lep1pt>100 && lep2pt<100)){
       	//split by case which one is high pt
 		if(lep1pt>100){	
 		  if(lep1pt>200){
@@ -190,7 +201,7 @@ void cmid_plotter_2017data(){
 			h_weight_hhpt->Fill(fabs(lep1eta),weight); // 'h1'
 			//h_ptweight_hhpt->Fill(
 			if(lep1ch==lep2ch){
-			  h_num_hhpt->Fill(fabs(lep1eta)); // 'h3'
+			  h_num_hhpt->Fill(fabs(lep1eta),1-weight); // 'h3'
 			  h_numpt_hhpt->Fill(lep1pt,1.0-cmid_lpt);
 			}
 		  }
@@ -204,7 +215,7 @@ void cmid_plotter_2017data(){
 			h_weightpt_hpt->Fill(weight); // 'h1'
 			if(lep1ch==lep2ch){
 			  h_num2d_hpt->Fill(fabs(lep1eta),fabs(lep2eta));
-			  h_num_hpt->Fill(fabs(lep1eta)); // 'h3'
+			  h_num_hpt->Fill(fabs(lep1eta),1-weight); // 'h3'
 			  h_numpt_hpt->Fill(lep1pt,1.0);
 			}
 		  }
@@ -220,7 +231,7 @@ void cmid_plotter_2017data(){
 			h_weight_hhpt->Fill(fabs(lep2eta),weight); // 'h1'
 			if(lep1ch==lep2ch){
 			  h_num2d_hhpt->Fill(fabs(lep2eta),fabs(lep1eta));
-			  h_num_hhpt->Fill(fabs(lep2eta)); // 'h3'
+			  h_num_hhpt->Fill(fabs(lep2eta),1-weight); // 'h3'
 			  h_numpt_hhpt->Fill(lep2pt,1.0);
 			}
 		  }
@@ -234,7 +245,7 @@ void cmid_plotter_2017data(){
 			h_weight_hpt->Fill(fabs(lep2eta),weight); //'h1'
 			if(lep1ch==lep2ch){
 			  h_num2d_hpt->Fill(fabs(lep2eta),fabs(lep1eta));
-			  h_num_hpt->Fill(fabs(lep2eta)); // 'h3'
+			  h_num_hpt->Fill(fabs(lep2eta),1-weight); // 'h3'
 			  h_numpt_hpt->Fill(lep2pt,1.0-cmid_lpt);
 			}
 		  }
@@ -322,7 +333,8 @@ void cmid_plotter_2017data(){
     h_numpt_hpt->Divide(h_denpt_hpt);
     h_numpt_hpt->SetBinContent(1,cmid_lpt);
     h_numpt_hpt->SetMarkerStyle(20);
-    h_numpt_hpt->GetYaxis()->SetRangeUser(0.0003,0.4);
+    //h_numpt_hpt->GetYaxis()->SetRangeUser(0.0003,0.4);
+    h_numpt_hpt->GetYaxis()->SetRangeUser(0.0001,0.2);
     h_numpt_hpt->GetYaxis()->SetLabelSize(0.03);
     h_numpt_hpt->GetXaxis()->SetTitle("p_{T}");
     h_numpt_hpt->GetYaxis()->SetTitle("probability of charge misidentification");
@@ -334,6 +346,8 @@ void cmid_plotter_2017data(){
     for(int k=1; k<= h_numpt_hhpt->GetNbinsX();k++){
       h_numpt_hhpt->SetBinContent(k, h_numpt_hhpt->GetBinContent(k)-cmid_lpt);
     }
+    h_numpt_hhpt->GetYaxis()->SetRangeUser(0.0001,0.2);
+    h_numpt_hhpt->GetYaxis()->SetTitleSize(0.035);
     h_numpt_hhpt->SetMarkerStyle(20);
     h_numpt_hhpt->Draw("pe same");
     text1->Draw();
