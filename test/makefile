@@ -11,6 +11,9 @@ PWD         = $(shell pwd)
 
 TOOLDIR     = $(PWD)/../
 
+test:
+	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o test.o test.cc
+
 LJMETanalyzer:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o LJMETanalyzer.o LJMETanalyzer.cc
 HighHTCheck:
@@ -20,8 +23,14 @@ HighHTCheck:
 Plotter:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makePlots.o makePlots.cc
 
+PromptRate_2017data_smartPtr:
+	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o PromptRate_2017data_smartPtr.o PromptRate_2017data_smartPtr.cc
+
 PromptRate_2017data:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o PromptRate_2017data.o PromptRate_2017data.cc
+
+PromptRate_2018data_smartPtr:
+	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o PromptRate_2018data_smartPtr.o PromptRate_2018data_smartPtr.cc
 
 PromptRate:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o PromptRate.o PromptRate.cc
@@ -35,11 +44,23 @@ FakeRate_ModifiedLepPt:
 FakeRate_2017data:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o FakeRate_2017data.o FakeRate_2017data.cc
 
+FakeRate_2018data:
+	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o FakeRate_2018data.o FakeRate_2018data.cc
+
 ChargeMisID:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o ChargeMisID.o ChargeMisID.cc
 
 ChargeMisID_2017dataset:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o ChargeMisID_2017dataset.o ChargeMisID_2017dataset.cc
+
+ChargeMisID_2018dataset:
+	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o ChargeMisID_2018dataset.o ChargeMisID_2018dataset.cc
+
+ChargeMisID_2018dataset_smartPtr:
+	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o ChargeMisID_2018dataset_smartPtr.o ChargeMisID_2018dataset_smartPtr.cc
+
+ChargeMisID_2018dataset_likelihood:
+	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o ChargeMisID_2018dataset_likelihood.o ChargeMisID_2018dataset_likelihood.cc
 
 IsoAnalyzer:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o IsoAnalyzer.o IsoAnalyzer.cc

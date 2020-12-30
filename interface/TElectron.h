@@ -93,6 +93,8 @@ public:
   bool mva94XTightV2_90();
   bool mva94XTightV2_90_Iso();
   bool mva94XTightV2_90_Iso_RC();
+  bool mva94XTightV2_90_IsoTight();
+  bool mva94XTightV2_90_IsoTight_RC();
   bool mva94XTightV2_90_RC();
   bool mva94XLooseV2();
   bool mva94XLooseV2_Iso();
@@ -126,6 +128,17 @@ public:
   bool mva94XLooseV1_Iso();
   bool mva94XLooseV1_Iso_RC();
   bool mva94XLooseV1_RC();
+
+  //added by Jess to test 2016 custom MVA
+  bool mva94X2016CustomTight();
+  bool mva94X2016CustomTight_Iso();
+  bool mva94X2016CustomTight_Iso_RC();
+  bool mva94X2016CustomTight_RC();
+  bool mva94X2016CustomLoose();
+  bool mva94X2016CustomLoose_Iso();
+  bool mva94X2016CustomLoose_Iso_RC();
+  bool mva94X2016CustomLoose_RC();
+
 
   bool mvaTight();
   bool mva2016Tight();

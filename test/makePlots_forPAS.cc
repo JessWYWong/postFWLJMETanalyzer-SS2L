@@ -20,6 +20,7 @@
 #include "TGraphErrors.h"
 #include "TGraphAsymmErrors.h"
 #include "TString.h"
+#include "../interface/unc.h"
 //eaxample usage:
 //root -b -q -l 'makePlots_forPAS.cc("MVA2016TightRC","CBTightMiniIsoTight")'
 
@@ -27,17 +28,43 @@ void DrawAndSaveCombined(Variable* Var, std::vector<Sample*> vBkg, std::vector<S
 TH1F* getPullPlot(TH1F* hData, THStack * h, Variable* var, TH1F* h_err);
 double poissonErrors(TGraphAsymmErrors* tgae_err, TH1F* h, double sys_err, int ibin);
 //below sys were obtaind from Julie documented in B2G Oct31 presentation
+/*
+float uncLumi = 0.025;
+float uncIsoSF = 0.015;
 
-float uncPU_TTZ=0.06;
-float uncPU_TTW=0.01;
-float uncPU_TTH=0.01;
-float uncPU_TTTT=0.03;
-float uncPU_WZ=0.1;
-float uncPU_ZZ=0.07;
-float uncPU_WpWp=0.01;
-float uncPU_WWZ=0.06;
-float uncPU_WZZ=0.02;
-float uncPU_ZZZ=0.;
+float uncPU_TTZ=0.0084;
+float uncPU_TTW=0.0076;
+float uncPU_TTH=0.0008;
+float uncPU_TTTT=0.0017;
+float uncPU_WZ=0.0425;
+float uncPU_ZZ=0.402;
+float uncPU_WpWp=0.0049;
+float uncPU_WWZ=0.0508;
+float uncPU_WZZ=0.131;
+float uncPU_ZZZ=0.0861;
+
+float uncTrigSF_TTZ=0.019;
+float uncTrigSF_TTW=0.0193;
+float uncTrigSF_TTH=0.0196;
+float uncTrigSF_TTTT=0.0192;
+float uncTrigSF_WZ=0.0189;
+float uncTrigSF_ZZ=0.0206;
+float uncTrigSF_WpWp=0.0192;
+float uncTrigSF_WWZ=0.0181;
+float uncTrigSF_WZZ=0.0173;
+float uncTrigSF_ZZZ=0.0206;
+
+float uncIDSF_TTZ=0.0362;
+float uncIDSF_TTW=0.0397;
+float uncIDSF_TTH=0.0337;
+float uncIDSF_TTTT=0.0365;
+float uncIDSF_WZ=0.041;
+float uncIDSF_ZZ=0.0408;
+float uncIDSF_WpWp=0.0412;
+float uncIDSF_WWZ=0.0395;
+float uncIDSF_WZZ=0.0392;
+float uncIDSF_ZZZ=0.0508;
+
 
 float uncPDF_TTZ=0.03;
 float uncPDF_TTW=0.13;
@@ -60,7 +87,7 @@ float uncSCALE_WpWp=0.354;
 float uncSCALE_WWZ=0.20;
 float uncSCALE_WZZ=0.21;
 float uncSCALE_ZZZ=0.;
-
+*/
 float uncMC_TTZ=pow(uncSCALE_TTZ*uncSCALE_TTZ + uncPDF_TTZ*uncPDF_TTZ,0.5);
 float uncMC_TTW=pow(uncSCALE_TTW*uncSCALE_TTW + uncPDF_TTW*uncPDF_TTW,0.5);
 float uncMC_TTH=pow(uncSCALE_TTH*uncSCALE_TTH + uncPDF_TTH*uncPDF_TTH,0.5);
@@ -71,7 +98,7 @@ float uncMC_WpWp=pow(uncSCALE_WpWp*uncSCALE_WpWp + uncPDF_WpWp*uncPDF_WpWp,0.5);
 float uncMC_WWZ=pow(uncSCALE_WWZ*uncSCALE_WWZ + uncPDF_WWZ*uncPDF_WWZ,0.5);
 float uncMC_WZZ=pow(uncSCALE_WZZ*uncSCALE_WZZ + uncPDF_WZZ*uncPDF_WZZ,0.5);
 float uncMC_ZZZ=pow(uncSCALE_ZZZ*uncSCALE_ZZZ + uncPDF_ZZZ*uncPDF_ZZZ,0.5);
-
+/*
 float uncJES_TTZ=0.04;
 float uncJES_TTW=0.03;
 float uncJES_TTH=0.04;
@@ -93,11 +120,14 @@ float uncJER_WpWp=0.01;
 float uncJER_WWZ=0.1;
 float uncJER_WZZ=0.01;
 float uncJER_ZZZ=0;
+*/
+
+float lumi1 = 59.74;
 
 //folder to save plots - rizki
 // const std::string saveFolder = "plots_nConst4_HT1200_0NonSSLep_NonIsoTrig_Jan30-2019"; //CHECK Macros.cc for input folder!!
-const std::string saveFolder = "plots_nConst4_HT1200_0NonSSLep_IsoTrig_Jan30-2019"; //CHECK Macros.cc for input folder!!
-
+//const std::string saveFolder = "plots_nConst4_HT1200_0NonSSLep_IsoTrig_Jan30-2019"; //CHECK Macros.cc for input folder!!
+const std::string saveFolder = "plots_IsoTrig_Nov-2020";
 
 void makePlots_forPAS(std::string elID, std::string muID){
 
@@ -113,15 +143,15 @@ void makePlots_forPAS(std::string elID, std::string muID){
 
   //desired lumi:
   //Json lumi with normtag: BCDEF - https://twiki.cern.ch/twiki/bin/view/CMS/PdmV2017Analysis - Nov 11, 2018.
-  float lumi = 41.56; //fb^-1
-  float lumi2 = 0; //fb^-1
-  std::string weightstring = "PUWeight * ChargeMisIDWeight * NPWeight * IDSF * IsoSF * trigSF * GsfSF * MCWeight *";
+  //float lumi = 59.74; //fb^-1
+  //float lumi2 = 0; //fb^-1
+  std::string weightstring = "PUWeight * ChargeMisIDWeight * NPWeight * IDSF * IsoSF * trigSF * GsfSF * MCWeight/abs(MCWeight) *";
 
   std::vector<Variable*> vVariables = getVariableVec();
 
-  std::vector<Sample*> vMCBkgSamples = getMCBkgSampleVec("sZVeto", lumi, elID, muID,"2017B-F");
+  std::vector<Sample*> vMCBkgSamples = getMCBkgSampleVec("sZVeto", lumi1, elID, muID,"2018A-D");
   std::cout << "DONE Preparing MC bkg samples" << std::endl;
-  std::vector<Sample*> vDDBkgSamples = getDDBkgSampleVec("sZVeto", lumi, elID, muID,"2017B-F");
+  std::vector<Sample*> vDDBkgSamples = getDDBkgSampleVec("sZVeto", lumi1, elID, muID,"2018A-D");
   std::cout << "DONE Preparing DDBkg samples" << std::endl;
   std::vector<Sample*> vBkgSamples = appendSampleVectors(vMCBkgSamples, vDDBkgSamples);
   std::cout << "DONE appending Bkg samples" << std::endl;
@@ -130,28 +160,28 @@ void makePlots_forPAS(std::string elID, std::string muID){
 //   std::vector<Sample*> vSigSamples2 = getInclusiveSigSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H");
 
   //TT SIGNAL <decay> - RIZKI
-  std::vector<Sample*> vSigSamples1 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi, elID, muID,"2017B-F","BWBW",0);
+  std::vector<Sample*> vSigSamples1 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,"2018A-D","BWBW",0);
   std::cout << "DONE Preparing signal BWBW samples" << std::endl;
 
-  std::vector<Sample*> vSigSamples2 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi, elID, muID,"2017B-F","THBW",0);
+  std::vector<Sample*> vSigSamples2 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,"2018A-D","THBW",0);
   std::cout << "DONE Preparing signal THBW samples" << std::endl;
 
-  std::vector<Sample*> vSigSamples3 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi, elID, muID,"2017B-F","THTH",0);
+  std::vector<Sample*> vSigSamples3 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,"2018A-D","THTH",0);
   std::cout << "DONE Preparing signal THTH samples" << std::endl;
 
-  std::vector<Sample*> vSigSamples4 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi, elID, muID,"2017B-F","TZBW",0);
+  std::vector<Sample*> vSigSamples4 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,"2018A-D","TZBW",0);
   std::cout << "DONE Preparing signal TZBW samples" << std::endl;
 
-  std::vector<Sample*> vSigSamples5 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi, elID, muID,"2017B-F","TZTH",0);
+  std::vector<Sample*> vSigSamples5 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,"2018A-D","TZTH",0);
   std::cout << "DONE Preparing signal TZTH samples" << std::endl;
 
-  std::vector<Sample*> vSigSamples6 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi, elID, muID,"2017B-F","TZTZ",0);
+  std::vector<Sample*> vSigSamples6 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,"2018A-D","TZTZ",0);
   std::cout << "DONE Preparing signal TZTZ samples" << std::endl;
 
   std::vector<Sample*> vSigSamples = appendSampleVectors(vSigSamples1,vSigSamples2,vSigSamples3,vSigSamples4,vSigSamples5,vSigSamples6);
   std::cout << "DONE appending signal samples" << std::endl;
 
-  Sample* dataSample = getDataSample("sZVeto",elID,muID,"2017B-F");
+  Sample* dataSample = getDataSample("sZVeto",elID,muID,"2018A-D");
 
   std::cout << "DONE Preparing data samples" << std::endl;
 
@@ -164,7 +194,6 @@ void makePlots_forPAS(std::string elID, std::string muID){
       DrawAndSaveCombined(vVariables.at(i),vBkgSamples,vSigSamples,dataSample, fout,elID,muID,0,j,weightstring);
       DrawAndSaveCombined(vVariables.at(i),vBkgSamples,vSigSamples,dataSample, fout,elID,muID,1,j,weightstring);
       DrawAndSaveCombined(vVariables.at(i),vBkgSamples,vSigSamples,dataSample, fout,elID,muID,2,j,weightstring);
-
       //gROOT->Reset();
     }
   }
@@ -196,6 +225,28 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   pad1->cd();
   std::stringstream cutstring;
   if(nMu>=0){
+    if(cutIndex==0){                                                                                            cutstring<<"( "<<weightstring<<" (Channel=="<<nMu<<") )";}
+    else if(cutIndex==1){                                                                                       cutstring<<"( "<<weightstring<<"( (Channel=="<<nMu<<"  && DilepMass >20 &&  ((Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0 ) ))";}
+    else if(cutIndex==2){
+      if(var->name=="Lep1PtEl" || var->name=="cleanAK4HTEl")            cutstring<<"( "<<weightstring<<"( (Channel=="<<nMu<<"  && DilepMass >20 && nCleanAK4Jets > 1&& Lep1Flavor==0 && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0 ) ))";
+      else if(var->name=="Lep1PtMu" || var->name=="cleanAK4HTMu")       cutstring<<"( "<<weightstring<<"( (Channel=="<<nMu<<"  && DilepMass >20 && nCleanAK4Jets > 1&& Lep1Flavor==1 && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0 ) ))";     
+      else                                                                                                                      cutstring<<"( "<<weightstring<<"( (Channel=="<<nMu<<"  && DilepMass >20 && nCleanAK4Jets > 1 &&( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0 ) ))";
+    }
+    else if(cutIndex==3){
+      if(var->name=="Lep1PtEl" || var->name=="cleanAK4HTEl")            cutstring<<"( "<<weightstring<<"( (Channel=="<<nMu<<"  && DilepMass >20 && nCleanAK4Jets > 1 && Lep1Flavor==0 && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0 && nConst <=4 && nConst >=2) ))";
+      else if(var->name=="Lep1PtMu" || var->name=="cleanAK4HTMu")       cutstring<<"( "<<weightstring<<"( (Channel=="<<nMu<<"  && DilepMass >20 && nCleanAK4Jets > 1 && Lep1Flavor==1 && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0  && nConst <=4 && nConst >=2 ) ))";
+      else                                                                                                                      cutstring<<"( "<<weightstring<<"( (Channel=="<<nMu<<"  && DilepMass >20 && nCleanAK4Jets > 1 && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0  && nConst <=3 && nConst >=2 ) ))";}
+    else if(cutIndex==4){                                                                                       cutstring<<"( "<<weightstring<<"( (Channel=="<<nMu<<"  && DilepMass >20 && nCleanAK4Jets > 1 && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0  && nConst >=4) ))";}
+  }
+  else {
+    if(cutIndex==0){cutstring<<"( "<<     weightstring<<"( (Channel>=0 &&                                       ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0                              ) ))";}
+    else if(cutIndex==1){cutstring<<"( "<<weightstring<<"( (Channel>=0 && DilepMass >20 &&                      ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0                              ) ))";}
+    else if(cutIndex==2){cutstring<<"( "<<weightstring<<"( (Channel>=0 && DilepMass >20 && nCleanAK4Jets > 1 && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0                              ) ))";}
+    else if(cutIndex==3){cutstring<<"( "<<weightstring<<"( (Channel>=0 && DilepMass >20 && nCleanAK4Jets > 1 && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0  && nConst <=3 && nConst >=2 ) ))";}
+    else if(cutIndex==4){cutstring<<"( "<<weightstring<<"( (Channel>=0 && DilepMass >20 && nCleanAK4Jets > 1 && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0  && nConst >=4               ) ))";}
+  }
+/*
+  if(nMu>=0){
     if(cutIndex==0){												cutstring<<"( "<<weightstring<<" (Channel=="<<nMu<<") )";}
     else if(cutIndex==1){											cutstring<<"( "<<weightstring<<"( !(Channel==2 && TMath::Abs(Lep1Phi - Lep2Phi) < 1.25 && ( (Lep1Eta>1.2 && Lep2Eta >1.2) || (Lep1Eta<-1.2 && Lep2Eta <-1.2))) &&(Channel=="<<nMu<<"  && DilepMass >20 &&  ((Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0 ) ))";}
     else if(cutIndex==2){
@@ -216,6 +267,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     else if(cutIndex==3){cutstring<<"( "<<weightstring<<"( !(Channel==2 && TMath::Abs(Lep1Phi - Lep2Phi) < 1.25 && ( (Lep1Eta>1.2 && Lep2Eta >1.2) || (Lep1Eta<-1.2 && Lep2Eta <-1.2))) &&(Channel>=0 && DilepMass >20 && nCleanAK4Jets > 1 && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0  && nConst <=3 && nConst >=2 ) ))";}
     else if(cutIndex==4){cutstring<<"( "<<weightstring<<"( !(Channel==2 && TMath::Abs(Lep1Phi - Lep2Phi) < 1.25 && ( (Lep1Eta>1.2 && Lep2Eta >1.2) || (Lep1Eta<-1.2 && Lep2Eta <-1.2))) &&(Channel>=0 && DilepMass >20 && nCleanAK4Jets > 1 && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && nNonSSLeps==0  && nConst >=4               ) ))";}
   }
+*/
   std::cout<<"cutstring: "<<cutstring.str()<<std::endl;
   THStack* tStack = new THStack("tStack","");
   TLegend* leg = new TLegend(0.65,0.6,0.9,0.9);
@@ -398,102 +450,122 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     //if(h_npf->GetBinContent(ibin)!=0) etemp_stat = etemp_stat + pow(h_npf->GetBinError(ibin),2); //stat
     //else etemp_stat = etemp_stat + 1.8*1.8; //stat
     etemp_stat= etemp_stat + pow(h_npf->GetBinError(ibin),2); //stat
-    etemp_sys = etemp_sys + pow( 0.5*h_npf->GetBinContent(ibin),2);//sys
+    etemp_sys = etemp_sys + pow( unc_NP*h_npf->GetBinContent(ibin),2);//sys
     //chargemisID
     //if(h_cmid->GetBinContent(ibin)!=0) etemp_stat = etemp_stat + pow(h_cmid->GetBinError(ibin),2);//stat
     //else etemp_stat = etemp_stat+1.8*1.8; //stat
     etemp_stat = etemp_stat + pow(h_cmid->GetBinError(ibin),2); //stat
-    etemp_sys = etemp_sys + pow(0.3*h_cmid->GetBinContent(ibin),2);//sys
+    etemp_sys = etemp_sys + pow(unc_CMID*h_cmid->GetBinContent(ibin),2);//sys
     //TTZ
     etemp_stat= etemp_stat + pow(h_ttz->GetBinError(ibin),2);//stat
     etemp_sys = etemp_sys + pow(uncMC_TTZ*h_ttz->GetBinContent(ibin),2); //MC
     etemp_sys = etemp_sys + pow(uncJES_TTZ*h_ttz->GetBinContent(ibin),2); //JES
     etemp_sys = etemp_sys + pow(uncJER_TTZ*h_ttz->GetBinContent(ibin),2); //JER
-    etemp_sys = etemp_sys + pow(0.025*h_ttz->GetBinContent(ibin),2); //lumi
+    etemp_sys = etemp_sys + pow(uncLumi*h_ttz->GetBinContent(ibin),2); //lumi
     etemp_sys = etemp_sys + pow(uncPU_TTZ*h_ttz->GetBinContent(ibin),2); //pileup
-    etemp_sys = etemp_sys + pow(0.03*h_ttz->GetBinContent(ibin),2); //trigger
-    etemp_sys = etemp_sys + 2*pow(0.02*h_ttz->GetBinContent(ibin),2); //id plus iso
+    etemp_sys = etemp_sys + pow(uncTrigSF_TTZ*h_ttz->GetBinContent(ibin),2); //trigger
+    etemp_sys = etemp_sys + pow(uncIsoSF*h_ttz->GetBinContent(ibin),2); //iso
+    etemp_sys = etemp_sys + pow(uncIDSF_TTZ*h_ttz->GetBinContent(ibin),2); //id
+    //etemp_sys = etemp_sys + 2*pow(0.02*h_ttz->GetBinContent(ibin),2); //id plus iso
     //TTW
     etemp_stat = etemp_stat + pow(h_ttw->GetBinError(ibin),2);//stat
     etemp_sys = etemp_sys + pow(uncMC_TTW*h_ttw->GetBinContent(ibin),2); //MC
     etemp_sys = etemp_sys + pow(uncJES_TTW*h_ttw->GetBinContent(ibin),2); //JES
     etemp_sys = etemp_sys + pow(uncJER_TTW*h_ttw->GetBinContent(ibin),2); //JER
-    etemp_sys = etemp_sys + pow(0.025*h_ttw->GetBinContent(ibin),2); //lumi
+    etemp_sys = etemp_sys + pow(uncLumi*h_ttw->GetBinContent(ibin),2); //lumi
     etemp_sys = etemp_sys + pow(uncPU_TTW*h_ttw->GetBinContent(ibin),2); //pileup
-    etemp_sys = etemp_sys + pow(0.03*h_ttw->GetBinContent(ibin),2); //trigger
-    etemp_sys = etemp_sys + 2*pow(0.02*h_ttw->GetBinContent(ibin),2); //id plus iso
+    etemp_sys = etemp_sys + pow(uncTrigSF_TTW*h_ttw->GetBinContent(ibin),2); //trigger
+    etemp_sys = etemp_sys + pow(uncIsoSF*h_ttw->GetBinContent(ibin),2); //iso
+    etemp_sys = etemp_sys + pow(uncIDSF_TTW*h_ttw->GetBinContent(ibin),2); //id
+    //etemp_sys = etemp_sys + 2*pow(0.02*h_ttw->GetBinContent(ibin),2); //id plus iso
     //TTH
     etemp_stat = etemp_stat + pow(h_tth->GetBinError(ibin),2);//stat
     etemp_sys = etemp_sys + pow(uncMC_TTH*h_tth->GetBinContent(ibin),2); //MC
     etemp_sys = etemp_sys + pow(uncJES_TTH*h_tth->GetBinContent(ibin),2); //JES
     etemp_sys = etemp_sys + pow(uncJER_TTH*h_tth->GetBinContent(ibin),2); //JER
-    etemp_sys = etemp_sys + pow(0.025*h_tth->GetBinContent(ibin),2); //lumi
+    etemp_sys = etemp_sys + pow(uncLumi*h_tth->GetBinContent(ibin),2); //lumi
     etemp_sys = etemp_sys + pow(uncPU_TTH*h_tth->GetBinContent(ibin),2); //pileup
-    etemp_sys = etemp_sys + pow(0.03*h_tth->GetBinContent(ibin),2); //trigger
-    etemp_sys = etemp_sys + 2*pow(0.02*h_tth->GetBinContent(ibin),2); //id plus iso
+    etemp_sys = etemp_sys + pow(uncTrigSF_TTH*h_tth->GetBinContent(ibin),2); //trigger
+    etemp_sys = etemp_sys + pow(uncIsoSF*h_tth->GetBinContent(ibin),2); //iso
+    etemp_sys = etemp_sys + pow(uncIDSF_TTH*h_tth->GetBinContent(ibin),2); //id
+    //etemp_sys = etemp_sys + 2*pow(0.02*h_tth->GetBinContent(ibin),2); //id plus iso
     //TTTT
     etemp_stat = etemp_stat + pow(h_tttt->GetBinError(ibin),2);//stat
     etemp_sys = etemp_sys + pow(uncMC_TTTT*h_tttt->GetBinContent(ibin),2); //MC
     etemp_sys = etemp_sys + pow(uncJES_TTTT*h_tttt->GetBinContent(ibin),2); //JES
     etemp_sys = etemp_sys + pow(uncJER_TTTT*h_tttt->GetBinContent(ibin),2); //JER
-    etemp_sys = etemp_sys + pow(0.025*h_tttt->GetBinContent(ibin),2); //lumi
+    etemp_sys = etemp_sys + pow(uncLumi*h_tttt->GetBinContent(ibin),2); //lumi
     etemp_sys = etemp_sys + pow(uncPU_TTTT*h_tttt->GetBinContent(ibin),2); //pileup
-    etemp_sys = etemp_sys + pow(0.03*h_tttt->GetBinContent(ibin),2); //trigger
-    etemp_sys = etemp_sys + 2*pow(0.02*h_tttt->GetBinContent(ibin),2); //id plus iso
+    etemp_sys = etemp_sys + pow(uncTrigSF_TTTT*h_tttt->GetBinContent(ibin),2); //trigger
+    etemp_sys = etemp_sys + pow(uncIsoSF*h_tttt->GetBinContent(ibin),2); //iso
+    etemp_sys = etemp_sys + pow(uncIDSF_TTTT*h_tttt->GetBinContent(ibin),2); //id
+    //etemp_sys = etemp_sys + 2*pow(0.02*h_tttt->GetBinContent(ibin),2); //id plus iso
     //WZ
     etemp_stat = etemp_stat + pow(h_wz->GetBinError(ibin),2);//stat
     etemp_sys = etemp_sys + pow(uncMC_WZ*h_wz->GetBinContent(ibin),2); //MC
     etemp_sys = etemp_sys + pow(uncJES_WZ*h_wz->GetBinContent(ibin),2); //JES
     etemp_sys = etemp_sys + pow(uncJER_WZ*h_wz->GetBinContent(ibin),2); //JER
-    etemp_sys = etemp_sys + pow(0.025*h_wz->GetBinContent(ibin),2); //lumi
+    etemp_sys = etemp_sys + pow(uncLumi*h_wz->GetBinContent(ibin),2); //lumi
     etemp_sys = etemp_sys + pow(uncPU_WZ*h_wz->GetBinContent(ibin),2); //pileup
-    etemp_sys = etemp_sys + pow(0.03*h_wz->GetBinContent(ibin),2); //trigger
-    etemp_sys = etemp_sys + 2*pow(0.02*h_wz->GetBinContent(ibin),2); //id plus iso
+    etemp_sys = etemp_sys + pow(uncTrigSF_WZ*h_wz->GetBinContent(ibin),2); //trigger
+    etemp_sys = etemp_sys + pow(uncIsoSF*h_wz->GetBinContent(ibin),2); //iso
+    etemp_sys = etemp_sys + pow(uncIDSF_WZ*h_wz->GetBinContent(ibin),2); //id
+    //etemp_sys = etemp_sys + 2*pow(0.02*h_wz->GetBinContent(ibin),2); //id plus iso
     //ZZ
     etemp_stat = etemp_stat + pow(h_zz->GetBinError(ibin),2);//stat
     etemp_sys = etemp_sys + pow(uncMC_ZZ*h_zz->GetBinContent(ibin),2); //MC
     etemp_sys = etemp_sys + pow(uncJES_ZZ*h_zz->GetBinContent(ibin),2); //JES
     etemp_sys = etemp_sys + pow(uncJER_ZZ*h_zz->GetBinContent(ibin),2); //JER
-    etemp_sys = etemp_sys + pow(0.025*h_zz->GetBinContent(ibin),2); //lumi
+    etemp_sys = etemp_sys + pow(uncLumi*h_zz->GetBinContent(ibin),2); //lumi
     etemp_sys = etemp_sys + pow(uncPU_ZZ*h_zz->GetBinContent(ibin),2); //pileup
-    etemp_sys = etemp_sys + pow(0.03*h_zz->GetBinContent(ibin),2); //trigger
-    etemp_sys = etemp_sys + 2*pow(0.02*h_zz->GetBinContent(ibin),2); //id plus iso
+    etemp_sys = etemp_sys + pow(uncTrigSF_ZZ*h_zz->GetBinContent(ibin),2); //trigger
+    etemp_sys = etemp_sys + pow(uncIsoSF*h_zz->GetBinContent(ibin),2); //iso
+    etemp_sys = etemp_sys + pow(uncIDSF_ZZ*h_zz->GetBinContent(ibin),2); //id
+    //etemp_sys = etemp_sys + 2*pow(0.02*h_zz->GetBinContent(ibin),2); //id plus iso
     //WPWP
     etemp_stat = etemp_stat + pow(h_wpwp->GetBinError(ibin),2);//stat
     etemp_sys = etemp_sys + pow(uncMC_WpWp*h_wpwp->GetBinContent(ibin),2); //MC
     etemp_sys = etemp_sys + pow(uncJES_WpWp*h_wpwp->GetBinContent(ibin),2); //JES
     etemp_sys = etemp_sys + pow(uncJER_WpWp*h_wpwp->GetBinContent(ibin),2); //JER
-    etemp_sys = etemp_sys + pow(0.025*h_wpwp->GetBinContent(ibin),2); //lumi
+    etemp_sys = etemp_sys + pow(uncLumi*h_wpwp->GetBinContent(ibin),2); //lumi
     etemp_sys = etemp_sys + pow(uncPU_WpWp*h_wpwp->GetBinContent(ibin),2); //pileup
-    etemp_sys = etemp_sys + pow(0.03*h_wpwp->GetBinContent(ibin),2); //trigger
-    etemp_sys = etemp_sys + 2*pow(0.02*h_wpwp->GetBinContent(ibin),2); //id plus iso
+    etemp_sys = etemp_sys + pow(uncTrigSF_WpWp*h_wpwp->GetBinContent(ibin),2); //trigger
+    etemp_sys = etemp_sys + pow(uncIsoSF*h_wpwp->GetBinContent(ibin),2); //iso
+    etemp_sys = etemp_sys + pow(uncIDSF_WpWp*h_wpwp->GetBinContent(ibin),2); //id
+    //etemp_sys = etemp_sys + 2*pow(0.02*h_wpwp->GetBinContent(ibin),2); //id plus iso
     //WWZ
     etemp_stat = etemp_stat + pow(h_wwz->GetBinError(ibin),2);//stat
     etemp_sys = etemp_sys + pow(uncMC_WWZ*h_wwz->GetBinContent(ibin),2); //MC
     etemp_sys = etemp_sys + pow(uncJES_WWZ*h_wwz->GetBinContent(ibin),2); //JES
     etemp_sys = etemp_sys + pow(uncJER_WWZ*h_wwz->GetBinContent(ibin),2); //JER
-    etemp_sys = etemp_sys + pow(0.025*h_wwz->GetBinContent(ibin),2); //lumi
+    etemp_sys = etemp_sys + pow(uncLumi*h_wwz->GetBinContent(ibin),2); //lumi
     etemp_sys = etemp_sys + pow(uncPU_WWZ*h_wwz->GetBinContent(ibin),2); //pileup
-    etemp_sys = etemp_sys + pow(0.03*h_wwz->GetBinContent(ibin),2); //trigger
-    etemp_sys = etemp_sys + 2*pow(0.02*h_wwz->GetBinContent(ibin),2); //id plus iso
+    etemp_sys = etemp_sys + pow(uncTrigSF_WWZ*h_wwz->GetBinContent(ibin),2); //trigger
+    etemp_sys = etemp_sys + pow(uncIsoSF*h_wwz->GetBinContent(ibin),2); //iso
+    etemp_sys = etemp_sys + pow(uncIDSF_WWZ*h_wwz->GetBinContent(ibin),2); //id
+    //etemp_sys = etemp_sys + 2*pow(0.02*h_wwz->GetBinContent(ibin),2); //id plus iso
     //WZZ
     etemp_stat = etemp_stat + pow(h_wzz->GetBinError(ibin),2);//stat
     etemp_sys = etemp_sys + pow(uncMC_WZZ*h_wzz->GetBinContent(ibin),2); //MC
     etemp_sys = etemp_sys + pow(uncJES_WZZ*h_wzz->GetBinContent(ibin),2); //JES
     etemp_sys = etemp_sys + pow(uncJER_WZZ*h_wzz->GetBinContent(ibin),2); //JER
-    etemp_sys = etemp_sys + pow(0.0265*h_wzz->GetBinContent(ibin),2); //lumi
+    etemp_sys = etemp_sys + pow(uncLumi*h_wzz->GetBinContent(ibin),2); //lumi
     etemp_sys = etemp_sys + pow(uncPU_WZZ*h_wzz->GetBinContent(ibin),2); //pileup
-    etemp_sys = etemp_sys + pow(0.03*h_wzz->GetBinContent(ibin),2); //trigger
-    etemp_sys = etemp_sys + 2*pow(0.02*h_wzz->GetBinContent(ibin),2); //id plus iso
+    etemp_sys = etemp_sys + pow(uncTrigSF_WZZ*h_wzz->GetBinContent(ibin),2); //trigger
+    etemp_sys = etemp_sys + pow(uncIsoSF*h_wzz->GetBinContent(ibin),2); //iso
+    etemp_sys = etemp_sys + pow(uncIDSF_WZZ*h_wzz->GetBinContent(ibin),2); //id
+    //etemp_sys = etemp_sys + 2*pow(0.02*h_wzz->GetBinContent(ibin),2); //id plus iso
     //ZZZ
     etemp_stat = etemp_stat + pow(h_zzz->GetBinError(ibin),2);//stat
     etemp_sys = etemp_sys + pow(uncMC_ZZZ*h_zzz->GetBinContent(ibin),2); //MC
     etemp_sys = etemp_sys + pow(uncJES_ZZZ*h_zzz->GetBinContent(ibin),2); //JES
     etemp_sys = etemp_sys + pow(uncJER_ZZZ*h_zzz->GetBinContent(ibin),2); //JER
-    etemp_sys = etemp_sys + pow(0.025*h_zzz->GetBinContent(ibin),2); //lumi
+    etemp_sys = etemp_sys + pow(uncLumi*h_zzz->GetBinContent(ibin),2); //lumi
     etemp_sys = etemp_sys + pow(uncPU_ZZZ*h_zzz->GetBinContent(ibin),2); //pileup
-    etemp_sys = etemp_sys + pow(0.03*h_zzz->GetBinContent(ibin),2); //trigger
-    etemp_sys = etemp_sys + 2*pow(0.02*h_zzz->GetBinContent(ibin),2); //id plus iso
+    etemp_sys = etemp_sys + pow(uncTrigSF_ZZZ*h_zzz->GetBinContent(ibin),2); //trigger
+    etemp_sys = etemp_sys + pow(uncIsoSF*h_zzz->GetBinContent(ibin),2); //iso
+    etemp_sys = etemp_sys + pow(uncIDSF_ZZZ*h_zzz->GetBinContent(ibin),2); //id
+    //etemp_sys = etemp_sys + 2*pow(0.02*h_zzz->GetBinContent(ibin),2); //id plus iso
 
     //e_temp = etemp_stat + etemp_sys;
 
@@ -560,9 +632,9 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     TH1F* h = new TH1F("h",(var->name).c_str(), var->nbins, var->xmin, var->xmax);
     TTree* t = s->tree;
 
-    if(var->name=="Lep1PtEl" || var->name=="Lep1PtMu"){ t->Project("h","Lep1Pt",(cutstring.str()).c_str());}
-    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu"){ t->Project("h","cleanAK4HT",(cutstring.str()).c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()<<std::endl;}
-    else{ t->Project("h",(var->name).c_str(),(cutstring.str()).c_str());}
+    if(var->name=="Lep1PtEl" || var->name=="Lep1PtMu"){ t->Project("h","Lep1Pt",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());}
+    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu"){ t->Project("h","cleanAK4HT",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()+" * pdfWeights4LHC[0] "<<std::endl;}
+    else{ t->Project("h",(var->name).c_str(),(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());}
 
     float ovf =  (h)->GetBinContent( (h)->GetNbinsX()+1) + (h)->GetBinContent( (h)->GetNbinsX()) ;
     (h)->SetBinContent( (h)->GetNbinsX(),ovf);
@@ -592,9 +664,9 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     TH1F* h = new TH1F("h",(var->name).c_str(), var->nbins, var->xmin, var->xmax);
     TTree* t = s->tree;
 
-    if(var->name=="Lep1PtEl" || var->name=="Lep1PtMu"){ t->Project("h","Lep1Pt",(cutstring.str()).c_str());}
-    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu"){ t->Project("h","cleanAK4HT",(cutstring.str()).c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()<<std::endl;}
-    else{ t->Project("h",(var->name).c_str(),(cutstring.str()).c_str());}
+    if(var->name=="Lep1PtEl" || var->name=="Lep1PtMu"){ t->Project("h","Lep1Pt",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());}
+    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu"){ t->Project("h","cleanAK4HT",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()+" * pdfWeights4LHC[0] "<<std::endl;}
+    else{ t->Project("h",(var->name).c_str(),(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());}
 
     float ovf =  (h)->GetBinContent( (h)->GetNbinsX()+1) + (h)->GetBinContent( (h)->GetNbinsX()) ;
     (h)->SetBinContent( (h)->GetNbinsX(),ovf);
@@ -651,6 +723,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     gData->SetPointEXhigh(ig,0);
   }
   gData->Draw("pesame");
+  //gData->Print();
 
   leg->AddEntry(gData,"Data","p");
 
@@ -669,7 +742,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
 
   //draw latex
   cmstex->DrawLatex(0.15,0.96,"CMS Preliminary");
-  lumitex->DrawLatex(0.65,0.96,"41.56 fb^{-1} (13 TeV)");
+  lumitex->DrawLatex(0.65,0.96,Form("%2f fb^{-1} (13 TeV)", lumi1));
 
   //draw latex for channels
   TLatex* chantex = new TLatex();

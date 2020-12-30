@@ -19,9 +19,9 @@
 #include "GenAnalyzer.cc"
 #include "../interface/TreeMaker.h"
 #include "../plugins/Macros.cc"
-#include "../plugins/EventFilterFromFile_MuonEG.cc"
-#include "../plugins/EventFilterFromFile_DoubleMu.cc"
-#include "../plugins/EventFilterFromFile_DoubleEG.cc"
+//#include "../plugins/EventFilterFromFile_MuonEG.cc"
+//#include "../plugins/EventFilterFromFile_DoubleMu.cc"
+//#include "../plugins/EventFilterFromFile_DoubleEG.cc"
 
 std::vector<TLepton*> makeLeptons(std::vector<TMuon*>, std::vector<TElectron*>, float, std::string, std::string, bool,std::vector<TGenParticle*>);
 std::vector<TLepton*> makeSSLeptons(std::vector<TLepton*>);
@@ -39,22 +39,26 @@ int main(int argc, char* argv[]){
 
 
   bool bg_np = true;
-  std::string elID = "MVA2016TightRC";
+  std::string elID = "MVA2017TightV2IsoTightRC";
   std::string muID = "CBTightMiniIsoTight";
 
   //get input sample
   std::string sample(argv[1]);
   std::string inputname, outname;
-  std::string eosname="root://cmseos.fnal.gov//eos/uscms/store/user/lpctlbsm/clint/Spring16/25ns/Jan09/ljmet_trees/";
-  if(sample=="TTbar_pt5"){ outname="SmartClosure_TTbar_pt5.root"; inputname=eosname+"ljmet_TTbar_pt5.root";}
-  if(sample=="TTbar_pt6"){ outname="SmartClosure_TTbar_pt6.root"; inputname=eosname+"ljmet_TTbar_pt6.root";}
-  if(sample=="TTbar_pt7"){ outname="SmartClosure_TTbar_pt7.root"; inputname=eosname+"ljmet_TTbar_pt7.root";}
-  if(sample=="TTbar_pt8"){ outname="SmartClosure_TTbar_pt8.root"; inputname=eosname+"ljmet_TTbar_pt8.root";}
-  if(sample=="TTbar_pt9"){ outname="SmartClosure_TTbar_pt9.root"; inputname=eosname+"ljmet_TTbar_pt9.root";}
+  std::string eosname="root://cmseos.fnal.gov//eos/uscms/store/user/lpcljm/FWLJMET102X_2lepFakeRate2017_wywong_082020_hadds/";
+  if(sample=="TTTo2L2Nu"){ outname="SmartClosure_TTbar_2L2Nu.root"; inputname=eosname+"TTTo2L2Nu.root";}
+  if(sample=="TTTo2L2Nu_1"){ outname="SmartClosure_TTTo2L2Nu_1.root"; inputname=eosname+"TTTo2L2Nu_hadd_1.root";}
+  if(sample=="TTTo2L2Nu_2"){ outname="SmartClosure_TTTo2L2Nu_2.root"; inputname=eosname+"TTTo2L2Nu_hadd_2.root";}
+  if(sample=="TTTo2L2Nu_3"){ outname="SmartClosure_TTTo2L2Nu_3.root"; inputname=eosname+"TTTo2L2Nu_hadd_3.root";}
+  //if(sample=="TTbar_pt5"){ outname="SmartClosure_TTbar_pt5.root"; inputname=eosname+"ljmet_TTbar_pt5.root";}
+  //if(sample=="TTbar_pt6"){ outname="SmartClosure_TTbar_pt6.root"; inputname=eosname+"ljmet_TTbar_pt6.root";}
+  //if(sample=="TTbar_pt7"){ outname="SmartClosure_TTbar_pt7.root"; inputname=eosname+"ljmet_TTbar_pt7.root";}
+  //if(sample=="TTbar_pt8"){ outname="SmartClosure_TTbar_pt8.root"; inputname=eosname+"ljmet_TTbar_pt8.root";}
+  //if(sample=="TTbar_pt9"){ outname="SmartClosure_TTbar_pt9.root"; inputname=eosname+"ljmet_TTbar_pt9.root";}
 
   //treereader
   bool mc = true;
-  TreeReader* tr = new TreeReader(inputname.c_str(),mc,false);
+  TreeReader* tr = new TreeReader(inputname.c_str(),"ljmet/ljmet",mc,true);
   TTree* t = tr->tree;
   //output file
   TFile* fout = new TFile(outname.c_str(),"RECREATE");
@@ -195,7 +199,7 @@ int main(int argc, char* argv[]){
     if(vSSLep.at(0)->pt<40) continue; //skip events with leading lepton pt less than 40
     
     int nconst = tr->cleanedAK4Jets.size() + vNonSSLep.size();
-    if(nconst<5) continue; //nconst cut
+    if(nconst<4) continue; //nconst cut
 
     //no need to split by channel, just need to fill histograms based on whether fake lepton is electron or muon
 
@@ -524,6 +528,10 @@ std::vector<TLepton*> makeLeptons(std::vector<TMuon*> muons, std::vector<TElectr
       iLep->Tight=iel->susyTightRC();
       iLep->Loose=iel->susyLooseRC();
     }      
+    else if(elID=="MVA2017TightV2IsoTightRC"){
+      iLep->Tight=iel->mva94XTightV2_90_IsoTight_RC();
+      iLep->Loose=iel->mva94XLooseV2_Iso_RC();
+    } 
     if(iLep->pt<ptCut) continue;
     //get matched particle
     TGenParticle* gp = getMatchedGenParticle(iel,genParticles);

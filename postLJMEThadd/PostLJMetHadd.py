@@ -11,13 +11,42 @@ def collect_rootfile_paths(basedir,folder,samples):
 	for sample in samples:
 	
 		sample_dir = basedir+folder+samples[sample]
-		dirs = EOSlistdir(sample_dir)
+		dirs = []
 		paths = []
 
-		for dir in dirs:
-			files=EOSlist_root_files(sample_dir+dir)
+		files= EOSlistdir(sample_dir)
+		for file in files :
+			if '.root' in file and os.path.getsize('/eos/uscms'+sample_dir+'/'+file)>1000:
+				paths.append(sample_dir+'/'+file)
+		dirs = EOSlistdir(sample_dir)
+		if len(paths)>0: dirs = []
+
+		for Dir in dirs:
+                        print 'dir is ', Dir
+			files=EOSlist_root_files(sample_dir+Dir)
 			for file in files:
-				paths.append(sample_dir+dir+'/'+file)
+				if '.root' in file and os.path.getsize('/eos/uscms'+sample_dir+Dir+'/'+file)>1000:
+					 paths.append(sample_dir+Dir+'/'+file)
+					
+			subdirs = [] #EOSlistdir(sample_dir+Dir) # EOSlistdir list all files and do not check if it is a directory
+                        while len(subdirs) == 1  and ".root" not in subdirs[0]:
+ 				print subdirs[0]
+                        	Dir =Dir+"/"+subdirs[0]
+				subdirs = EOSlistdir(sample_dir+Dir)
+                        if len(EOSlistSubdirs(sample_dir+Dir))>1: #EOSlistSubdirs only list directories, unlike EOSlistdir
+                                print EOSlistSubdirs(sample_dir+Dir)
+				print "Multiple sub directories found --> specify which to use in sample list in run_PostLJMetHadd.py"
+			if len(subdirs)!=0 : 
+				print 'Full path of dir is ', Dir
+                        	files=EOSlist_root_files(sample_dir+Dir)
+                        #for subdir in subdirs:
+                        #        if '.root' in subdir:
+                        #                 continue    
+                        #        print 'subdir is ', subdir                   
+			#	files=EOSlist_root_files(sample_dir+Dir+'/'+subdir)
+				for file in files:
+					if '.root' in file and os.path.getsize('/eos/uscms'+sample_dir+Dir+'/'+file)>0: 
+						paths.append(sample_dir+Dir+'/'+file)
 				
 		root_files[sample] = paths
 
@@ -33,6 +62,8 @@ def create_condor_files_from_template(rel_base,cmssw,locdir,eosdir,samples,rootf
 		print '\n'+'Creating condor files for:',sample
 		print 'rootfiles:\n', 
 		rootfiles_to_hadd = ''
+		#if os.path.getsize('/eos/uscms'+rootfile_paths[sample][0])<os.path.getsize('/eos/uscms'+rootfile_paths[sample][-1]) and os.path.getsize('/eos/uscms'+rootfile_paths[sample][0])< 1000000:
+		#	rootfile_paths[sample] = reversed(rootfile_paths[sample])
 		for file in rootfile_paths[sample]: 
 			print '\t',file
 			rootfiles_to_hadd+=' root://cmseos.fnal.gov/'+file

@@ -15,17 +15,21 @@
 #include "TChain.h"
 
 #include "../interface/TreeReader.h"
+//#include "../interface/TreeReader_multipleTree.h"
 #include "JetAnalyzer.cc"
 #include "GenAnalyzer.cc"
 #include "../interface/TreeMaker.h"
 #include "../plugins/AnalyzerMacros.cc"
-#include "../plugins/EventFilterFromFile_MuonEG.cc"
-#include "../plugins/EventFilterFromFile_DoubleMu.cc"
-#include "../plugins/EventFilterFromFile_DoubleEG.cc"
+//#include "../plugins/EventFilterFromFile_MuonEG.cc"
+//#include "../plugins/EventFilterFromFile_DoubleMu.cc"
+//#include "../plugins/EventFilterFromFile_DoubleEG.cc"
 //#include "../plugins/EventFilterFromFile_CSC.cc"
 //#include "../plugins/EventFilterFromFile_ECALSC.cc"
-#include "../plugins/EventFilterFromVector.cc"
-#include "../plugins/ReadEventFilterFromFile.cc"
+//#include "../plugins/EventFilterFromVector.cc"
+//#include "../plugins/ReadEventFilterFromFile.cc"
+
+bool DEBUG_COUT = false;
+bool printCutFlow = true;
 
 std::vector<TLepton*> makeLeptons(std::vector<TMuon*>, std::vector<TElectron*>, float, std::string, std::string, bool);
 std::vector<TLepton*> makeSSLeptons(std::vector<TLepton*>);
@@ -48,7 +52,8 @@ int main(int argc, char* argv[]){
 //   std::string eosarea="root://cmsxrootd.fnal.gov//store/group/lpcljm/LJMet94x_2lepTT_2017datasets_2019_1_13_rizki_hadds/";
 //  std::string eosarea="root://cmsxrootd.fnal.gov//store/group/lpcljm/LJMet94x_2lepTT_2017datasets_2019_2_18_rizki_hadds/"; // nonIso HT triggers live here.
 //   std::string eosarea="root://cmsxrootd.fnal.gov//store/group/lpcljm/LJMet94x_2lepTT_2017datasets_2019_3_15_rizki_hadds/"; // nonIso HT triggers live here with el ID V2.
-  std::string eosarea="root://cmseos.fnal.gov//store/user/lpcljm/FWLJMET102X_2lep2017_061419_hadds/"; // FWLJMET era.
+  //std::string eosarea="root://cmseos.fnal.gov//store/user/lpcljm/FWLJMET102X_2lep2017_062719_hadds/"; // FWLJMET era.
+  std::string eosarea="root://cmseos.fnal.gov//store/user/lpcljm/FWLJMET102X_2lep2018_wywong_082020_hadds/";
 
   std::string eosdataarea=eosarea;
   std::string eosarea_signal=eosarea;
@@ -61,8 +66,20 @@ int main(int argc, char* argv[]){
   std::string sigDecay = argv[5]; //added by rizki
 
   //CHOOSE TRIGGERS:
-  bool isoTrig = false; // added by rizki
-  bool nonIso_HTtrig =true; // added by rizki
+  bool isoTrig = true; // added by rizki
+  bool nonIso_HTtrig =false; // added by rizki
+
+  //CHOOSE UNC:
+  bool elPRunc = false;
+  bool muPRunc = false;
+  if (argc>6){
+    int PRUncMode = std::atoi(argv[6]);
+    if (PRUncMode > 0){
+      std::cout << "UNCERTAINTY!!!! Unity PR "<<std::endl;
+      if(PRUncMode == 1) {elPRunc=true; std::cout << "for electrons \n" <<std::endl;}
+      else if (PRUncMode == 2){muPRunc = true; std::cout << "for muons \n" <<std::endl;}
+    }
+  }
 
   std::cout << "\nWhich triggers: " << std::endl;
   std::cout <<  "\tisoTrig "<< isoTrig<< "\n"<<std::endl;
@@ -71,6 +88,8 @@ int main(int argc, char* argv[]){
   typedef std::map<std::string,std::string> StringMap;
 
   StringMap bg_samples, sig_samples,data_samples;
+  std::vector<std::string> powheg_samples{"WZ","ZZ","TTH"};
+  std::vector<std::string> madgraph_samples{"WpWp","WJets"};
   bg_samples["TTW"]=eosarea+"TTW.root";
   bg_samples["TTZ"]=eosarea+"TTZ.root";
   bg_samples["TTH"]=eosarea+"TTH.root";
@@ -84,79 +103,68 @@ int main(int argc, char* argv[]){
   bg_samples["WpWp"]=eosarea+"WpWp.root";
 
   //TT signal - rizki
-  sig_samples["TprimeTprime_M-800"]=eosarea_signal+"TprimeTprime_M-800.root";
-  sig_samples["TprimeTprime_M-900"]=eosarea_signal+"TprimeTprime_M-900.root";
-  sig_samples["TprimeTprime_M-1000"]=eosarea_signal+"TprimeTprime_M-1000.root";
-  sig_samples["TprimeTprime_M-1100"]=eosarea_signal+"TprimeTprime_M-1100.root";
-  sig_samples["TprimeTprime_M-1200"]=eosarea_signal+"TprimeTprime_M-1200.root";
-  sig_samples["TprimeTprime_M-1300"]=eosarea_signal+"TprimeTprime_M-1300.root";
-  sig_samples["TprimeTprime_M-1400"]=eosarea_signal+"TprimeTprime_M-1400.root";
-  sig_samples["TprimeTprime_M-1500"]=eosarea_signal+"TprimeTprime_M-1500.root";
-  sig_samples["TprimeTprime_M-1600"]=eosarea_signal+"TprimeTprime_M-1600.root";
-  sig_samples["TprimeTprime_M-1700"]=eosarea_signal+"TprimeTprime_M-1700.root";
-  sig_samples["TprimeTprime_M-1800"]=eosarea_signal+"TprimeTprime_M-1800.root";
+  //sig_samples["TprimeTprime_M-800"]=eosarea_signal+"TprimeTprime_M-800.root";
+  //sig_samples["TprimeTprime_M-900"]=eosarea_signal+"TprimeTprime_M-900.root";
+  sig_samples["TprimeTprime_M-1000"]=eosarea_signal+"TpTp1000.root";
+  sig_samples["TprimeTprime_M-1100"]=eosarea_signal+"TpTp1100.root";
+  sig_samples["TprimeTprime_M-1200"]=eosarea_signal+"TpTp1200.root";
+  sig_samples["TprimeTprime_M-1300"]=eosarea_signal+"TpTp1300.root";
+  sig_samples["TprimeTprime_M-1400"]=eosarea_signal+"TpTp1400.root";
+  sig_samples["TprimeTprime_M-1500"]=eosarea_signal+"TpTp1500.root";
+  sig_samples["TprimeTprime_M-1600"]=eosarea_signal+"TpTp1600.root";
+  sig_samples["TprimeTprime_M-1700"]=eosarea_signal+"TpTp1700.root";
+  sig_samples["TprimeTprime_M-1800"]=eosarea_signal+"TpTp1800.root";
 
   //BB signal - rizki
-  sig_samples["BprimeBprime_M-800"]=eosarea_signal+"BprimeBprime_M-800.root";
-  sig_samples["BprimeBprime_M-900"]=eosarea_signal+"BprimeBprime_M-900.root";
-  sig_samples["BprimeBprime_M-1000"]=eosarea_signal+"BprimeBprime_M-1000.root";
-  sig_samples["BprimeBprime_M-1100"]=eosarea_signal+"BprimeBprime_M-1100.root";
-  sig_samples["BprimeBprime_M-1200"]=eosarea_signal+"BprimeBprime_M-1200.root";
-  sig_samples["BprimeBprime_M-1300"]=eosarea_signal+"BprimeBprime_M-1300.root";
-  sig_samples["BprimeBprime_M-1400"]=eosarea_signal+"BprimeBprime_M-1400.root";
-  sig_samples["BprimeBprime_M-1500"]=eosarea_signal+"BprimeBprime_M-1500.root";
-  sig_samples["BprimeBprime_M-1600"]=eosarea_signal+"BprimeBprime_M-1600.root";
-  sig_samples["BprimeBprime_M-1700"]=eosarea_signal+"BprimeBprime_M-1700.root";
-  sig_samples["BprimeBprime_M-1800"]=eosarea_signal+"BprimeBprime_M-1800.root";
+  //sig_samples["BprimeBprime_M-800"]=eosarea_signal+"BprimeBprime_M-800.root";
+  sig_samples["BprimeBprime_M-900"]=eosarea_signal+"BpBp900.root";
+  sig_samples["BprimeBprime_M-1000"]=eosarea_signal+"BpBp1000.root";
+  sig_samples["BprimeBprime_M-1100"]=eosarea_signal+"BpBp1100.root";
+  sig_samples["BprimeBprime_M-1200"]=eosarea_signal+"BpBp1200.root";
+  sig_samples["BprimeBprime_M-1300"]=eosarea_signal+"BpBp1300.root";
+  sig_samples["BprimeBprime_M-1400"]=eosarea_signal+"BpBp1400.root";
+  sig_samples["BprimeBprime_M-1500"]=eosarea_signal+"BpBp1500.root";
+  sig_samples["BprimeBprime_M-1600"]=eosarea_signal+"BpBp1600.root";
+  sig_samples["BprimeBprime_M-1700"]=eosarea_signal+"BpBp1700.root";
+  sig_samples["BprimeBprime_M-1800"]=eosarea_signal+"BpBp1800.root";
 
 
   //data samples
-  data_samples["DataElEl2017B"]=eosdataarea+"DoubleEGRun2017B.root";
-  data_samples["DataElMu2017B"]=eosdataarea+"MuonEGRun2017B.root";
-  data_samples["DataMuMu2017B"]=eosdataarea+"DoubleMuonRun2017B.root";
-  data_samples["DataElEl2017C"]=eosdataarea+"DoubleEGRun2017C.root";
-  data_samples["DataElMu2017C"]=eosdataarea+"MuonEGRun2017C.root";
-  data_samples["DataMuMu2017C"]=eosdataarea+"DoubleMuonRun2017C.root";
-  data_samples["DataElEl2017D"]=eosdataarea+"DoubleEGRun2017D.root";
-  data_samples["DataElMu2017D"]=eosdataarea+"MuonEGRun2017D.root";
-  data_samples["DataMuMu2017D"]=eosdataarea+"DoubleMuonRun2017D.root";
-  data_samples["DataElEl2017E"]=eosdataarea+"DoubleEGRun2017E.root";
-  data_samples["DataElMu2017E"]=eosdataarea+"MuonEGRun2017E.root";
-  data_samples["DataMuMu2017E"]=eosdataarea+"DoubleMuonRun2017E.root";
-  data_samples["DataElEl2017F"]=eosdataarea+"DoubleEGRun2017F.root";
-  data_samples["DataElMu2017F"]=eosdataarea+"MuonEGRun2017F.root";
-//   data_samples["DataMuMu2017F"]=eosdataarea+"DoubleMuonRun2017F.root";
-//   data_samples["DataMuMu2017F"]=eosdataarea+"DoubleMuonRun2017F_TEST.root";
-  data_samples["DataMuMu2017F"]=eosdataarea+"DoubleMuonRun2017F_TEST_small.root";
-
+  data_samples["DataElEl2018A"]=eosdataarea+"EGammaRun2018A.root";
+  data_samples["DataElMu2018A"]=eosdataarea+"MuonEGRun2018A.root";
+  data_samples["DataMuMu2018A"]=eosdataarea+"DoubleMuonRun2018A.root";
+  data_samples["DataElEl2018B"]=eosdataarea+"EGammaRun2018B.root";
+  data_samples["DataElMu2018B"]=eosdataarea+"MuonEGRun2018B.root";
+  data_samples["DataMuMu2018B"]=eosdataarea+"DoubleMuonRun2018B.root";
+  data_samples["DataElEl2018C"]=eosdataarea+"EGammaRun2018C.root";
+  data_samples["DataElMu2018C"]=eosdataarea+"MuonEGRun2018C.root";
+  data_samples["DataMuMu2018C"]=eosdataarea+"DoubleMuonRun2018C.root";
+  data_samples["DataElEl2018D"]=eosdataarea+"EGammaRun2018D.root";
+  data_samples["DataElMu2018D"]=eosdataarea+"MuonEGRun2018D.root";
+  data_samples["DataMuMu2018D"]=eosdataarea+"DoubleMuonRun2018D.root";
 //   data_samples["NonPromptData"]=eosdataarea+"All_2017.root";
-  data_samples["NonPromptDataElEl2017B"]=eosdataarea+"DoubleEGRun2017B.root";
-  data_samples["NonPromptDataElMu2017B"]=eosdataarea+"MuonEGRun2017B.root";
-  data_samples["NonPromptDataMuMu2017B"]=eosdataarea+"DoubleMuonRun2017B.root";
-  data_samples["NonPromptDataElEl2017C"]=eosdataarea+"DoubleEGRun2017C.root";
-  data_samples["NonPromptDataElMu2017C"]=eosdataarea+"MuonEGRun2017C.root";
-  data_samples["NonPromptDataMuMu2017C"]=eosdataarea+"DoubleMuonRun2017C.root";
-  data_samples["NonPromptDataElEl2017D"]=eosdataarea+"DoubleEGRun2017D.root";
-  data_samples["NonPromptDataElMu2017D"]=eosdataarea+"MuonEGRun2017D.root";
-  data_samples["NonPromptDataMuMu2017D"]=eosdataarea+"DoubleMuonRun2017D.root";
-  data_samples["NonPromptDataElEl2017E"]=eosdataarea+"DoubleEGRun2017E.root";
-  data_samples["NonPromptDataElMu2017E"]=eosdataarea+"MuonEGRun2017E.root";
-  data_samples["NonPromptDataMuMu2017E"]=eosdataarea+"DoubleMuonRun2017E.root";
-  data_samples["NonPromptDataElEl2017F"]=eosdataarea+"DoubleEGRun2017F.root";
-  data_samples["NonPromptDataElMu2017F"]=eosdataarea+"MuonEGRun2017F.root";
-  data_samples["NonPromptDataMuMu2017F"]=eosdataarea+"DoubleMuonRun2017F.root";
+  data_samples["NonPromptDataElEl2018A"]=eosdataarea+"EGammaRun2018A.root";
+  data_samples["NonPromptDataElMu2018A"]=eosdataarea+"MuonEGRun2018A.root";
+  data_samples["NonPromptDataMuMu2018A"]=eosdataarea+"DoubleMuonRun2018A.root";
+  data_samples["NonPromptDataElEl2018B"]=eosdataarea+"EGammaRun2018B.root";
+  data_samples["NonPromptDataElMu2018B"]=eosdataarea+"MuonEGRun2018B.root";
+  data_samples["NonPromptDataMuMu2018B"]=eosdataarea+"DoubleMuonRun2018B.root";
+  data_samples["NonPromptDataElEl2018C"]=eosdataarea+"EGammaRun2018C.root";
+  data_samples["NonPromptDataElMu2018C"]=eosdataarea+"MuonEGRun2018C.root";
+  data_samples["NonPromptDataMuMu2018C"]=eosdataarea+"DoubleMuonRun2018C.root";
+  data_samples["NonPromptDataElEl2018D"]=eosdataarea+"EGammaRun2018D.root";
+  data_samples["NonPromptDataElMu2018D"]=eosdataarea+"MuonEGRun2018D.root";
+  data_samples["NonPromptDataMuMu2018D"]=eosdataarea+"DoubleMuonRun2018D.root";
 
 //   data_samples["ChargeMisID"]=eosdataarea+"All_2017.root";
-  data_samples["ChargeMisIDElEl2017B"]=eosdataarea+"DoubleEGRun2017B.root";
-  data_samples["ChargeMisIDElMu2017B"]=eosdataarea+"MuonEGRun2017B.root";
-  data_samples["ChargeMisIDElEl2017C"]=eosdataarea+"DoubleEGRun2017C.root";
-  data_samples["ChargeMisIDElMu2017C"]=eosdataarea+"MuonEGRun2017C.root";
-  data_samples["ChargeMisIDElEl2017D"]=eosdataarea+"DoubleEGRun2017D.root";
-  data_samples["ChargeMisIDElMu2017D"]=eosdataarea+"MuonEGRun2017D.root";
-  data_samples["ChargeMisIDElEl2017E"]=eosdataarea+"DoubleEGRun2017E.root";
-  data_samples["ChargeMisIDElMu2017E"]=eosdataarea+"MuonEGRun2017E.root";
-  data_samples["ChargeMisIDElEl2017F"]=eosdataarea+"DoubleEGRun2017F.root";
-  data_samples["ChargeMisIDElMu2017F"]=eosdataarea+"MuonEGRun2017F.root";
+  data_samples["ChargeMisIDElEl2018A"]=eosdataarea+"EGammaRun2018A.root";
+  data_samples["ChargeMisIDElMu2018A"]=eosdataarea+"MuonEGRun2018A.root";
+  data_samples["ChargeMisIDElEl2018B"]=eosdataarea+"EGammaRun2018B.root";
+  data_samples["ChargeMisIDElMu2018B"]=eosdataarea+"MuonEGRun2018B.root";
+  data_samples["ChargeMisIDElEl2018C"]=eosdataarea+"EGammaRun2018C.root";
+  data_samples["ChargeMisIDElMu2018C"]=eosdataarea+"MuonEGRun2018C.root";
+  data_samples["ChargeMisIDElEl2018D"]=eosdataarea+"EGammaRun2018D.root";
+  data_samples["ChargeMisIDElMu2018D"]=eosdataarea+"MuonEGRun2018D.root";
 
 
   bool signal=false;
@@ -167,7 +175,7 @@ int main(int argc, char* argv[]){
 
   //check usage
   bool correctusage=true;
-  if(argc!=6 || ( bg_samples.find(argv[1])==bg_samples.end() && sig_samples.find(argv[1])==sig_samples.end() && data_samples.find(argv[1])==data_samples.end() && argv1!="NonPromptMC") ) correctusage=false; //edited by rizki
+  if(argc!=7 || ( bg_samples.find(argv[1])==bg_samples.end() && sig_samples.find(argv[1])==sig_samples.end() && data_samples.find(argv[1])==data_samples.end() && argv1!="NonPromptMC") ) correctusage=false; //edited by rizki
   if(!correctusage){
     std::cout<<"Need to specify electron and muon ID as well as supply argument for sample name of one of the following"<<std::endl;
     std::cout<<std::endl<<"********** Background *********"<<std::endl;
@@ -190,7 +198,7 @@ int main(int argc, char* argv[]){
   if(sample.find("NonPrompt")!=std::string::npos) bg_np = true;
 
   //check BR for signal - added by rizki
-  if(signal && (argc!=6 ||
+  if(signal && (argc!=7 ||
                 sigDecay=="" ||
                 !(sigDecay=="BWBW" || sigDecay=="THBW" || sigDecay=="TZBW"|| sigDecay=="TZTZ"|| sigDecay=="TZTH"|| sigDecay=="THTH" ||
                   sigDecay=="TWTW" || sigDecay=="BHTW" || sigDecay=="BZTW"|| sigDecay=="BZBZ"|| sigDecay=="BZBH"|| sigDecay=="BHBH")
@@ -213,15 +221,33 @@ int main(int argc, char* argv[]){
         if(signal) std::cout << " -- signal Decay : " << sigDecay << std::endl;
         std::cout << std::endl;
   }
+  std::string sampleName = argv[1];
+  if(signal){
+        std::string massStr = sampleName.substr(sampleName.find("M-")+2,sampleName.length()-sampleName.find("M-")-2);
+        if(sampleName.find("Tprime") != std::string::npos) sampleName = "TpTp"+massStr;
+        else if (sampleName.find("Bprime") != std::string::npos) sampleName = "BpBp"+massStr;
+        else std::cout<<"WARNING!!! Incorrect signal sample name." <<std::endl;
+  }
+  if(DEBUG_COUT) std::cout<<"sample name : " << sampleName << std::endl;
 
   //make output file
   std::stringstream outnamestream;
-  if(signal) outnamestream<<argv[1]<<"_"<<sigDecay<<"_Mu"<<muID<<"_El"<<elID<<"_"<<era<<".root"; //edited by rizki
-  else outnamestream<<argv[1]<<"_Mu"<<muID<<"_El"<<elID<<"_"<<era<<".root";
+  if(signal) {
+    if (elPRunc) outnamestream<<argv[1]<<"_"<<sigDecay<<"_Mu"<<muID<<"_El"<<elID<<"_"<<era<<"_UnityElPR.root"; //added by Jess
+    else if (muPRunc) outnamestream<<argv[1]<<"_"<<sigDecay<<"_Mu"<<muID<<"_El"<<elID<<"_"<<era<<"_UnityMuPR.root"; //added by Jess
+    else outnamestream<<argv[1]<<"_"<<sigDecay<<"_Mu"<<muID<<"_El"<<elID<<"_"<<era<<".root"; //edited by rizki
+  }
+  else {
+    if (elPRunc) outnamestream<<argv[1]<<"_Mu"<<muID<<"_El"<<elID<<"_"<<era<<"_UnityElPR.root"; //added by Jess
+    else if (muPRunc) outnamestream<<argv[1]<<"_Mu"<<muID<<"_El"<<elID<<"_"<<era<<"_UnityMuPR.root"; //added by Jess
+    else outnamestream<<argv[1]<<"_Mu"<<muID<<"_El"<<elID<<"_"<<era<<".root";
+  }
 
   std::string outname = outnamestream.str();
   TFile* fsig = new TFile(outname.c_str(),"RECREATE");
 
+  TreeMaker* tm_ss = new TreeMaker();
+  tm_ss->InitTree("tEvts_ss");
   TreeMaker* tm_ssdl = new TreeMaker();
   tm_ssdl->InitTree("tEvts_ssdl");
   TreeMaker* tm_sZVeto = new TreeMaker();
@@ -229,9 +255,31 @@ int main(int argc, char* argv[]){
   TreeMaker* tm_DilepMassCut = new TreeMaker();
   tm_DilepMassCut->InitTree("tEvts_DilepMassCut");
 
+  TreeMaker* tm_sZVeto_JECup = new TreeMaker();
+  tm_sZVeto_JECup->InitTree("tEvts_sZVeto_JECup");
+  TreeMaker* tm_sZVeto_JECdn  = new TreeMaker();
+  tm_sZVeto_JECdn->InitTree("tEvts_sZVeto_JECdn");
+  TreeMaker* tm_sZVeto_JERup = new TreeMaker();
+  tm_sZVeto_JERup->InitTree("tEvts_sZVeto_JERup");
+  TreeMaker* tm_sZVeto_JERdn = new TreeMaker();
+  tm_sZVeto_JERdn->InitTree("tEvts_sZVeto_JERdn");
+
   TreeReader* tr;
   tr = new TreeReader(filename.c_str(),"ljmet/ljmet",!data,true);
-
+  /*
+  TreeReader_multipleTree* tr;
+  TString treename_JECup = "ljmet_JECup/ljmet_JECup";
+  TString treename_JECdown = "ljmet_JECdown/ljmet_JECdown";
+  TString treename_JERup = "ljmet_JERup/ljmet_JERup";
+  TString treename_JERdown = "ljmet_JERdown/ljmet_JERdown";
+  if(data) {
+    treename_JECup = "ljmet/ljmet";
+    treename_JECdown = "ljmet/ljmet";
+    treename_JERup = "ljmet/ljmet";
+    treename_JERdown = "ljmet/ljmet";
+  }
+  tr = new TreeReader_multipleTree(filename.c_str(),"ljmet/ljmet",treename_JECup, treename_JECdown, treename_JERup, treename_JERdown,!data,true);
+  */
   TTree* t=tr->tree;
 
   //histogram for cutflow
@@ -270,6 +318,8 @@ int main(int argc, char* argv[]){
 
   //histogram for pdf uncertainties
   TH2F* hist_pdfHT = new TH2F("hist_pdfHT","PDF Weights",500,0,5,30,0,3000);
+  TH2F* hist_pdf4LHCHT_nom = new TH2F("hist_pdf4LHCHT_nom","PDF4LHC nominal Weights",500,0,5,30,0,3000);
+  TH2F* hist_pdf4LHCHT = new TH2F("hist_pdf4LHCHT","PDF4LHC Weights",500,0,5,30,0,3000);
   //histogram for scale uncertainties - one for all and then separate ones
   TH2F* hist_scaleHT = new TH2F("hist_scaleHT","MC Scale Uncertainties Combined",500,0,5,30,0,3000);//total
   TH1F* hist_scaleHT_nom = new TH1F("hist_scaleHT_nom","MC Scale Uncertainties ID:Nominal",30,0,3000);//1002
@@ -290,13 +340,15 @@ int main(int argc, char* argv[]){
 
   //added by rizki
   TH2F* pdf_hist = new TH2F("pdf_hist","PDF Weights",100,0,100,30,0,3000);  // just need pdf vars with yields
-
+  TH2F* pdf4LHC_hist = new TH2F("pdf4LHC_hist","PDF Weights",31,0,31,30,0,3000);
 
   // Load Charge MisID eta weights in:
   std::cout << "Loading CMID file ..." << std::endl;
   std::string cmidFilename = "../scripts/ChargeMisID/ChargeMisID_Data_All_Electrons_"+elID+"_corrected.root";
   //for the moment there is no new measurement for MVA2017 so use 2016.
-  if(elID=="MVA2017TightV2RC")cmidFilename = "../scripts/ChargeMisID/ChargeMisID_Data_All_Electrons_MVA2017TightV2IsoRC_corrected.root";
+  //if(elID=="MVA2017TightV2RC")cmidFilename = "../scripts/ChargeMisID/ChargeMisID_Data_All_Electrons_MVA2017TightV2IsoRC_corrected.root";
+  //if(argv1=="DataElEl2017F_TEST" && elID=="MVA2017TightV2RC") cmidFilename = "../scripts/ChargeMisID/ChargeMisID_Data_2017F_Electrons_MVA2017TightV2IsoRC_corrected.root";
+  if(elID=="MVA2017TightV2IsoTightRC")cmidFilename = "../scripts/ChargeMisID/ChargeMisID_likelihood_Data_2018All_Electrons_MVA2017TightV2IsoTightRC.root";
   TFile* eWfile = new TFile(cmidFilename.c_str());
   std::vector<float> etaWeights_lpt = getEtaWeights_lpt(eWfile);
   std::vector<float> etaWeights_hpt = getEtaWeights_hpt(eWfile);
@@ -306,22 +358,25 @@ int main(int argc, char* argv[]){
 
 
   //load pileup hist
-  std::cout << "Loading PU files ..." << std::endl;
-  TFile* fpu = new TFile("PileupWeights.root");
-  TH1F* hpu = (TH1F*) fpu->Get("h_weights");
+  //std::cout << "Loading PU files ..." << std::endl;
+  //TFile* fpu = new TFile("PileupWeights.root");
+  //TH1F* hpu = (TH1F*) fpu->Get("h_weights");
   //load pileup hist - down
-  TFile* fpuDown = new TFile("PileupWeights_Down.root");
-  TH1F* hpuDown = (TH1F*) fpuDown->Get("h_weights");
+  //TFile* fpuDown = new TFile("PileupWeights_Down.root");
+  //TH1F* hpuDown = (TH1F*) fpuDown->Get("h_weights");
   //load pileup hist
-  TFile* fpuUp = new TFile("PileupWeights_Up.root");
-  TH1F* hpuUp = (TH1F*) fpuUp->Get("h_weights");
-  std::cout << "Done: Loading PU files." << std::endl;
+  //TFile* fpuUp = new TFile("PileupWeights_Up.root");
+  //TH1F* hpuUp = (TH1F*) fpuUp->Get("h_weights");
+  //std::cout << "Done: Loading PU files." << std::endl;
 
 
   //get prompt rate according to ID * constant for muons ****
   float muPromptRate;
   std::vector<float> muPromptRates;
-  if(muID=="CBTight") muPromptRate=0.940;
+  if (muPRunc){
+    for(int i=0;i<14;i++) muPromptRates.push_back(1.0);
+  }
+  else if(muID=="CBTight") muPromptRate=0.940;
   else if(muID=="CBTightMiniIso") muPromptRate=0.956;
 //   else if(muID=="CBTightMiniIsoTight") muPromptRate=0.943;
   else if(muID=="CBTightMiniIsoTight"){
@@ -357,8 +412,8 @@ int main(int argc, char* argv[]){
 	// pt bin: 300-400, PR: 0.951185+/-0.00605169
 	// pt bin: 400-500, PR: 0.932773+/-0.0147285
 	// pt bin: 500-1000, PR: 0.929078+/-0.025443
-	
-	muPromptRates.push_back(0.894);
+/*
+    muPromptRates.push_back(0.894);
     muPromptRates.push_back(0.930);
     muPromptRates.push_back(0.954);
     muPromptRates.push_back(0.962);
@@ -373,14 +428,47 @@ int main(int argc, char* argv[]){
     muPromptRates.push_back(0.951);
     muPromptRates.push_back(0.932);
     muPromptRates.push_back(0.929);
-
-  
+*/
+    //added by Jess 11-27-2020
+    //Opening file: ../scripts/PromptRate/Outputs_2018data_isoTrig_forTrilep/PromptRate_Graph_All_MVA2017TightV2IsoTightRC_isoTrig_forTrilep.root
+    //pt bin: 30-40, PR: 0.901128+/-0.000106491
+    //pt bin: 40-50, PR: 0.941808+/-7.60221e-05
+    //pt bin: 50-60, PR: 0.959551+/-0.000127237
+    //pt bin: 60-70, PR: 0.969682+/-0.000207045
+    //pt bin: 70-80, PR: 0.972126+/-0.000342536
+    //pt bin: 80-90, PR: 0.972367+/-0.000495816
+    //pt bin: 90-100, PR: 0.971629+/-0.000654343
+    //pt bin: 100-125, PR: 0.972171+/-0.000582344
+    //pt bin: 125-150, PR: 0.972471+/-0.000886017
+    //pt bin: 150-200, PR: 0.967743+/-0.00110169
+    //pt bin: 200-300, PR: 0.964977+/-0.00172115
+    //pt bin: 300-400, PR: 0.951493+/-0.00487995
+    //pt bin: 400-500, PR: 0.961382+/-0.00978131
+    //pt bin: 500-1000, PR: 0.935622+/-0.0183726
+    //mean = 0.958154 ; RMS = 0.0195215
+    muPromptRates.push_back(0.901);
+    muPromptRates.push_back(0.942);
+    muPromptRates.push_back(0.960);
+    muPromptRates.push_back(0.970);
+    muPromptRates.push_back(0.972);
+    muPromptRates.push_back(0.972);
+    muPromptRates.push_back(0.972);
+    muPromptRates.push_back(0.972);
+    muPromptRates.push_back(0.972);
+    muPromptRates.push_back(0.968);
+    muPromptRates.push_back(0.965);
+    muPromptRates.push_back(0.951);
+    muPromptRates.push_back(0.961);
+    muPromptRates.push_back(0.936);
   }
   else{ std::cout<<"Didn't pick a valid muon ID. Exiting..."<<std::endl; return 0;}
 
   //get electron prompt rate
   std::vector<float> elPromptRates;
-  if(elID=="CBTight" || elID=="CBTightRC") elPromptRates.push_back(0.7259);
+  if (elPRunc){
+    for(int i=0;i<14;i++) elPromptRates.push_back(1.0);
+  }
+  else if(elID=="CBTight" || elID=="CBTightRC") elPromptRates.push_back(0.7259);
   else if(elID=="MVATightCC" || elID=="MVATightRC") elPromptRates.push_back(0.839);
   else if(elID=="MVA2016TightCC" || elID=="MVA2016TightRC"){
     elPromptRates.push_back(0.904);
@@ -432,7 +520,7 @@ int main(int argc, char* argv[]){
 	// pt bin: 400-500, PR: 0.791139+/-0.0354723
 	// pt bin: 500-1000, PR: 1.18034e-316+/--1
 
-    elPromptRates.push_back(0.808);
+    //elPromptRates.push_back(0.808);
     elPromptRates.push_back(0.852);
     elPromptRates.push_back(0.873);
     elPromptRates.push_back(0.880);
@@ -448,6 +536,40 @@ int main(int argc, char* argv[]){
     elPromptRates.push_back(0.80);
     elPromptRates.push_back(0.80);
 
+  }
+  else if(elID=="MVA2017TightV2IsoTightRC"){
+    //added by Jess 10-13-2020
+    //Opening file: ../scripts/PromptRate/Outputs_2018data_isoTrig_forTrilep/PromptRate_Graph_All_MVA2017TightV2IsoTightRC_isoTrig_forTrilep.root
+    //pt bin: 30-40, PR: 0.785024+/-0.00018126
+    //pt bin: 40-50, PR: 0.840857+/-0.000150694
+    //pt bin: 50-60, PR: 0.870809+/-0.000273156
+    //pt bin: 60-70, PR: 0.883434+/-0.000488534
+    //pt bin: 70-80, PR: 0.888326+/-0.000813609
+    //pt bin: 80-90, PR: 0.886918+/-0.00117244
+    //pt bin: 90-100, PR: 0.889993+/-0.00149505
+    //pt bin: 100-125, PR: 0.872105+/-0.00138833
+    //pt bin: 125-150, PR: 0.868276+/-0.00212473
+    //pt bin: 150-200, PR: 0.862877+/-0.00242515
+    //pt bin: 200-300, PR: 0.852351+/-0.0037382
+    //pt bin: 300-400, PR: 0.836686+/-0.00928862
+    //pt bin: 400-500, PR: 0.815851+/-0.0198796
+    //pt bin: 500-1000, PR: 0.826733+/-0.029112
+    //mean = 0.855731 ; RMS = 0.0301265
+    
+    elPromptRates.push_back(0.785);
+    elPromptRates.push_back(0.841);
+    elPromptRates.push_back(0.871);
+    elPromptRates.push_back(0.883);
+    elPromptRates.push_back(0.888);
+    elPromptRates.push_back(0.887);
+    elPromptRates.push_back(0.890);
+    elPromptRates.push_back(0.872);
+    elPromptRates.push_back(0.868);
+    elPromptRates.push_back(0.863);
+    elPromptRates.push_back(0.852);
+    elPromptRates.push_back(0.837);
+    elPromptRates.push_back(0.816);
+    elPromptRates.push_back(0.827);
   }
   else if(elID=="MVATightMedIsoRC") elPromptRates.push_back(0.859);
   else if(elID=="MVATightNew" || elID=="MVATightNewRC") elPromptRates.push_back(0.8618);
@@ -469,6 +591,7 @@ int main(int argc, char* argv[]){
 //     muFakeRates.push_back(0.199);
 //     muFakeRates.push_back(0.256);
 //     muFakeRates.push_back(0.319);
+/*
     //Rizki's measurement for 2017 data: (April 30, 2019) from plots_April17-2019_isoTrig_forTrilep
 	// Mu:
 	// eta bin: -2.4 to -2.1, FR: 0.641026 +/- 0.0884624
@@ -489,6 +612,46 @@ int main(int argc, char* argv[]){
     muFakeRates.push_back(0.508);
     muFakeRates.push_back(0.523);
     muFakeRates.push_back(0.528);
+*/
+    //Using singleLep data. Mu17+Mu20 triggers. Opening file "../scripts/FakeRate/plots2018_082020_FakeRate_isoTrig_forTrilep_Mu20/MuonFakeRate-vs-Pt_2018All_CBTightMiniIsoTight_isoTrig_forTrilep.root"
+    //eta bin: -2.4 to -2.1, FR: 0.405021 +/- 0.0146131
+    //eta bin: -2.1 to -1.2, FR: 0.334534 +/- 0.00659194
+    //eta bin: -1.2 to -0.9, FR: 0.269733 +/- 0.0108583
+    //eta bin: -0.9 to -0.4, FR: 0.257283 +/- 0.00836451
+    //eta bin: -0.4 to 0.4, FR: 0.266817 +/- 0.00675769
+    //eta bin: 0.4 to 0.9, FR: 0.275318 +/- 0.00844677
+    //eta bin: 0.9 to 1.2, FR: 0.288361 +/- 0.011188
+    //eta bin: 1.2 to 2.1, FR: 0.340944 +/- 0.00663306
+    //eta bin: 2.1 to 2.4, FR: 0.399832 +/- 0.0146273
+    //muFakeRates.push_back(0.405);
+    //muFakeRates.push_back(0.335);
+    //muFakeRates.push_back(0.270);
+    //muFakeRates.push_back(0.257);
+    //muFakeRates.push_back(0.267);
+    //muFakeRates.push_back(0.275);
+    //muFakeRates.push_back(0.288);
+    //muFakeRates.push_back(0.341);
+    //muFakeRates.push_back(0.400);
+
+    //Using singleLep data. Mu17 triggers. Opening file "../scripts/FakeRate/plots2018_082020_FakeRate_isoTrig_forTrilep_AllPt_OneTrig/MuonFakeRate-vs-Pt_2018All_CBTightMiniIsoTight_isoTrig_forTrilep.root"
+    //eta bin: -2.4 to -2.1, FR: 0.361646 +/- 0.0146501
+    //eta bin: -2.1 to -1.2, FR: 0.305113 +/- 0.00676984
+    //eta bin: -1.2 to -0.9, FR: 0.247365 +/- 0.0110519
+    //eta bin: -0.9 to -0.4, FR: 0.220794 +/- 0.00825365
+    //eta bin: -0.4 to 0.4, FR: 0.234553 +/- 0.00671655
+    //eta bin: 0.4 to 0.9, FR: 0.236455 +/- 0.00855168
+    //eta bin: 0.9 to 1.2, FR: 0.244416 +/- 0.0111735
+    //eta bin: 1.2 to 2.1, FR: 0.305631 +/- 0.00676941
+    //eta bin: 2.1 to 2.4, FR: 0.376316 +/- 0.0147811
+    muFakeRates.push_back(0.362);
+    muFakeRates.push_back(0.305);
+    muFakeRates.push_back(0.247);
+    muFakeRates.push_back(0.221);
+    muFakeRates.push_back(0.235);
+    muFakeRates.push_back(0.236);
+    muFakeRates.push_back(0.244);
+    muFakeRates.push_back(0.306);
+    muFakeRates.push_back(0.376);
 
   }
   else{ std::cout<<"Didn't pick a valid muon ID. Exiting..."<<std::endl; return 0;}
@@ -543,6 +706,40 @@ int main(int argc, char* argv[]){
     elFakeRates.push_back(0.35);
     elFakeRates.push_back(0.558);
     elFakeRates.push_back(0.513);
+  }
+  else if(elID=="MVA2017TightV2IsoTightRC"){
+    // added by Jess 11-27-2020
+    // Opening file: "../scripts/FakeRate/plots2018_082020_isoTrig_forTrilep/FakeRate_Graph_2018All_MVA2017TightV2IsoTightRC.root";
+    // eta bin: -2.4 to -1.57, FR: 0.170594 +/- 0.00459516
+    // eta bin: -1.57 to -0.8, FR: 0.156282 +/- 0.00683312
+    // eta bin: -0.8 to -0.4, FR: 0.143367 +/- 0.00884668
+    // eta bin: -0.4 to 0.4, FR: 0.133116 +/- 0.00629998
+    // eta bin: 0.4 to 0.8, FR: 0.153121 +/- 0.00903473
+    // eta bin: 0.8 to 1.57, FR: 0.152293 +/- 0.00681867
+    // eta bin: 1.57 to 2.4, FR: 0.180682 +/- 0.00498344
+    //elFakeRates.push_back(0.171);
+    //elFakeRates.push_back(0.156);
+    //elFakeRates.push_back(0.143);
+    //elFakeRates.push_back(0.133);
+    //elFakeRates.push_back(0.153);
+    //elFakeRates.push_back(0.152);
+    //elFakeRates.push_back(0.181);
+    // added by Jess 12-07-2020
+    // Opening file: "../scripts/FakeRate/plots2018_082020_FakeRate_isoTrig_forTrilep_AllPt_OneTrig/FakeRate_Graph_2018All_MVA2017TightV2IsoTightRC.root";
+    // eta bin: -2.4 to -1.57, FR: 0.131985 +/- 0.00565513
+    // eta bin: -1.57 to -0.8, FR: 0.117433 +/- 0.00906349
+    // eta bin: -0.8 to -0.4, FR: 0.116995 +/- 0.0119044
+    // eta bin: -0.4 to 0.4, FR: 0.101449 +/- 0.00789849
+    // eta bin: 0.4 to 0.8, FR: 0.13728 +/- 0.012849
+    // eta bin: 0.8 to 1.57, FR: 0.127232 +/- 0.00946525
+    // eta bin: 1.57 to 2.4, FR: 0.136189 +/- 0.00629332
+    elFakeRates.push_back(0.132);
+    elFakeRates.push_back(0.117);
+    elFakeRates.push_back(0.117);
+    elFakeRates.push_back(0.101);
+    elFakeRates.push_back(0.137);
+    elFakeRates.push_back(0.127);
+    elFakeRates.push_back(0.136);
   }
   else if(elID=="MVATightMedIsoRC") elFakeRates.push_back(0.354);
   else if(elID=="MVATightNew" || elID=="MVATightNewRC") elFakeRates.push_back(0.28);
@@ -611,7 +808,6 @@ int main(int argc, char* argv[]){
 
     tr->GetEntry(ient);
 
-
     //weight for non prompt method
     float NPweight=0;
     float NPAltWeight=0;
@@ -622,7 +818,7 @@ int main(int argc, char* argv[]){
     //make vector of good Leptons change based on era --> No need anymore --rizki
     std::vector<TLepton*> goodLeptons;
     if(isoTrig || nonIso_HTtrig){
-      goodLeptons = makeLeptons(tr->allMuons, tr->allElectrons,20.0,elID,muID,bg_np);
+      goodLeptons = makeLeptons(tr->allMuons, tr->allElectrons,30.0,elID,muID,bg_np);
     }
     else{
       goodLeptons = makeLeptons(tr->allMuons, tr->allElectrons,35.0,elID,muID,bg_np);
@@ -693,8 +889,9 @@ int main(int argc, char* argv[]){
     //now prune the goodleptons of the ssleptons
     std::vector<TLepton*> vNonSSLep = pruneSSLep(goodLeptons,vSSLep);
 
+  // move to after tm_ss->FillTree
     //added by rizki - require exactly 2 leptons, only the SSdilep, means 0 extra leptons
-    if(vNonSSLep.size()!=0) continue;
+    //if(vNonSSLep.size()!=0) continue;
 
     float ew1,ew2=0.0;
     //with vector now get weight for DY Events
@@ -763,9 +960,9 @@ int main(int argc, char* argv[]){
 
         if(isoTrig){
                 //isoTrig
-          if(mumu && tr->HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8) skip =false;
+          if(mumu && tr->HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v) skip =false;
           if(elmu && (tr->HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v || tr->HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v)) skip = false;
-          if(elel && (tr->HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v || tr->HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v)) skip = false;
+          if(elel && (tr->HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v)) skip = false;
         }
         else{
                 if(nonIso_HTtrig){
@@ -888,14 +1085,19 @@ int main(int argc, char* argv[]){
 
 
     //get trigger scale factors
-    float trigSF;
-    if(data) trigSF = 1.0;
-    else trigSF = getTrigSF(vSSLep,era);
+    std::vector<float> vTrigSF;
+    if(!data) vTrigSF = getTrigSF(vSSLep,era);
+    else {vTrigSF.push_back(1.0); vTrigSF.push_back(1.0); vTrigSF.push_back(1.0);}
+    float trigSF = vTrigSF.at(0);
+    float trigSFup = vTrigSF.at(1);
+    float trigSFdn = vTrigSF.at(2);
 
     //now get lepton ID Scale Factors
-    float lepIDSF;
-    if(data) lepIDSF = 1.0;
-    else lepIDSF = getLepIDSF(vSSLep);
+    std::vector<float> lepIDSF_vec = getLepIDSF(vSSLep);
+    float lepIDSF, lepIDSFup, lepIDSFdn;
+    if(data) {lepIDSF = 1.0; lepIDSFup = 1.0; lepIDSFdn = 1.0;}
+    else {lepIDSF = lepIDSF_vec.at(0); lepIDSFup = lepIDSF_vec.at(1); lepIDSFdn = lepIDSF_vec.at(2);}
+
     float lepIsoSF;
     if(data) lepIsoSF = 1.0;
     else lepIsoSF = getLepIsoSF(vSSLep);
@@ -913,74 +1115,74 @@ int main(int argc, char* argv[]){
     float lep2PromptRate=0.0;
 //     if(vSSLep.at(0)->isMu) lep1PromptRate=muPromptRate;
     if(vSSLep.at(0)->isMu){
-      if(vSSLep.at(0)->pt<30) lep1PromptRate=muPromptRates.at(0);
-      else if(vSSLep.at(0)->pt<40) lep1PromptRate=muPromptRates.at(1);
-      else if(vSSLep.at(0)->pt<50) lep1PromptRate=muPromptRates.at(2);
-      else if(vSSLep.at(0)->pt<60) lep1PromptRate=muPromptRates.at(3);
-      else if(vSSLep.at(0)->pt<70) lep1PromptRate=muPromptRates.at(4);
-      else if(vSSLep.at(0)->pt<80) lep1PromptRate=muPromptRates.at(5);
-      else if(vSSLep.at(0)->pt<90) lep1PromptRate=muPromptRates.at(6);
-      else if(vSSLep.at(0)->pt<100) lep1PromptRate=muPromptRates.at(7);
-      else if(vSSLep.at(0)->pt<125) lep1PromptRate=muPromptRates.at(8);
-      else if(vSSLep.at(0)->pt<150) lep1PromptRate=muPromptRates.at(9);
-      else if(vSSLep.at(0)->pt<200) lep1PromptRate=muPromptRates.at(10);
-      else if(vSSLep.at(0)->pt<300) lep1PromptRate=muPromptRates.at(11);
-      else if(vSSLep.at(0)->pt<400) lep1PromptRate=muPromptRates.at(12);
-      else if(vSSLep.at(0)->pt<500) lep1PromptRate=muPromptRates.at(13);
-      else lep1PromptRate = muPromptRates.at(14);    
+      //if(vSSLep.at(0)->pt<30) lep1PromptRate=muPromptRates.at(0);
+      if(vSSLep.at(0)->pt<40) lep1PromptRate=muPromptRates.at(0);
+      else if(vSSLep.at(0)->pt<50) lep1PromptRate=muPromptRates.at(1);
+      else if(vSSLep.at(0)->pt<60) lep1PromptRate=muPromptRates.at(2);
+      else if(vSSLep.at(0)->pt<70) lep1PromptRate=muPromptRates.at(3);
+      else if(vSSLep.at(0)->pt<80) lep1PromptRate=muPromptRates.at(4);
+      else if(vSSLep.at(0)->pt<90) lep1PromptRate=muPromptRates.at(5);
+      else if(vSSLep.at(0)->pt<100) lep1PromptRate=muPromptRates.at(6);
+      else if(vSSLep.at(0)->pt<125) lep1PromptRate=muPromptRates.at(7);
+      else if(vSSLep.at(0)->pt<150) lep1PromptRate=muPromptRates.at(8);
+      else if(vSSLep.at(0)->pt<200) lep1PromptRate=muPromptRates.at(9);
+      else if(vSSLep.at(0)->pt<300) lep1PromptRate=muPromptRates.at(10);
+      else if(vSSLep.at(0)->pt<400) lep1PromptRate=muPromptRates.at(11);
+      else if(vSSLep.at(0)->pt<500) lep1PromptRate=muPromptRates.at(12);
+      else lep1PromptRate = muPromptRates.at(13);    
     }
     else{
-      if(vSSLep.at(0)->pt<30) lep1PromptRate=elPromptRates.at(0);
-      else if(vSSLep.at(0)->pt<40) lep1PromptRate=elPromptRates.at(1);
-      else if(vSSLep.at(0)->pt<50) lep1PromptRate=elPromptRates.at(2);
-      else if(vSSLep.at(0)->pt<60) lep1PromptRate=elPromptRates.at(3);
-      else if(vSSLep.at(0)->pt<70) lep1PromptRate=elPromptRates.at(4);
-      else if(vSSLep.at(0)->pt<80) lep1PromptRate=elPromptRates.at(5);
-      else if(vSSLep.at(0)->pt<90) lep1PromptRate=elPromptRates.at(6);
-      else if(vSSLep.at(0)->pt<100) lep1PromptRate=elPromptRates.at(7);
-      else if(vSSLep.at(0)->pt<125) lep1PromptRate=elPromptRates.at(8);
-      else if(vSSLep.at(0)->pt<150) lep1PromptRate=elPromptRates.at(9);
-      else if(vSSLep.at(0)->pt<200) lep1PromptRate=elPromptRates.at(10);
-      else if(vSSLep.at(0)->pt<300) lep1PromptRate=elPromptRates.at(11);
-      else if(vSSLep.at(0)->pt<400) lep1PromptRate=elPromptRates.at(12);
-      else if(vSSLep.at(0)->pt<500) lep1PromptRate=elPromptRates.at(13);
-      else lep1PromptRate = elPromptRates.at(14);
+      //if(vSSLep.at(0)->pt<30) lep1PromptRate=elPromptRates.at(0);
+      if(vSSLep.at(0)->pt<40) lep1PromptRate=elPromptRates.at(0);
+      else if(vSSLep.at(0)->pt<50) lep1PromptRate=elPromptRates.at(1);
+      else if(vSSLep.at(0)->pt<60) lep1PromptRate=elPromptRates.at(2);
+      else if(vSSLep.at(0)->pt<70) lep1PromptRate=elPromptRates.at(3);
+      else if(vSSLep.at(0)->pt<80) lep1PromptRate=elPromptRates.at(4);
+      else if(vSSLep.at(0)->pt<90) lep1PromptRate=elPromptRates.at(5);
+      else if(vSSLep.at(0)->pt<100) lep1PromptRate=elPromptRates.at(6);
+      else if(vSSLep.at(0)->pt<125) lep1PromptRate=elPromptRates.at(7);
+      else if(vSSLep.at(0)->pt<150) lep1PromptRate=elPromptRates.at(8);
+      else if(vSSLep.at(0)->pt<200) lep1PromptRate=elPromptRates.at(9);
+      else if(vSSLep.at(0)->pt<300) lep1PromptRate=elPromptRates.at(10);
+      else if(vSSLep.at(0)->pt<400) lep1PromptRate=elPromptRates.at(11);
+      else if(vSSLep.at(0)->pt<500) lep1PromptRate=elPromptRates.at(12);
+      else lep1PromptRate = elPromptRates.at(13);
     }
 
     if(vSSLep.at(1)->isMu) lep2PromptRate=muPromptRate;
     if(vSSLep.at(1)->isMu){
-      if(vSSLep.at(1)->pt<30) lep2PromptRate=muPromptRates.at(0);
-      else if(vSSLep.at(1)->pt<40) lep2PromptRate=muPromptRates.at(1);
-      else if(vSSLep.at(1)->pt<50) lep2PromptRate=muPromptRates.at(2);
-      else if(vSSLep.at(1)->pt<60) lep2PromptRate=muPromptRates.at(3);
-      else if(vSSLep.at(1)->pt<70) lep2PromptRate=muPromptRates.at(4);
-      else if(vSSLep.at(1)->pt<80) lep2PromptRate=muPromptRates.at(5);
-      else if(vSSLep.at(1)->pt<90) lep2PromptRate=muPromptRates.at(6);
-      else if(vSSLep.at(1)->pt<100) lep2PromptRate=muPromptRates.at(7);
-      else if(vSSLep.at(1)->pt<125) lep2PromptRate=muPromptRates.at(8);
-      else if(vSSLep.at(1)->pt<150) lep2PromptRate=muPromptRates.at(9);
-      else if(vSSLep.at(1)->pt<200) lep2PromptRate=muPromptRates.at(10);
-      else if(vSSLep.at(1)->pt<300) lep2PromptRate=muPromptRates.at(11);
-      else if(vSSLep.at(1)->pt<400) lep2PromptRate=muPromptRates.at(12);
-      else if(vSSLep.at(1)->pt<500) lep2PromptRate=muPromptRates.at(13);
-      else lep2PromptRate = muPromptRates.at(14);    
+      //if(vSSLep.at(1)->pt<30) lep2PromptRate=muPromptRates.at(0);
+      if(vSSLep.at(1)->pt<40) lep2PromptRate=muPromptRates.at(0);
+      else if(vSSLep.at(1)->pt<50) lep2PromptRate=muPromptRates.at(1);
+      else if(vSSLep.at(1)->pt<60) lep2PromptRate=muPromptRates.at(2);
+      else if(vSSLep.at(1)->pt<70) lep2PromptRate=muPromptRates.at(3);
+      else if(vSSLep.at(1)->pt<80) lep2PromptRate=muPromptRates.at(4);
+      else if(vSSLep.at(1)->pt<90) lep2PromptRate=muPromptRates.at(5);
+      else if(vSSLep.at(1)->pt<100) lep2PromptRate=muPromptRates.at(6);
+      else if(vSSLep.at(1)->pt<125) lep2PromptRate=muPromptRates.at(7);
+      else if(vSSLep.at(1)->pt<150) lep2PromptRate=muPromptRates.at(8);
+      else if(vSSLep.at(1)->pt<200) lep2PromptRate=muPromptRates.at(9);
+      else if(vSSLep.at(1)->pt<300) lep2PromptRate=muPromptRates.at(10);
+      else if(vSSLep.at(1)->pt<400) lep2PromptRate=muPromptRates.at(11);
+      else if(vSSLep.at(1)->pt<500) lep2PromptRate=muPromptRates.at(12);
+      else lep2PromptRate = muPromptRates.at(13);    
     }
     else {
-      if(vSSLep.at(1)->pt<30) lep2PromptRate=elPromptRates.at(0);
-      else if(vSSLep.at(1)->pt<40) lep2PromptRate=elPromptRates.at(1);
-      else if(vSSLep.at(1)->pt<50) lep2PromptRate=elPromptRates.at(2);
-      else if(vSSLep.at(1)->pt<60) lep2PromptRate=elPromptRates.at(3);
-      else if(vSSLep.at(1)->pt<70) lep2PromptRate=elPromptRates.at(4);
-      else if(vSSLep.at(1)->pt<80) lep2PromptRate=elPromptRates.at(5);
-      else if(vSSLep.at(1)->pt<90) lep2PromptRate=elPromptRates.at(6);
-      else if(vSSLep.at(1)->pt<100) lep2PromptRate=elPromptRates.at(7);
-      else if(vSSLep.at(1)->pt<125) lep2PromptRate=elPromptRates.at(8);
-      else if(vSSLep.at(1)->pt<150) lep2PromptRate=elPromptRates.at(9);
-      else if(vSSLep.at(1)->pt<200) lep2PromptRate=elPromptRates.at(10);
-      else if(vSSLep.at(1)->pt<300) lep2PromptRate=elPromptRates.at(11);
-      else if(vSSLep.at(1)->pt<400) lep2PromptRate=elPromptRates.at(12);
-      else if(vSSLep.at(1)->pt<500) lep2PromptRate=elPromptRates.at(13);
-      else lep2PromptRate = elPromptRates.at(14);
+      //if(vSSLep.at(1)->pt<30) lep2PromptRate=elPromptRates.at(0);
+      if(vSSLep.at(1)->pt<40) lep2PromptRate=elPromptRates.at(0);
+      else if(vSSLep.at(1)->pt<50) lep2PromptRate=elPromptRates.at(1);
+      else if(vSSLep.at(1)->pt<60) lep2PromptRate=elPromptRates.at(2);
+      else if(vSSLep.at(1)->pt<70) lep2PromptRate=elPromptRates.at(3);
+      else if(vSSLep.at(1)->pt<80) lep2PromptRate=elPromptRates.at(4);
+      else if(vSSLep.at(1)->pt<90) lep2PromptRate=elPromptRates.at(5);
+      else if(vSSLep.at(1)->pt<100) lep2PromptRate=elPromptRates.at(6);
+      else if(vSSLep.at(1)->pt<125) lep2PromptRate=elPromptRates.at(7);
+      else if(vSSLep.at(1)->pt<150) lep2PromptRate=elPromptRates.at(8);
+      else if(vSSLep.at(1)->pt<200) lep2PromptRate=elPromptRates.at(9);
+      else if(vSSLep.at(1)->pt<300) lep2PromptRate=elPromptRates.at(10);
+      else if(vSSLep.at(1)->pt<400) lep2PromptRate=elPromptRates.at(11);
+      else if(vSSLep.at(1)->pt<500) lep2PromptRate=elPromptRates.at(12);
+      else lep2PromptRate = elPromptRates.at(13);
     }
     //now get fake rate for each lepton
     float lep1FakeRate = 0.0;
@@ -1096,9 +1298,13 @@ int main(int argc, char* argv[]){
     float puweightDown=-11;
     if(data) puweight=1;
     else{
-      puweight = getPUWeight(hpu,(int)tr->nPU);
-      puweightUp = getPUWeight(hpuUp,(int)tr->nPU);
-      puweightDown = getPUWeight(hpuDown,(int)tr->nPU);
+      int nTrueInteractions = tr->nPU;
+      if (tr->nPU > 99) nTrueInteractions = 99;
+      if (signal && tr->nPU > 79) nTrueInteractions = 79;
+      if (tr->nPU < 0 ) nTrueInteractions = 0;
+      puweight = getPUWeight(sampleName, nTrueInteractions, 0);
+      puweightUp = getPUWeight(sampleName, nTrueInteractions, 1);
+      puweightDown = getPUWeight(sampleName, nTrueInteractions, -1);
       //puweight=1;
     }
 
@@ -1115,10 +1321,22 @@ int main(int argc, char* argv[]){
     bool secondaryZVeto = (checkSecondaryZVeto(vSSLep,tr->looseMuons,tr->looseElectrons)).first;
     float assocMass =  (checkSecondaryZVeto(vSSLep,tr->looseMuons,tr->looseElectrons)).second;
 
+    std::vector<double> pdfweights_ss(100,1.0); 
+    std::vector<double> renormWeights_ss(6,1.0);
+    std::vector<double> pdfNewWeights_ss(100,1.0);
+    std::vector<double> pdfWeights4LHC_ss(31,1.0);
+    std::vector<double> pdfWeightsMSTW_ss(41,1.0);
+    double pdfNewNominalWeight_ss = 1.0;
+
+    //fill tree for ss cut only (for table)
+    tm_ss->FillTree(vSSLep, tr->allAK4Jets, tr->cleanedAK4Jets, tr->simpleCleanedAK4Jets, HT, tr->MET, dilepMass, nMu, weight, vNonSSLep, tr->MCWeight, NPweight, NPAltWeight, NPSUSYWeight, TL, trigSF, trigSFup, trigSFdn, lepIDSF, lepIDSFup, lepIDSFdn, lepIsoSF, gsfSF, puweight, puweightUp, puweightDown, assocMass, tr->allAK8Jets, tr->hadronicGenJets, !data, tr->run, tr->lumi, tr->event, tr->nPrimaryVert, pdfweights_ss, renormWeights_ss, pdfNewWeights_ss, pdfWeights4LHC_ss, pdfWeightsMSTW_ss, pdfNewNominalWeight_ss);
+
+    if(vNonSSLep.size()!=0) continue;
+
     //fill tree for post ssdl cut since that is all that we've applied so far
     tm_ssdl->FillTree(vSSLep, 
                       tr->allAK4Jets, 
-                      tr->cleanedAK4Jets, 
+                      tr->cleanedAK4Jets,
                       tr->simpleCleanedAK4Jets, 
                       HT, 
                       tr->MET, 
@@ -1132,7 +1350,11 @@ int main(int argc, char* argv[]){
                       NPSUSYWeight,
                       TL,
                       trigSF,
+                      trigSFup,
+                      trigSFdn,
                       lepIDSF,
+                      lepIDSFup,
+                      lepIDSFdn,
                       lepIsoSF,
                       gsfSF,
                       puweight,
@@ -1145,7 +1367,13 @@ int main(int argc, char* argv[]){
                       tr->run,
                       tr->lumi,
                       tr->event,
-                      tr->nPrimaryVert);
+                      tr->nPrimaryVert,
+                      pdfweights_ss,
+                      renormWeights_ss,
+                      pdfNewWeights_ss,
+                      pdfWeights4LHC_ss,
+                      pdfWeightsMSTW_ss, 
+                      pdfNewNominalWeight_ss);
     //fill histos for same cut level
     float totalweight = weight * NPweight * trigSF * lepIDSF * lepIsoSF* puweight * mcweight * gsfSF;
     fillHistos(hists_ssdl_all, vSSLep, vNonSSLep, tr->cleanedAK4Jets, tr->MET, dilepMass, totalweight);
@@ -1162,33 +1390,74 @@ int main(int argc, char* argv[]){
       st = st + tr->cleanedAK4Jets.at(j)->pt;
     }
 
+    std::vector<double> pdfweights_ssdl{}; 
+    std::vector<double> renormWeights_ssdl{};
+    std::vector<double> pdfNewWeights_ssdl{};
+    std::vector<double> pdfWeights4LHC_ssdl{};
+    std::vector<double> pdfWeightsMSTW_ssdl{};
+    double pdfNewNominalWeight_ssdl = 1.0;
+
     //now get pdf weights at early stage
     if(!data){
       //now fill ppdf weight histogram
-      std::vector<double> pdfweight_ssdl = (*tr->LHEWeights);
-      std::vector<int> pdfweightIDs_ssdl = (*tr->LHEWeightIDs);
+      //std::vector<double> pdfweight_ssdl = (*tr->LHEWeights);
+      //std::vector<int> pdfweightIDs_ssdl = (*tr->LHEWeightIDs);
       hist_scaleHT_ssdl_nom->Fill(st,mcweight);
-      for(unsigned int i=0; i< pdfweightIDs_ssdl.size(); i++){
-        int ID = pdfweightIDs_ssdl.at(i);
+
+      if(signal) pdfNewNominalWeight_ssdl = (*tr->NewPDFweights).at(0);
+      //for(unsigned int i=0; i< pdfweightIDs_ssdl.size(); i++){
+      //  int ID = pdfweightIDs_ssdl.at(i);
+      for(unsigned int i=0; i< (*tr->LHEWeightIDs).size(); i++){
+        int ID = (*tr->LHEWeightIDs).at(i);
+        // select pdf by ID
+        if(signal){
+          if(i > 0 && i < 101) pdfNewWeights_ssdl.push_back((*tr->NewPDFweights).at(i));
+          if((ID > 1 && ID < 10) && !(ID==6 || ID==8)) renormWeights_ssdl.push_back((*tr->LHEWeights).at(i));
+          if(ID > 474 && ID < 575) pdfweights_ssdl.push_back((*tr->LHEWeights).at(i));
+          if(ID > 442 && ID < 474) pdfWeights4LHC_ssdl.push_back((*tr->LHEWeights).at(i));
+          if(ID > 205 && ID < 247) pdfWeightsMSTW_ssdl.push_back((*tr->LHEWeights).at(i));
+        }
+        else if(std::find(madgraph_samples.begin(), madgraph_samples.end(), sample)!=madgraph_samples.end() ){
+          if((ID > 1 && ID < 10) && !(ID==6 || ID==8)) renormWeights_ssdl.push_back((*tr->LHEWeights).at(i));
+          if(ID > 714 && ID < 746) pdfWeights4LHC_ssdl.push_back((*tr->LHEWeights).at(i));
+          if(ID > 10 && ID < 111) pdfweights_ssdl.push_back((*tr->LHEWeights).at(i));
+        }
+        else if(std::find(powheg_samples.begin(), powheg_samples.end(), sample)!=powheg_samples.end() ){
+          if((ID > 1001 && ID < 1010) && !(ID==1006 || ID==1008)) renormWeights_ssdl.push_back((*tr->LHEWeights).at(i));
+          if(ID > 10999 && ID < 11031) pdfWeights4LHC_ssdl.push_back((*tr->LHEWeights).at(i));
+          if(ID > 2000 && ID < 2101) pdfweights_ssdl.push_back((*tr->LHEWeights).at(i));
+        }
+        else {
+          if((ID > 1001 && ID < 1010) && !(ID==1006 || ID==1008)) renormWeights_ssdl.push_back((*tr->LHEWeights).at(i));
+          if(ID > 1714 && ID < 1745) pdfWeights4LHC_ssdl.push_back((*tr->LHEWeights).at(i));
+          if(ID > 1010 && ID < 1111) pdfweights_ssdl.push_back((*tr->LHEWeights).at(i));
+        }
+
         if(ID==1002 || ID==1003 || ID==1004 || ID==1005 || ID==1007 || ID==1009 || ID==2 || ID==3 || ID==4 || ID==5 || ID==7 || ID==9){
           //now fill individual
-          if(ID==1002 || (outname.find("prime")!=std::string::npos && ID==2) )hist_scaleHT_ssdl_1002->Fill(st,pdfweight_ssdl.at(i)*mcweight); //edited by rizki
-          if(ID==1003 || (outname.find("prime")!=std::string::npos && ID==3) )hist_scaleHT_ssdl_1003->Fill(st,pdfweight_ssdl.at(i)*mcweight); //edited by rizki
-          if(ID==1004 || (outname.find("prime")!=std::string::npos && ID==4) )hist_scaleHT_ssdl_1004->Fill(st,pdfweight_ssdl.at(i)*mcweight); //edited by rizki
-          if(ID==1005 || (outname.find("prime")!=std::string::npos && ID==5) )hist_scaleHT_ssdl_1005->Fill(st,pdfweight_ssdl.at(i)*mcweight); //edited by rizki
-          if(ID==1007|| (outname.find("prime")!=std::string::npos && ID==7) )hist_scaleHT_ssdl_1007->Fill(st,pdfweight_ssdl.at(i)*mcweight); //edited by rizki
-          if(ID==1009|| (outname.find("prime")!=std::string::npos && ID==2) )hist_scaleHT_ssdl_1009->Fill(st,pdfweight_ssdl.at(i)*mcweight); //edited by rizki
+          if(ID==1002 || (outname.find("prime")!=std::string::npos && ID==2) )hist_scaleHT_ssdl_1002->Fill(st,(*tr->LHEWeights).at(i)*mcweight); //edited by rizki
+          if(ID==1003 || (outname.find("prime")!=std::string::npos && ID==3) )hist_scaleHT_ssdl_1003->Fill(st,(*tr->LHEWeights).at(i)*mcweight); //edited by rizki
+          if(ID==1004 || (outname.find("prime")!=std::string::npos && ID==4) )hist_scaleHT_ssdl_1004->Fill(st,(*tr->LHEWeights).at(i)*mcweight); //edited by rizki
+          if(ID==1005 || (outname.find("prime")!=std::string::npos && ID==5) )hist_scaleHT_ssdl_1005->Fill(st,(*tr->LHEWeights).at(i)*mcweight); //edited by rizki
+          if(ID==1007|| (outname.find("prime")!=std::string::npos && ID==7) )hist_scaleHT_ssdl_1007->Fill(st,(*tr->LHEWeights).at(i)*mcweight); //edited by rizki
+          if(ID==1009|| (outname.find("prime")!=std::string::npos && ID==2) )hist_scaleHT_ssdl_1009->Fill(st,(*tr->LHEWeights).at(i)*mcweight); //edited by rizki
         }
-        if(!(ID>2000 && i<2101)) continue;
-
+        //if(!(ID>2000 && i<2101)) continue;
       }
     }
+    else{ // dummy pdf weights for data
+      for(unsigned int i=0; i< 100; i++){pdfweights_ssdl.push_back(1.0); pdfNewWeights_ssdl.push_back(1.0);}
+      for(unsigned int i=0; i< 6  ; i++){renormWeights_ssdl.push_back(1.0);}
+      for(unsigned int i=0; i< 31 ; i++){pdfWeights4LHC_ssdl.push_back(1.0);}
+      for(unsigned int i=0; i< 41 ; i++){pdfWeightsMSTW_ssdl.push_back(1.0);}
+    }
 
+    if(DEBUG_COUT) std::cout<< "pdf weights size (ssdl) ... " << pdfweights_ssdl.size() << " " << pdfNewWeights_ssdl.size() << " " << renormWeights_ssdl.size() << " " << pdfWeights4LHC_ssdl.size() << " " << pdfWeightsMSTW_ssdl.size() << std::endl;
 
     //since we have the two same-sign leptons, now make sure neither of them reconstructs with any other tight lepton in the event to form a Z
     if(secondaryZVeto) continue;
     //fill tree for post secondary z veto
-    tm_sZVeto->FillTree(vSSLep, tr->allAK4Jets, tr->cleanedAK4Jets, tr->simpleCleanedAK4Jets, HT, tr->MET, dilepMass,nMu,weight,vNonSSLep,tr->MCWeight,NPweight,NPAltWeight,NPSUSYWeight,TL,trigSF,lepIDSF,lepIsoSF,gsfSF,puweight,puweightUp,puweightDown,assocMass,tr->allAK8Jets,tr->hadronicGenJets,!data,tr->run,tr->lumi,tr->event,tr->nPrimaryVert);
+    tm_sZVeto->FillTree(vSSLep, tr->allAK4Jets, tr->cleanedAK4Jets, tr->simpleCleanedAK4Jets, HT, tr->MET, dilepMass,nMu,weight,vNonSSLep,tr->MCWeight,NPweight,NPAltWeight,NPSUSYWeight,TL,trigSF,trigSFup,trigSFdn,lepIDSF,lepIDSFup,lepIDSFdn,lepIsoSF,gsfSF,puweight,puweightUp,puweightDown,assocMass,tr->allAK8Jets,tr->hadronicGenJets,!data,tr->run,tr->lumi,tr->event,tr->nPrimaryVert, pdfweights_ssdl, renormWeights_ssdl, pdfNewWeights_ssdl, pdfWeights4LHC_ssdl, pdfWeightsMSTW_ssdl, pdfNewNominalWeight_ssdl);
     //now fill corresponding histos
     fillHistos(hists_sZVeto_all, vSSLep, vNonSSLep, tr->cleanedAK4Jets, tr->MET, dilepMass, totalweight);
     if(elel) fillHistos(hists_sZVeto_elel, vSSLep, vNonSSLep, tr->cleanedAK4Jets, tr->MET, dilepMass, totalweight);
@@ -1209,7 +1478,7 @@ int main(int argc, char* argv[]){
     //else if(elmu) badEvent = EventFilterFromFile_MuonEG(tr->run,tr->lumi,tr->event);
     //}
     if(badEvent) {std::cout<<"filtering bad event"<<std::endl;continue;}
-    tm_DilepMassCut->FillTree(vSSLep, tr->allAK4Jets, tr->cleanedAK4Jets, tr->simpleCleanedAK4Jets, HT, tr->MET, dilepMass,nMu,weight,vNonSSLep,tr->MCWeight,NPweight,NPAltWeight,NPSUSYWeight,TL,trigSF,lepIDSF,lepIsoSF,gsfSF,puweight,puweightUp,puweightDown,assocMass,tr->allAK8Jets,tr->hadronicGenJets,!data,tr->run,tr->lumi,tr->event,tr->nPrimaryVert);
+    tm_DilepMassCut->FillTree(vSSLep, tr->allAK4Jets, tr->cleanedAK4Jets, tr->simpleCleanedAK4Jets, HT, tr->MET, dilepMass,nMu,weight,vNonSSLep,tr->MCWeight,NPweight,NPAltWeight,NPSUSYWeight,TL,trigSF,trigSFup,trigSFdn,lepIDSF,lepIDSFup,lepIDSFdn,lepIsoSF,gsfSF,puweight,puweightUp,puweightDown,assocMass,tr->allAK8Jets,tr->hadronicGenJets,!data,tr->run,tr->lumi,tr->event,tr->nPrimaryVert, pdfweights_ssdl, renormWeights_ssdl, pdfNewWeights_ssdl, pdfWeights4LHC_ssdl, pdfWeightsMSTW_ssdl, pdfNewNominalWeight_ssdl);
 
     if(tr->cleanedAK4Jets.size()>1){
       //now fill corresponding histos
@@ -1219,8 +1488,8 @@ int main(int argc, char* argv[]){
       if(mumu) fillHistos(hists_TwoJets_mumu, vSSLep, vNonSSLep, tr->cleanedAK4Jets, tr->MET, dilepMass, totalweight);
     }
 
-        if(isoTrig || nonIso_HTtrig){
-        if(vSSLep.at(0)->pt<25) continue; //skip events with leading lepton pt less than 40
+    if(isoTrig || nonIso_HTtrig){
+        if(vSSLep.at(0)->pt<40) continue; //skip events with leading lepton pt less than 40
     }
     else{
         if(vSSLep.at(0)->pt<40) continue; //skip events with leading lepton pt less than 40
@@ -1244,35 +1513,82 @@ int main(int argc, char* argv[]){
 
     if(!data){
       //now fill ppdf weight histogram
-      std::vector<double> pdfweights = (*tr->LHEWeights);
-      std::vector<int> pdfweightIDs = (*tr->LHEWeightIDs);
+      std::vector<double> pdfweights{}; //= (*tr->LHEWeights);
+      //std::vector<int> pdfweightIDs = (*tr->LHEWeightIDs);
+      std::vector<double> renormWeights{};
+      std::vector<double> pdfNewWeights{};
+      std::vector<double> pdfWeights4LHC{};
+      std::vector<double> pdfWeightsMSTW{};
       //now fill ppdf weight histogram
       hist_scaleHT_nom->Fill(st,mcweight);
-      for(unsigned int i=0; i< pdfweightIDs.size(); i++){
-                int ID = pdfweightIDs.at(i);
+
+      double pdfNewNominalWeight = 1.0;
+      if(signal) pdfNewNominalWeight = (*tr->NewPDFweights).at(0);
+      for(unsigned int i=0; i< (*tr->LHEWeightIDs).size(); i++){
+                int ID = (*tr->LHEWeightIDs).at(i);
+                // select pdf by ID
+                  if(signal){
+                        if(i > 0 && i < 101) pdfNewWeights.push_back((*tr->NewPDFweights).at(i));
+                        if((ID > 1 && ID < 10) && !(ID==6 || ID==8)) renormWeights.push_back((*tr->LHEWeights).at(i));
+                        if(ID > 474 && ID < 575) pdfweights.push_back((*tr->LHEWeights).at(i));
+                        if(ID > 442 && ID < 474) pdfWeights4LHC.push_back((*tr->LHEWeights).at(i));
+                        if(ID > 205 && ID < 247) pdfWeightsMSTW.push_back((*tr->LHEWeights).at(i));
+                  }
+                  else if(std::find(madgraph_samples.begin(), madgraph_samples.end(), sample)!=madgraph_samples.end() ){
+                        if((ID > 1 && ID < 10) && !(ID==6 || ID==8)) renormWeights.push_back((*tr->LHEWeights).at(i));
+                        if(ID > 714 && ID < 746) pdfWeights4LHC.push_back((*tr->LHEWeights).at(i));
+                        if(ID > 10 && ID < 111) pdfweights.push_back((*tr->LHEWeights).at(i));
+                  }
+                  else if(std::find(powheg_samples.begin(), powheg_samples.end(), sample)!=powheg_samples.end() ){
+                        if((ID > 1001 && ID < 1010) && !(ID==1006 || ID==1008)) renormWeights.push_back((*tr->LHEWeights).at(i));
+                        if(ID > 10999 && ID < 11031) pdfWeights4LHC.push_back((*tr->LHEWeights).at(i));
+                        if(ID > 2000 && ID < 2101) pdfweights.push_back((*tr->LHEWeights).at(i));
+                  }
+                  else {
+                        if((ID > 1001 && ID < 1010) && !(ID==1006 || ID==1008)) renormWeights.push_back((*tr->LHEWeights).at(i));
+                        if(ID > 1714 && ID < 1745) pdfWeights4LHC.push_back((*tr->LHEWeights).at(i));
+                        if(ID > 1010 && ID < 1111) pdfweights.push_back((*tr->LHEWeights).at(i));
+                  }
+
+                // original code (fill hist)
                 if(ID==1002 || ID==1003 || ID==1004 || ID==1005 || ID==1007 || ID==1009 || ID==2 || ID==3 || ID==4 || ID==5 || ID==7 || ID==9){
-                  hist_scaleHT->Fill(pdfweights.at(i),st);//fill combined
+                  hist_scaleHT->Fill((*tr->LHEWeights).at(i),st);//fill combined
                   //now fill individual
-                  if(ID==1002 || (outname.find("prime")!=std::string::npos && ID==2) )hist_scaleHT_1002->Fill(st,pdfweights.at(i)*mcweight); //edited by rizki
-                  if(ID==1003 || (outname.find("prime")!=std::string::npos && ID==3) )hist_scaleHT_1003->Fill(st,pdfweights.at(i)*mcweight); //edited by rizki
-                  if(ID==1004 || (outname.find("prime")!=std::string::npos && ID==4) )hist_scaleHT_1004->Fill(st,pdfweights.at(i)*mcweight); //edited by rizki
-                  if(ID==1005 || (outname.find("prime")!=std::string::npos && ID==5) )hist_scaleHT_1005->Fill(st,pdfweights.at(i)*mcweight); //edited by rizki
-                  if(ID==1007 || (outname.find("prime")!=std::string::npos && ID==7) )hist_scaleHT_1007->Fill(st,pdfweights.at(i)*mcweight); //edited by rizki
-                  if(ID==1009 || (outname.find("prime")!=std::string::npos && ID==9) )hist_scaleHT_1009->Fill(st,pdfweights.at(i)*mcweight); //edited by rizki
+                  if(ID==1002 || (outname.find("prime")!=std::string::npos && ID==2) )hist_scaleHT_1002->Fill(st,(*tr->LHEWeights).at(i)*mcweight); //edited by rizki
+                  if(ID==1003 || (outname.find("prime")!=std::string::npos && ID==3) )hist_scaleHT_1003->Fill(st,(*tr->LHEWeights).at(i)*mcweight); //edited by rizki
+                  if(ID==1004 || (outname.find("prime")!=std::string::npos && ID==4) )hist_scaleHT_1004->Fill(st,(*tr->LHEWeights).at(i)*mcweight); //edited by rizki
+                  if(ID==1005 || (outname.find("prime")!=std::string::npos && ID==5) )hist_scaleHT_1005->Fill(st,(*tr->LHEWeights).at(i)*mcweight); //edited by rizki
+                  if(ID==1007 || (outname.find("prime")!=std::string::npos && ID==7) )hist_scaleHT_1007->Fill(st,(*tr->LHEWeights).at(i)*mcweight); //edited by rizki
+                  if(ID==1009 || (outname.find("prime")!=std::string::npos && ID==9) )hist_scaleHT_1009->Fill(st,(*tr->LHEWeights).at(i)*mcweight); //edited by rizki
                 }
-                if(!( (ID>2000 && i<2101 && outname.find("prime")==std::string::npos ) || (outname.find("prime")!=std::string::npos && ( ID> 111 && ID <212)) ) ) continue; //edited by rizki
-                hist_pdfHT->Fill(pdfweights.at(i),st);
+                //if(!( (ID>2000 && i<2101 && outname.find("prime")==std::string::npos ) || (outname.find("prime")!=std::string::npos && ( ID> 111 && ID <212)) ) ) continue; //edited by rizki
+                //hist_pdfHT->Fill((*tr->LHEWeights).at(i),st);
 
                 //added by rizki - start
-                if (ID > 111 && ID < 212){
-                        pdf_hist->Fill(ID-111.5, st, totalweight*pdfweights.at(i));
-                        // counting up weighted yields for each pdf variation
-                }
+                //if (ID > 111 && ID < 212){
+                //        pdf_hist->Fill(ID-111.5, st, totalweight*(*tr->LHEWeights).at(i));
+                //        // counting up weighted yields for each pdf variation
+                //}
                 // If you need nominal in this hist, make it 101,0,101 and do:
                 // pdf_hist->Fill(100.5,totalweight);
                 //added by rizki - end
 
       }
+      for (unsigned int i=0; i<pdfweights.size(); i++){
+           //hist_pdfHT->Fill((*tr->LHEWeights).at(i),st);
+           hist_pdfHT->Fill(pdfweights.at(i),st);
+           pdf_hist->Fill(i+0.5, st, totalweight*pdfweights.at(i) );
+      }
+
+      if(pdfWeights4LHC.size()> 0){
+           hist_pdf4LHCHT_nom->Fill(pdfWeights4LHC.at(0),st);
+           pdf4LHC_hist->Fill(0.5, st, totalweight*pdfWeights4LHC.at(0));
+      }
+      for (unsigned int i=1; i<pdfWeights4LHC.size(); i++){
+           hist_pdf4LHCHT->Fill(pdfWeights4LHC.at(i),st);
+           pdf4LHC_hist->Fill(i+0.5, st, totalweight*pdfWeights4LHC.at(i));
+      }
+
     }
 
     //now fill nonprompt histos for later use
@@ -1306,6 +1622,7 @@ int main(int argc, char* argv[]){
   }//end event loop
 
   //write the trees
+  tm_ss->tree->Write();
   tm_ssdl->tree->Write();
   tm_sZVeto->tree->Write();
   tm_DilepMassCut->tree->Write();
@@ -1364,6 +1681,10 @@ int main(int argc, char* argv[]){
 
 
   fsig->WriteTObject(hist_pdfHT);
+  fsig->WriteTObject(hist_pdf4LHCHT_nom);
+  fsig->WriteTObject(hist_pdf4LHCHT);
+  fsig->WriteTObject(pdf_hist);
+  fsig->WriteTObject(pdf4LHC_hist);
   fsig->WriteTObject(hist_scaleHT);
   fsig->WriteTObject(hist_scaleHT_nom);
   fsig->WriteTObject(hist_scaleHT_1002);
@@ -1380,6 +1701,403 @@ int main(int argc, char* argv[]){
   fsig->WriteTObject(hist_scaleHT_ssdl_1005);
   fsig->WriteTObject(hist_scaleHT_ssdl_1007);
   fsig->WriteTObject(hist_scaleHT_ssdl_1009);
+
+  delete tr;
+
+  /////////////////////////////////////////////// JEC/JECR Trees ///////////////////////////////////////////////
+  if(bg_mc || signal){
+    std::vector<TString> TreesPostFix{"_JECup","_JECdown","_JERup","_JERdown"};
+    for (auto & postFix : TreesPostFix){
+      TreeReader* tr_shift;
+      tr_shift = new TreeReader(filename.c_str(),"ljmet"+postFix+"/ljmet"+postFix,true,true);
+
+      TTree* t_shift = tr_shift->tree;
+
+      fsig->cd();
+
+      nEntries = t_shift->GetEntries();
+
+      nMuMu=0;
+      nElMu=0;
+      nElEl=0;
+
+      for(int ient=0; ient<nEntries; ient++){
+
+        if(ient % 500 ==0) std::cout<<"Completed "<<ient<<" out of "<<nEntries<<" "<< postFix <<" events"<<std::endl;
+
+        tr_shift->GetEntry(ient);
+
+        // lumi mask for 2017 ONLY
+        if(data && ((tr_shift->run==299480 && tr_shift->lumi==7) || (tr_shift->run==301397 && tr_shift->lumi==518) || (tr_shift->run==305366 && tr_shift->lumi==395))) continue;
+
+        //weight for non prompt method
+        float NPweight=0;
+        float NPAltWeight=0;
+        float NPSUSYWeight=0;
+        int TL;
+
+        std::vector<TLepton*> goodLeptons;
+        goodLeptons = makeLeptons(tr_shift->allMuons, tr_shift->allElectrons,30.0,elID,muID,bg_np);
+
+        if(signal){ //check TT/BB sig Decay - added by rizki
+                if(sigDecay=="TZTZ" && tr_shift->isTZTZ==false){continue ;}
+                if(sigDecay=="TZTH" && tr_shift->isTZTH==false){continue ;}
+                if(sigDecay=="TZBW" && tr_shift->isTZBW==false){continue ;}
+                if(sigDecay=="THTH" && tr_shift->isTHTH==false){continue ;}
+                if(sigDecay=="THBW" && tr_shift->isTHBW==false){continue ;}
+                if(sigDecay=="BWBW" && tr_shift->isBWBW==false){continue ;}
+
+                if(sigDecay=="BZBZ" && tr_shift->isBZBZ==false){continue ;}
+                if(sigDecay=="BZBH" && tr_shift->isBZBH==false){continue ;}
+                if(sigDecay=="BZTW" && tr_shift->isBZTW==false){continue ;}
+                if(sigDecay=="BHBH" && tr_shift->isBHBH==false){continue ;}
+                if(sigDecay=="BHTW" && tr_shift->isBHTW==false){continue ;}
+                if(sigDecay=="TWTW" && tr_shift->isTWTW==false){continue ;}
+        }
+
+        //reorder the leptons by pt to remove flavor ordering
+        std::sort(goodLeptons.begin(),goodLeptons.end(),sortByPt);
+        bool samesign;
+
+        //get chargeMisID rate for DY and save DY events outside of Z-peak (71-111 GeV) with weights for chargeMisID
+        if(outname.find("DYJets")!=std::string::npos || outname.find("ChargeMisID")!=std::string::npos){
+
+            samesign = checkOppositeSignLeptonsForDY(goodLeptons); //returns true if find opposite sign leptons not in mu-mu channel
+        }      
+        else{ //now that we have good leptons, if it's not DY sample just check for two with same-sign charge and assign weight of 1
+            samesign = checkSameSignLeptons(goodLeptons);
+        }
+
+        if(!samesign) continue;
+
+        //now make vector of same-sign leptons, for DY make vector containing opposite sign leptons closest to Z mass
+        std::vector<TLepton*> vSSLep;
+        if(outname.find("DYJets")!=std::string::npos || outname.find("ChargeMisID")!=std::string::npos){
+            vSSLep = makeOSLeptonsForDY(goodLeptons);
+        }
+        else vSSLep = makeSSLeptons(goodLeptons);
+
+        //dummy check to make sure the vector got filled properly
+        assert(vSSLep.size() > 1);
+        //make sure both are tight if not doing fakes background
+        if(!bg_np){
+            if( !(vSSLep.at(0)->Tight && vSSLep.at(1)->Tight)) continue;
+        }
+
+        //now prune the goodleptons of the ssleptons
+        std::vector<TLepton*> vNonSSLep = pruneSSLep(goodLeptons,vSSLep); 
+        if(vNonSSLep.size()!=0) continue;
+
+        //get channel
+        int nMu=0;
+        if(vSSLep.at(0)->isMu) nMu++;
+        if(vSSLep.at(1)->isMu) nMu++;
+
+        //bools for channels
+        bool mumu=false;
+        bool elmu=false;
+        bool elel=false;
+
+        //ok at this point only have events with same-sign leptons, now let's do simple check to see how many of each channel we have:
+        if(vSSLep.at(0)->isMu && vSSLep.at(1)->isMu){ nMuMu+=1; mumu=true;}
+        else if( ( vSSLep.at(0)->isEl && vSSLep.at(1)->isMu) || (vSSLep.at(0)->isMu && vSSLep.at(1)->isEl)){ nElMu+=1; elmu=true;}
+        else {nElEl+=1; elel=true;}
+
+        //require OR of triggers but make each channel consistent
+        bool skip = true;
+
+        if(isoTrig){
+            if(mumu && (tr_shift->HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v)) skip =false; 
+            if(elmu && (tr_shift->HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v || tr_shift->HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v)) skip = false;
+            if(elel && (tr_shift->HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v)) skip = false; 
+        }
+        else{
+            if(nonIso_HTtrig){ //NonIso_HTtrig
+                if(mumu && tr_shift->HLT_DoubleMu4_Mass8_DZ_PFHT350) skip =false;
+                if(elmu && (tr_shift->HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT350_DZ_v )) skip = false;
+                if(elel && tr_shift->HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_DZ_PFHT350_v) skip = false;
+            }
+            else{ //NoIsoTrig --> the corressponding single lepton trigger for one of these double triggers below dont exist for 2017/2018 !!
+                if(mumu && tr_shift->HLT_Mu37_TkMu27) skip =false;
+                if(elmu && (tr_shift->HLT_Mu37Ele27 || tr_shift->HLT_Mu27Ele37)) skip = false;
+                if(elel && tr_shift->HLT_Ele27_Ele37) skip = false;
+            }
+        }
+
+        if(skip) continue;
+
+        //HT requirement if using HT triggers - added by rizki
+        float HT=0;
+        HT+=vSSLep.at(0)->pt+vSSLep.at(1)->pt;
+        for(unsigned int uijet=0; uijet<tr_shift->allAK4Jets.size();uijet++){
+          HT+=tr_shift->allAK4Jets.at(uijet)->pt;
+        }
+        if(nonIso_HTtrig){ if(HT < 400) continue ;}
+
+        //now skip if not the channel from the corresponding dataset
+        if((argv1.find("DataMuMu")!=std::string::npos || argv1.find("NonPromptDataMuMu")!=std::string::npos) && !mumu) continue;
+        if((argv1.find("DataElMu")!=std::string::npos || argv1.find("NonPromptDataElMu")!=std::string::npos || argv1.find("ChargeMisIDElMu")!=std::string::npos) && !elmu) continue;
+        if((argv1.find("DataElEl")!=std::string::npos || argv1.find("NonPromptDataElEl")!=std::string::npos || argv1.find("ChargeMisIDElEl")!=std::string::npos) && !elel) continue;
+
+        //make boolean here so we can fill the closets associated mass
+        bool secondaryZVeto = (checkSecondaryZVeto(vSSLep,tr_shift->looseMuons,tr_shift->looseElectrons)).first;
+        float assocMass =  (checkSecondaryZVeto(vSSLep,tr_shift->looseMuons,tr_shift->looseElectrons)).second;
+
+        //since we have the two same-sign leptons, now make sure neither of them reconstructs with any other tight lepton in the event to form a Z
+        if(secondaryZVeto) continue;
+
+        /////// now get CMID weight
+        float weight=1.0;
+        float ew1,ew2=0.0;
+        //with vector now get weight for DY Events
+        if(outname.find("DYJets")!=std::string::npos || outname.find("ChargeMisID")!=std::string::npos) {
+          //first set to one if muon
+          if(vSSLep.at(0)->isMu){ew1=0.0;}//zero since it's cmid probability
+          else{
+            if(vSSLep.at(0)->pt>200){
+              ew1=getEtaWeight_hhpt(fabs(vSSLep.at(0)->eta),etaWeights_hhpt);
+            }
+            else if(vSSLep.at(0)->pt>100){
+              ew1=getEtaWeight_hpt(fabs(vSSLep.at(0)->eta),etaWeights_hpt);
+            }
+            else{
+              ew1=getEtaWeight_lpt(fabs(vSSLep.at(0)->eta),etaWeights_lpt);
+            }
+          }
+          if(vSSLep.at(1)->isMu){ew2=0.0;} //zero since it's cmid probability
+          else{
+            if(vSSLep.at(1)->pt>200){
+              ew2 = getEtaWeight_hhpt(fabs(vSSLep.at(1)->eta),etaWeights_hhpt);
+            }
+            else if(vSSLep.at(1)->pt>100){
+              ew2 = getEtaWeight_hpt(fabs(vSSLep.at(1)->eta),etaWeights_hpt);
+            }
+            else{
+              ew2 = getEtaWeight_lpt(fabs(vSSLep.at(1)->eta),etaWeights_lpt);
+            }
+          }
+          //now add since these are probabilities
+          weight=ew1 + ew2 - ew1*ew2;
+        }
+        /////// end CMID weight
+
+        /////// now get dilepton mass 
+        float dilepMass = (vSSLep.at(0)->lv + vSSLep.at(1)->lv).M();
+
+        /////// get trigger scale factors
+        std::vector<float> vTrigSF;
+        if(!data) vTrigSF = getTrigSF(vSSLep,era);
+        else {vTrigSF.push_back(1.0); vTrigSF.push_back(1.0); vTrigSF.push_back(1.0);}
+        float trigSF = vTrigSF.at(0);
+        float trigSFup = vTrigSF.at(1);
+        float trigSFdn = vTrigSF.at(2);
+        /////// end trigger scale factors
+
+        /////// lepton Scale Factors
+        std::vector<float> lepIDSF_vec;
+        lepIDSF_vec = getLepIDSF(vSSLep);
+        float lepIDSF, lepIDSFup, lepIDSFdn;
+        if(data) {lepIDSF = 1.0; lepIDSFup = 1.0; lepIDSFdn = 1.0;}
+        else {lepIDSF = lepIDSF_vec.at(0); lepIDSFup = lepIDSF_vec.at(1); lepIDSFdn = lepIDSF_vec.at(2);}
+
+        float lepIsoSF;
+        if(data) lepIsoSF = 1.0;
+        else lepIsoSF = getLepIsoSF(vSSLep);
+
+        float gsfSF = 1.0;
+        if(data) gsfSF=1.0;
+        else{
+          gsfSF=1.0;//set to one currently
+          if(vSSLep.at(0)->isEl) gsfSF*= getGsfSF(vSSLep.at(0));
+          if(vSSLep.at(1)->isEl) gsfSF*= getGsfSF(vSSLep.at(1));
+        }
+        /////// end lepton Scale Factors
+        
+        /////// now need to calculate nonPromptWeight - first get prompt rate for each lepton
+        float lep1PromptRate=0.0;
+        float lep2PromptRate=0.0;
+        if(vSSLep.at(0)->isMu){
+          if(vSSLep.at(0)->pt<40) lep1PromptRate=muPromptRates.at(0);
+          else if(vSSLep.at(0)->pt<50) lep1PromptRate=muPromptRates.at(1);
+          else if(vSSLep.at(0)->pt<60) lep1PromptRate=muPromptRates.at(2);
+          else if(vSSLep.at(0)->pt<70) lep1PromptRate=muPromptRates.at(3);
+          else if(vSSLep.at(0)->pt<80) lep1PromptRate=muPromptRates.at(4);
+          else if(vSSLep.at(0)->pt<90) lep1PromptRate=muPromptRates.at(5);
+          else if(vSSLep.at(0)->pt<100) lep1PromptRate=muPromptRates.at(6);
+          else if(vSSLep.at(0)->pt<125) lep1PromptRate=muPromptRates.at(7);
+          else if(vSSLep.at(0)->pt<150) lep1PromptRate=muPromptRates.at(8);
+          else if(vSSLep.at(0)->pt<200) lep1PromptRate=muPromptRates.at(9);
+          else if(vSSLep.at(0)->pt<300) lep1PromptRate=muPromptRates.at(10);
+          else if(vSSLep.at(0)->pt<400) lep1PromptRate=muPromptRates.at(11);
+          else if(vSSLep.at(0)->pt<500) lep1PromptRate=muPromptRates.at(12);
+          else lep1PromptRate = muPromptRates.at(13);    
+        }
+        else{
+          if(vSSLep.at(0)->pt<40) lep1PromptRate=elPromptRates.at(0);
+          else if(vSSLep.at(0)->pt<50) lep1PromptRate=elPromptRates.at(1);
+          else if(vSSLep.at(0)->pt<60) lep1PromptRate=elPromptRates.at(2);
+          else if(vSSLep.at(0)->pt<70) lep1PromptRate=elPromptRates.at(3);
+          else if(vSSLep.at(0)->pt<80) lep1PromptRate=elPromptRates.at(4);
+          else if(vSSLep.at(0)->pt<90) lep1PromptRate=elPromptRates.at(5);
+          else if(vSSLep.at(0)->pt<100) lep1PromptRate=elPromptRates.at(6);
+          else if(vSSLep.at(0)->pt<125) lep1PromptRate=elPromptRates.at(7);
+          else if(vSSLep.at(0)->pt<150) lep1PromptRate=elPromptRates.at(8);
+          else if(vSSLep.at(0)->pt<200) lep1PromptRate=elPromptRates.at(9);
+          else if(vSSLep.at(0)->pt<300) lep1PromptRate=elPromptRates.at(10);
+          else if(vSSLep.at(0)->pt<400) lep1PromptRate=elPromptRates.at(11);
+          else if(vSSLep.at(0)->pt<500) lep1PromptRate=elPromptRates.at(12);
+          else lep1PromptRate = elPromptRates.at(13);
+        }
+        if(vSSLep.at(1)->isMu){
+          if(vSSLep.at(1)->pt<40) lep2PromptRate=muPromptRates.at(0);
+          else if(vSSLep.at(1)->pt<50) lep2PromptRate=muPromptRates.at(1);
+          else if(vSSLep.at(1)->pt<60) lep2PromptRate=muPromptRates.at(2);
+          else if(vSSLep.at(1)->pt<70) lep2PromptRate=muPromptRates.at(3);
+          else if(vSSLep.at(1)->pt<80) lep2PromptRate=muPromptRates.at(4);
+          else if(vSSLep.at(1)->pt<90) lep2PromptRate=muPromptRates.at(5);
+          else if(vSSLep.at(1)->pt<100) lep2PromptRate=muPromptRates.at(6);
+          else if(vSSLep.at(1)->pt<125) lep2PromptRate=muPromptRates.at(7);
+          else if(vSSLep.at(1)->pt<150) lep2PromptRate=muPromptRates.at(8);
+          else if(vSSLep.at(1)->pt<200) lep2PromptRate=muPromptRates.at(9);
+          else if(vSSLep.at(1)->pt<300) lep2PromptRate=muPromptRates.at(10);
+          else if(vSSLep.at(1)->pt<400) lep2PromptRate=muPromptRates.at(11);
+          else if(vSSLep.at(1)->pt<500) lep2PromptRate=muPromptRates.at(12);
+          else lep2PromptRate = muPromptRates.at(13);    
+        }
+        else {
+          if(vSSLep.at(1)->pt<40) lep2PromptRate=elPromptRates.at(0);
+          else if(vSSLep.at(1)->pt<50) lep2PromptRate=elPromptRates.at(1);
+          else if(vSSLep.at(1)->pt<60) lep2PromptRate=elPromptRates.at(2);
+          else if(vSSLep.at(1)->pt<70) lep2PromptRate=elPromptRates.at(3);
+          else if(vSSLep.at(1)->pt<80) lep2PromptRate=elPromptRates.at(4);
+          else if(vSSLep.at(1)->pt<90) lep2PromptRate=elPromptRates.at(5);
+          else if(vSSLep.at(1)->pt<100) lep2PromptRate=elPromptRates.at(6);
+          else if(vSSLep.at(1)->pt<125) lep2PromptRate=elPromptRates.at(7);
+          else if(vSSLep.at(1)->pt<150) lep2PromptRate=elPromptRates.at(8);
+          else if(vSSLep.at(1)->pt<200) lep2PromptRate=elPromptRates.at(9);
+          else if(vSSLep.at(1)->pt<300) lep2PromptRate=elPromptRates.at(10);
+          else if(vSSLep.at(1)->pt<400) lep2PromptRate=elPromptRates.at(11);
+          else if(vSSLep.at(1)->pt<500) lep2PromptRate=elPromptRates.at(12);
+          else lep2PromptRate = elPromptRates.at(13);
+        }
+
+        //now get fake rate for each lepton
+        float lep1FakeRate = 0.0;
+        float lep2FakeRate = 0.0;
+        if(vSSLep.at(0)->isMu){
+          if(vSSLep.at(0)->eta < -2.1) lep1FakeRate=muFakeRates.at(0);
+          else if(vSSLep.at(0)->eta < -1.2) lep1FakeRate=muFakeRates.at(1);
+          else if(vSSLep.at(0)->eta < -0.9) lep1FakeRate=muFakeRates.at(2);
+          else if(vSSLep.at(0)->eta < -0.4) lep1FakeRate=muFakeRates.at(3);
+          else if(vSSLep.at(0)->eta < 0.4) lep1FakeRate=muFakeRates.at(4);
+          else if(vSSLep.at(0)->eta < 0.9) lep1FakeRate=muFakeRates.at(5);
+          else if(vSSLep.at(0)->eta < 1.2) lep1FakeRate=muFakeRates.at(6);
+          else if(vSSLep.at(0)->eta < 2.1) lep1FakeRate=muFakeRates.at(7);
+          else lep1FakeRate=muFakeRates.at(8);
+        }
+        else{ //leading is electron
+          if(vSSLep.at(0)->eta < -1.566) lep1FakeRate=elFakeRates.at(0);
+          else if(vSSLep.at(0)->eta < -0.8) lep1FakeRate=elFakeRates.at(1);
+          else if(vSSLep.at(0)->eta < -0.4) lep1FakeRate=elFakeRates.at(2);
+          else if(vSSLep.at(0)->eta < 0.4) lep1FakeRate=elFakeRates.at(3);
+          else if(vSSLep.at(0)->eta < 0.8) lep1FakeRate=elFakeRates.at(4);
+          else if(vSSLep.at(0)->eta < 1.566) lep1FakeRate=elFakeRates.at(5);
+          else lep1FakeRate=elFakeRates.at(6);
+        }
+        //now for subleading
+        if(vSSLep.at(1)->isMu){
+          if(vSSLep.at(1)->eta < -2.1) lep2FakeRate=muFakeRates.at(0);
+          else if(vSSLep.at(1)->eta < -1.2) lep2FakeRate=muFakeRates.at(1);
+          else if(vSSLep.at(1)->eta < -0.9) lep2FakeRate=muFakeRates.at(2);
+          else if(vSSLep.at(1)->eta < -0.4) lep2FakeRate=muFakeRates.at(3);
+          else if(vSSLep.at(1)->eta < 0.4) lep2FakeRate=muFakeRates.at(4);
+          else if(vSSLep.at(1)->eta < 0.9) lep2FakeRate=muFakeRates.at(5);
+          else if(vSSLep.at(1)->eta < 1.2) lep2FakeRate=muFakeRates.at(6);
+          else if(vSSLep.at(1)->eta < 2.1) lep2FakeRate=muFakeRates.at(7);
+          else lep2FakeRate=muFakeRates.at(8);
+        }
+        else{ //leading is electron
+          if(vSSLep.at(1)->eta < -1.566) lep2FakeRate=elFakeRates.at(0);
+          else if(vSSLep.at(1)->eta < -0.8) lep2FakeRate=elFakeRates.at(1);
+          else if(vSSLep.at(1)->eta < -0.4) lep2FakeRate=elFakeRates.at(2);
+          else if(vSSLep.at(1)->eta < 0.4) lep2FakeRate=elFakeRates.at(3);
+          else if(vSSLep.at(1)->eta < 0.8) lep2FakeRate=elFakeRates.at(4);
+          else if(vSSLep.at(1)->eta < 1.566) lep2FakeRate=elFakeRates.at(5);
+          else lep2FakeRate=elFakeRates.at(6);
+        }
+
+        if(!bg_np) {NPweight=1.0;NPAltWeight=1.0;NPSUSYWeight=1.0;TL=-1;}
+        else{ //**********get susy alternative weight
+          if(vSSLep.at(0)->Tight && vSSLep.at(1)->Tight) NPSUSYWeight=0;
+          else if(vSSLep.at(0)->Tight && !(vSSLep.at(1)->Tight)) NPSUSYWeight = lep2FakeRate / (1.0 - lep2FakeRate);
+          else if(!(vSSLep.at(0)->Tight) && vSSLep.at(1)->Tight) NPSUSYWeight = lep1FakeRate / (1.0 - lep1FakeRate);
+          else NPSUSYWeight = (lep1FakeRate / (1 - lep1FakeRate)) * ( lep2FakeRate/ (1 - lep2FakeRate));
+
+          if(mumu || elel){ // kinematic dependent fake/prompt rates for same flavor channels can treat as 'different' flavors where flavor is now leading/subleading
+            if(vSSLep.at(0)->Tight && vSSLep.at(1)->Tight) {NPweight = WeightOF_T11(lep1PromptRate,lep1FakeRate,lep2PromptRate,lep2FakeRate); TL = 3;}//both tight
+            else if(vSSLep.at(0)->Tight && !(vSSLep.at(1)->Tight)) {NPweight = WeightOF_T10(lep1PromptRate,lep1FakeRate,lep2PromptRate,lep2FakeRate); TL=2;}//leading tight
+            else if(!(vSSLep.at(0)->Tight) && vSSLep.at(1)->Tight) {NPweight = WeightOF_T01(lep1PromptRate,lep1FakeRate,lep2PromptRate,lep2FakeRate); TL=1;}//subleading tight
+            else {NPweight = WeightOF_T00(lep1PromptRate,lep1FakeRate,lep2PromptRate,lep2FakeRate); TL=0;}//both loose
+            NPAltWeight=NPweight; //make alt weight the same as above
+          }
+          else{ //cross channel - still important to save which flavor is which, kinematic effects happen 'in background'
+            //******** Making alternative weight***********
+            if(vSSLep.at(0)->Tight && vSSLep.at(1)->Tight) {NPAltWeight = WeightOF_T11(lep1PromptRate,lep1FakeRate,lep2PromptRate,lep2FakeRate); TL = 3;}//both tight
+            else if(vSSLep.at(0)->Tight && !(vSSLep.at(1)->Tight)) {NPAltWeight = WeightOF_T10(lep1PromptRate,lep1FakeRate,lep2PromptRate,lep2FakeRate); TL=2;}//leading tight
+            else if(!(vSSLep.at(0)->Tight) && vSSLep.at(1)->Tight) {NPAltWeight = WeightOF_T01(lep1PromptRate,lep1FakeRate,lep2PromptRate,lep2FakeRate); TL=1;}//subleading tight
+            else {NPAltWeight = WeightOF_T00(lep1PromptRate,lep1FakeRate,lep2PromptRate,lep2FakeRate); TL=0;}//both loose
+            //******** Making origin np weight ************
+            float muPR,muFR,elPR,elFR;
+            if(vSSLep.at(0)->isMu){muPR=lep1PromptRate;muFR=lep1FakeRate;elPR=lep2PromptRate;elFR=lep2FakeRate;} //for cross channel finding flavor of leading determines flavor of subleading
+            else {muPR=lep2PromptRate;muFR=lep2FakeRate;elPR=lep1PromptRate;elFR=lep1FakeRate;}
+            if(vSSLep.at(0)->Tight && vSSLep.at(1)->Tight) {NPweight = WeightOF_T11(elPR,elFR,muPR,muFR); TL=3;} //both tight
+            else if ( (vSSLep.at(0)->isEl && vSSLep.at(0)->Tight) || (vSSLep.at(1)->isEl && vSSLep.at(1)->Tight) )  {NPweight = WeightOF_T10(elPR,elFR,muPR,muFR);TL=2;} //if electron is tight, muon must be loose or we would be on line above so just see if either lepton is a tight electron
+            else if ( (vSSLep.at(0)->isMu && vSSLep.at(0)->Tight) || (vSSLep.at(1)->isMu && vSSLep.at(1)->Tight) ) {NPweight = WeightOF_T01(elPR,elFR,muPR,muFR); TL=1;}//if muon is tight, el must be loose or we would be on tight-tight line so just check for tight muon
+            else {NPweight = WeightOF_T00(elPR,elFR,muPR,muFR); TL=0;}//otherwise both are loose
+          }
+        }
+        ///////  end np weight
+
+        ///////get pileup weight;
+        float puweight=-11;
+        float puweightUp=-11;
+        float puweightDown=-11;
+        if(data) puweight=1;
+        else{
+          int nTrueInteractions = tr_shift->nPU;
+          if (tr_shift->nPU > 99) nTrueInteractions = 99;
+          if (signal && tr_shift->nPU > 79) nTrueInteractions = 79;
+          if (tr_shift->nPU < 0 ) nTrueInteractions = 0;
+          puweight = getPUWeight(sampleName, nTrueInteractions, 0);
+          puweightUp = getPUWeight(sampleName, nTrueInteractions, 1);
+          puweightDown = getPUWeight(sampleName, nTrueInteractions, -1);
+        }
+        /////// end pileup weight
+
+        /////// make dummy pdfweights vector for FillTree
+        std::vector<double> pdfweights_ss(100,1.0); 
+        std::vector<double> renormWeights_ss(6,1.0);
+        std::vector<double> pdfNewWeights_ss(100,1.0);
+        std::vector<double> pdfWeights4LHC_ss(31,1.0);
+        std::vector<double> pdfWeightsMSTW_ss(41,1.0);
+        double pdfNewNominalWeight_ss = 1.0;
+        /////// end dummy pdf weight
+
+        //fill tree for post secondary z veto
+        if(postFix == "_JECup") tm_sZVeto_JECup->FillTree(vSSLep, tr_shift->allAK4Jets, tr_shift->cleanedAK4Jets, tr_shift->simpleCleanedAK4Jets, HT, tr_shift->MET, dilepMass,nMu,weight,vNonSSLep,tr_shift->MCWeight,NPweight,NPAltWeight,NPSUSYWeight,TL,trigSF,trigSFup,trigSFdn,lepIDSF,lepIDSFup,lepIDSFdn,lepIsoSF,gsfSF,puweight,puweightUp,puweightDown,assocMass,tr_shift->allAK8Jets,tr_shift->hadronicGenJets,!data,tr_shift->run,tr_shift->lumi,tr_shift->event,tr_shift->nPrimaryVert, pdfweights_ss, renormWeights_ss, pdfNewWeights_ss, pdfWeights4LHC_ss, pdfWeightsMSTW_ss, pdfNewNominalWeight_ss);
+        if(postFix == "_JECdown") tm_sZVeto_JECdn->FillTree(vSSLep, tr_shift->allAK4Jets, tr_shift->cleanedAK4Jets, tr_shift->simpleCleanedAK4Jets, HT, tr_shift->MET, dilepMass,nMu,weight,vNonSSLep,tr_shift->MCWeight,NPweight,NPAltWeight,NPSUSYWeight,TL,trigSF,trigSFup,trigSFdn,lepIDSF,lepIDSFup,lepIDSFdn,lepIsoSF,gsfSF,puweight,puweightUp,puweightDown,assocMass,tr_shift->allAK8Jets,tr_shift->hadronicGenJets,!data,tr_shift->run,tr_shift->lumi,tr_shift->event,tr_shift->nPrimaryVert, pdfweights_ss, renormWeights_ss, pdfNewWeights_ss, pdfWeights4LHC_ss, pdfWeightsMSTW_ss, pdfNewNominalWeight_ss);
+        if(postFix == "_JERup") tm_sZVeto_JERup->FillTree(vSSLep, tr_shift->allAK4Jets, tr_shift->cleanedAK4Jets, tr_shift->simpleCleanedAK4Jets, HT, tr_shift->MET, dilepMass,nMu,weight,vNonSSLep,tr_shift->MCWeight,NPweight,NPAltWeight,NPSUSYWeight,TL,trigSF,trigSFup,trigSFdn,lepIDSF,lepIDSFup,lepIDSFdn,lepIsoSF,gsfSF,puweight,puweightUp,puweightDown,assocMass,tr_shift->allAK8Jets,tr_shift->hadronicGenJets,!data,tr_shift->run,tr_shift->lumi,tr_shift->event,tr_shift->nPrimaryVert, pdfweights_ss, renormWeights_ss, pdfNewWeights_ss, pdfWeights4LHC_ss, pdfWeightsMSTW_ss, pdfNewNominalWeight_ss);
+        if(postFix == "_JERdown") tm_sZVeto_JERdn->FillTree(vSSLep, tr_shift->allAK4Jets, tr_shift->cleanedAK4Jets, tr_shift->simpleCleanedAK4Jets, HT, tr_shift->MET, dilepMass,nMu,weight,vNonSSLep,tr_shift->MCWeight,NPweight,NPAltWeight,NPSUSYWeight,TL,trigSF,trigSFup,trigSFdn,lepIDSF,lepIDSFup,lepIDSFdn,lepIsoSF,gsfSF,puweight,puweightUp,puweightDown,assocMass,tr_shift->allAK8Jets,tr_shift->hadronicGenJets,!data,tr_shift->run,tr_shift->lumi,tr_shift->event,tr_shift->nPrimaryVert, pdfweights_ss, renormWeights_ss, pdfNewWeights_ss, pdfWeights4LHC_ss, pdfWeightsMSTW_ss, pdfNewNominalWeight_ss);
+      }//end JEC/JER event loop
+      delete tr_shift;
+    }//end postFix loop 
+  }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  tm_sZVeto_JECup->tree->Write();
+  tm_sZVeto_JECdn->tree->Write();
+  tm_sZVeto_JERup->tree->Write();
+  tm_sZVeto_JERdn->tree->Write();  
 
   fsig->Write();
   fsig->Close();
@@ -1507,7 +2225,7 @@ std::vector<TLepton*> makeLeptons(std::vector<TMuon*> muons, std::vector<TElectr
     if(iLep->pt<ptCut) continue;
     //now save based on ID requirments if 'normal' running then require tight, else save if loose
     if(!doFakes){
-      if(iLep->Loose) Leptons.push_back(iLep);
+      if(iLep->Tight) Leptons.push_back(iLep);
     }
     else{ //if doing fake estimate save if loose
       if(iLep->Loose) Leptons.push_back(iLep);
@@ -1618,10 +2336,18 @@ std::vector<TLepton*> makeLeptons(std::vector<TMuon*> muons, std::vector<TElectr
       iLep->Tight=iel->mva94XTightV1_Iso_RC();
       iLep->Loose=iel->mva94XLooseV1_Iso_RC();
     }
+    else if(elID=="MVA2017TightV2IsoRC"){
+      iLep->Tight=iel->mva94XTightV2_90_Iso_RC();
+      iLep->Loose=iel->mva94XLooseV2_Iso_RC();
+    }
+    else if(elID=="MVA2017TightV2IsoTightRC"){
+      iLep->Tight=iel->mva94XTightV2_90_IsoTight_RC();
+      iLep->Loose=iel->mva94XLooseV2_Iso_RC();
+    }
     if(iLep->pt<ptCut) continue;
     //now save based on elID requirments if 'normal' running then require tight, else save if loose
     if(!doFakes){
-      if(iLep->Loose) Leptons.push_back(iLep);
+      if(iLep->Tight) Leptons.push_back(iLep);
     }
     else{ //if doing fake estimate save if loose
       if(iLep->Loose) Leptons.push_back(iLep);

@@ -14,7 +14,7 @@ public:
           int chargetemp, 
           float relIsotemp, 
           float miniIsotemp, 
-          float susyisotemp
+          float susyisotemp 
           );
   //Four vector
   double pt;

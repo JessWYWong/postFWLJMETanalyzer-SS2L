@@ -19,24 +19,32 @@ TreeReader::TreeReader(TTree *treetemp,bool mc,bool latestVers)
   Init(treetemp);
 }
 TreeReader::~TreeReader(){
-
+  std::cout<<"Destructor ~TreeReader()"<<std::endl;
 }
 //need to actually get the data
 Int_t TreeReader::GetEntry(Long64_t entry){
 
   bool debug = false;
   
-  if(debug)
+  //if(debug)
 
   //delete anything hanging out in memory
   for (unsigned int i = 0;i<allMuons.size();++i ) delete allMuons[i];
+  //for (unsigned int i = 0;i<goodMuons.size();++i ) delete goodMuons[i];
+  //for (unsigned int i = 0;i<looseMuons.size();++i ) delete looseMuons[i];
   for (unsigned int i = 0;i<allElectrons.size();++i ) delete allElectrons[i];
-  for (unsigned int i = 0;i<allAK4Jets.size();++i ) delete allAK4Jets[i];
+  //for (unsigned int i = 0;i<goodElectrons.size();++i ) delete goodElectrons[i];
+  //for (unsigned int i = 0;i<looseElectrons.size();++i ) delete looseElectrons[i];
+ // for (unsigned int i = 0;i<cmsdasElectrons.size();++i ) delete cmsdasElectrons[i];
+ // for (unsigned int i = 0;i<good50nsElectrons.size();++i ) delete good50nsElectrons[i];
+  //for (unsigned int i = 0;i<loose50nsElectrons.size();++i ) delete loose50nsElectrons[i];
+  //if(debug) std::cout<<"deleted loose50nsElectrons"<<std::endl;
   for (unsigned int i = 0;i<cleanedAK4Jets.size();++i ) delete cleanedAK4Jets[i];
+  for (unsigned int i = 0;i<allAK4Jets.size();++i ) delete allAK4Jets[i];
   for (unsigned int i = 0;i<newCleanedAK4Jets.size();++i ) delete newCleanedAK4Jets[i];
-  if(debug) if(debug) std::cout<<"deleting ak8 jets"<<std::endl;
+  //if(debug) if(debug) std::cout<<"deleting ak8 jets"<<std::endl;
   for (unsigned int i = 0;i<allAK8Jets.size();++i ) delete allAK8Jets[i];
-  if(debug) std::cout<<"deleted ak8 jets"<<std::endl;
+  //if(debug) std::cout<<"deleted ak8 jets"<<std::endl;
   for (unsigned int i = 0;i<simpleCleanedAK4Jets.size();++i ) delete simpleCleanedAK4Jets[i];
   if(isMc){
     for (unsigned int i = 0;i<genJets.size();++i ) delete genJets[i];
@@ -329,7 +337,7 @@ void TreeReader::Init(TTree *treetemp)
   elIsEBEE = 0;
   elMHits = 0;
   elPassConversionVeto = 0;
-  elQuality = 0;
+//  elQuality = 0;
   elVtxFitConv = 0;
   elMVAValue = 0;
   elIsMVATight80 = 0;
@@ -362,6 +370,7 @@ void TreeReader::Init(TTree *treetemp)
 
   LHEWeights = 0;
   LHEWeightIDs = 0;
+  NewPDFweights = 0;
 
   //muons
   muChi2 = 0;
@@ -444,7 +453,7 @@ void TreeReader::Init(TTree *treetemp)
   tree->SetBranchAddress("event_CommonCalc",&event,&b_event_CommonCalc);
 
   //pileup
-  tree->SetBranchAddress("nTrueInteractions_PileUpCalc",&nPU,&b_nTrueInteractions_PileUpCalc);
+  tree->SetBranchAddress("nTrueInteractions_DileptonCalc",&nPU,&b_nTrueInteractions_DileptonCalc);
   tree->SetBranchAddress("nPV_DileptonCalc",&nPrimaryVert,&b_nPV_DileptonCalc);
   //Electrons
   tree->SetBranchAddress("elChargeConsistent_DileptonCalc", &elChargeConsistent, &b_elChargeConsistent_DileptonCalc);
@@ -455,7 +464,7 @@ void TreeReader::Init(TTree *treetemp)
   tree->SetBranchAddress("elIsEBEE_DileptonCalc", &elIsEBEE, &b_elIsEBEE_DileptonCalc);
   tree->SetBranchAddress("elMHits_DileptonCalc", &elMHits, &b_elMHits_DileptonCalc);
   tree->SetBranchAddress("elVtxFitConv_DileptonCalc", &elPassConversionVeto, &b_elPassConversionVeto_DileptonCalc);
-  tree->SetBranchAddress("elQuality_DileptonCalc", &elQuality, &b_elQuality_DileptonCalc);
+//  tree->SetBranchAddress("elQuality_DileptonCalc", &elQuality, &b_elQuality_DileptonCalc);
   tree->SetBranchAddress("elD0_DileptonCalc", &elD0, &b_elD0_DileptonCalc);
   tree->SetBranchAddress("elDZ_DileptonCalc", &elDZ, &b_elDZ_DileptonCalc);
   tree->SetBranchAddress("elSIP3D_DileptonCalc", &elSIP3d, &b_elSIP3d_DileptonCalc);
@@ -537,8 +546,8 @@ void TreeReader::Init(TTree *treetemp)
   tree->SetBranchAddress("theJetAK8Phi_JetSubCalc", &AK8JetPhi, &b_AK8JetPhi_JetSubCalc);
   tree->SetBranchAddress("theJetAK8Pt_JetSubCalc", &AK8JetPt, &b_AK8JetPt_JetSubCalc);
   //tree->SetBranchAddress("theJetAK8TrimmedMass_JetSubCalc", &AK8JetTrimMass, &b_AK8JetTrimMass_JetSubCalc);
-  tree->SetBranchAddress("theJetAK8SoftDropMass_JetSubCalc", &AK8JetSDMass, &b_AK8JetSDMass_JetSubCalc);
-  tree->SetBranchAddress("theJetAK8PrunedMass_JetSubCalc", &AK8JetPruneMass, &b_AK8JetPruneMass_JetSubCalc);
+  tree->SetBranchAddress("AK8JetSoftDropMass_DileptonCalc", &AK8JetSDMass, &b_AK8JetSDMass_JetSubCalc);
+  tree->SetBranchAddress("AK8JetPrunedMass_DileptonCalc", &AK8JetPruneMass, &b_AK8JetPruneMass_JetSubCalc);
   //tree->SetBranchAddress("theJetAK8FilteredMass_JetSubCalc", &AK8JetFiltMass, &b_AK8JetFiltMass_JetSubCalc);
   tree->SetBranchAddress("theJetAK8NjettinessTau1_JetSubCalc", &AK8JetTau1, &b_AK8JetTau1_JetSubCalc);
   tree->SetBranchAddress("theJetAK8NjettinessTau2_JetSubCalc", &AK8JetTau2, &b_AK8JetTau2_JetSubCalc);
@@ -550,7 +559,7 @@ void TreeReader::Init(TTree *treetemp)
   tree->SetBranchAddress("theJetAK8SDSubjetPt_JetSubCalc", &subJetPt, &b_subJetPt_JetSubCalc);
   tree->SetBranchAddress("theJetAK8SDSubjetEta_JetSubCalc", &subJetEta, &b_subJetEta_JetSubCalc);
   tree->SetBranchAddress("theJetAK8SDSubjetPhi_JetSubCalc", &subJetPhi, &b_subJetPhi_JetSubCalc);
-  tree->SetBranchAddress("theJetAK8SDSubjetCSV_JetSubCalc", &subJetBDisc, &b_subJetBDisc_JetSubCalc);
+  tree->SetBranchAddress("theJetAK8SDSubjetDeepCSVb_JetSubCalc", &subJetBDisc, &b_subJetBDisc_JetSubCalc);
   tree->SetBranchAddress("theJetAK8SDSubjetBTag_JetSubCalc", &subJetBTag, &b_subJetBTag_JetSubCalc);
   tree->SetBranchAddress("theJetAK8SDSubjetDR_JetSubCalc", &subJetDeltaR, &b_subJetDeltaR_JetSubCalc);
   tree->SetBranchAddress("theJetAK8SDSubjetMass_JetSubCalc", &subJetMass, &b_subJetMass_JetSubCalc);
@@ -612,7 +621,7 @@ void TreeReader::Init(TTree *treetemp)
   tree->SetBranchAddress("MCWeight_DileptonCalc",&MCWeight,&b_MCWeight_DileptonCalc);
   tree->SetBranchAddress("LHEWeights_DileptonCalc",&LHEWeights,&b_LHEWeights_DileptonCalc);
   tree->SetBranchAddress("LHEWeightIDs_DileptonCalc",&LHEWeightIDs,&b_LHEWeightIDs_DileptonCalc);
-
+  tree->SetBranchAddress("NewPDFweights_DileptonCalc",&NewPDFweights, &b_NewPDFweights_DileptonCalc);
 
   //trigger info
 
@@ -653,8 +662,8 @@ void TreeReader::Init(TTree *treetemp)
 
   //double muon
   tree->SetBranchAddress("HLT_Mu37_TkMu27_DileptonCalc",&HLT_Mu37_TkMu27,&b_HLT_Mu37_TkMu27_DileptonCalc);
-  tree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_DileptonCalc", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8,&b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_DileptonCalc);
-  tree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_DileptonCalc", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8,&b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_DileptonCalc);
+  tree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v_DileptonCalc", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v,&b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v_DileptonCalc);
+  tree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v_DileptonCalc", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v,&b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v_DileptonCalc);
   tree->SetBranchAddress("HLT_DoubleMu8_Mass8_PFHT350_DileptonCalc",&HLT_DoubleMu8_Mass8_PFHT350,&b_HLT_DoubleMu8_Mass8_PFHT350_DileptonCalc);
   tree->SetBranchAddress("HLT_DoubleMu4_Mass8_DZ_PFHT350_DileptonCalc",&HLT_DoubleMu4_Mass8_DZ_PFHT350,&b_HLT_DoubleMu4_Mass8_DZ_PFHT350_DileptonCalc);
 
@@ -683,8 +692,8 @@ void TreeReader::Init(TTree *treetemp)
   tree->SetBranchAddress("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v_DileptonCalc", &HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v,&b_HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v_DileptonCalc);
 
   //hadronic triggers
-  tree->SetBranchAddress("HLT_PFHT900_DileptonCalc",&HLT_PFHT900,&b_HLT_PFHT900_DileptonCalc);
-  tree->SetBranchAddress("HLT_AK8PFJet360TrimMass30_DileptonCalc",&HLT_AK8PFJet360TrimMass30,&b_HLT_AK8PFJet360TrimMass30_DileptonCalc);
+//  tree->SetBranchAddress("HLT_PFHT900_DileptonCalc",&HLT_PFHT900,&b_HLT_PFHT900_DileptonCalc);
+//  tree->SetBranchAddress("HLT_AK8PFJet360TrimMass30_DileptonCalc",&HLT_AK8PFJet360TrimMass30,&b_HLT_AK8PFJet360TrimMass30_DileptonCalc);
 
   //TT sig decay info
   tree->SetBranchAddress("isTZTZ_TpTpCalc",&isTZTZ,&b_isTZTZ_TpTpCalc);
