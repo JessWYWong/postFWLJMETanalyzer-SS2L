@@ -39,3 +39,5 @@ uncDict['prefireUp']['TTM1700']=0.99124
 uncDict['prefireDn']['TTM1700']=1.00870
 uncDict['prefireUp']['TTM1800']=0.99260
 uncDict['prefireDn']['TTM1800']=1.00732
+uncDict['prefireUp']['TTM700']=0.99191
+uncDict['prefireDn']['TTM700']=1.00801

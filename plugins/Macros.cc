@@ -453,6 +453,7 @@ std::vector<Sample*> getInclusiveSigTTSampleVecForTable(std::string cut, float l
   vSigNames.push_back("TprimeTprime_M-1600"); vXsec.push_back(0.001148); vNEvts.push_back(989851.281);
   vSigNames.push_back("TprimeTprime_M-1700"); vXsec.push_back(0.000666); vNEvts.push_back(939135.751);
   vSigNames.push_back("TprimeTprime_M-1800"); vXsec.push_back(0.000391); vNEvts.push_back(884660.318);
+  vSigNames.push_back("TprimeTprime_M-700");  vXsec.push_back(0.455);    vNEvts.push_back(973451.16);
 
   //vector to hold weights
   std::vector<float> vWeights;
@@ -506,6 +507,21 @@ std::vector<Sample*> getInclusiveSigTTSampleVecForTable(std::string cut, float l
   TFile* x53x531600Lfile = TFile::Open(lh1600.c_str());
   Sample* x53x53m1600L = new Sample(vSigNames.at(8),x53x531600Lfile,vWeights.at(8),vXsec.at(8),cut,kRed+2,2);
   vSigSamples.push_back(x53x53m1600L);
+
+  std::string lh1700 = samplesDir+"test/TprimeTprime_M-1700_Mu"+muID+"_El"+elID+"_"+era+".root";
+  TFile* x53x531700Lfile = TFile::Open(lh1700.c_str());
+  Sample* x53x53m1700L = new Sample(vSigNames.at(9),x53x531700Lfile,vWeights.at(9),vXsec.at(9),cut,kCyan+2,2);
+  vSigSamples.push_back(x53x53m1700L);
+
+  std::string lh1800 = samplesDir+"test/TprimeTprime_M-1800_Mu"+muID+"_El"+elID+"_"+era+".root";
+  TFile* x53x531800Lfile = TFile::Open(lh1800.c_str());
+  Sample* x53x53m1800L = new Sample(vSigNames.at(10),x53x531800Lfile,vWeights.at(10),vXsec.at(10),cut,kOrange+2,2);
+  vSigSamples.push_back(x53x53m1800L);
+
+  std::string lh700 = samplesDir+"test/TprimeTprime_M-700_Mu"+muID+"_El"+elID+"_"+era+".root";
+  TFile* x53x53700Lfile = TFile::Open(lh700.c_str());
+  Sample* x53x53m700L = new Sample(vSigNames.at(11),x53x53700Lfile,vWeights.at(11),vXsec.at(11),cut,kRed,2);
+  vSigSamples.push_back(x53x53m700L);
 
 
 
@@ -591,7 +607,7 @@ std::vector<Sample*> getInclusiveSigTTSampleVecForTable(std::string cut, float l
   vSigNames.push_back("TprimeTprime_M-1600_"+sigDecay); vXsec.push_back(0.001148); vNEvts.push_back(989851.281);
   vSigNames.push_back("TprimeTprime_M-1700_"+sigDecay); vXsec.push_back(0.000666); vNEvts.push_back(939135.751);
   vSigNames.push_back("TprimeTprime_M-1800_"+sigDecay); vXsec.push_back(0.000391); vNEvts.push_back(884660.318);
-  //vSigNames.push_back("TprimeTprime_M-700_"+sigDecay); vXsec.push_back(0.455); vNEvts.push_back();
+  vSigNames.push_back("TprimeTprime_M-700_"+sigDecay);  vXsec.push_back(0.455);    vNEvts.push_back(973451.16);
 
 
   //vector to hold weights
@@ -664,6 +680,10 @@ std::vector<Sample*> getInclusiveSigTTSampleVecForTable(std::string cut, float l
   Sample* x53x53m1800L = new Sample(vSigNames.at(10),x53x531800Lfile,vWeights.at(10),vXsec.at(10),cut,kOrange+2,2);
   vSigSamples.push_back(x53x53m1800L);
 
+  std::string lh700 = eosDirector+samplesDir+subfolder+"/TprimeTprime_M-700_"+sigDecay+"_Mu"+muID+"_El"+elID+"_"+era+".root";
+  TFile* x53x53700Lfile = TFile::Open(lh700.c_str());
+  Sample* x53x53m700L = new Sample(vSigNames.at(11),x53x53700Lfile,vWeights.at(11),vXsec.at(11),cut,kRed,2);
+  vSigSamples.push_back(x53x53m700L);
 
 
   return vSigSamples;

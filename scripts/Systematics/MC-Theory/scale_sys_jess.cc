@@ -5,7 +5,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "../../../plugins/SetTDRStyle.cc"
-int TTmass[] = {1000,1100,1200,1300,1400,1500,1600,1700,1800};
+int TTmass[] = {700,1000,1100,1200,1300,1400,1500,1600,1700,1800};
 int BBmass[] = {900,1000,1100,1200,1300,1400,1500,1600,1700,1800};
 
 int nTT = sizeof(TTmass)/sizeof(TTmass[0]);
@@ -74,6 +74,7 @@ void printSys(TFile* f,std::string name,std::stringstream& filecontent){
 
   //SF from Julie (updated by Jess 30 Nov 2020) https://github.com/jmhogan/singleLepAnalyzer/blob/tptp_2017/makeTemplates/modifyBinning_byyear.py
   float scaleSFsUp = 1.0;
+  if(name=="TTM700") scaleSFsUp = 0.745;
   if(name=="TTM1000") scaleSFsUp = 0.744;
   if(name=="TTM1100") scaleSFsUp = 0.747;
   if(name=="TTM1200") scaleSFsUp = 0.742;
@@ -84,6 +85,7 @@ void printSys(TFile* f,std::string name,std::stringstream& filecontent){
   if(name=="TTM1700") scaleSFsUp = 0.721;
   if(name=="TTM1800") scaleSFsUp = 0.746;
   float scaleSFsDn = 1.0;
+  if(name=="TTM700") scaleSFsDn = 1.311;
   if(name=="TTM1000") scaleSFsDn = 1.312;
   if(name=="TTM1100") scaleSFsDn = 1.306;
   if(name=="TTM1200") scaleSFsDn = 1.315;
@@ -94,7 +96,7 @@ void printSys(TFile* f,std::string name,std::stringstream& filecontent){
   if(name=="TTM1700") scaleSFsDn = 1.354;
   if(name=="TTM1800") scaleSFsDn = 1.311;
 
-  if(name=="BBM900") scaleSFsUp = 0.742;
+  if(name=="BBM900") scaleSFsUp = 0.744;
   if(name=="BBM1000") scaleSFsUp = 0.742;
   if(name=="BBM1100") scaleSFsUp = 0.743;
   if(name=="BBM1200") scaleSFsUp = 0.742;
@@ -105,7 +107,7 @@ void printSys(TFile* f,std::string name,std::stringstream& filecontent){
   if(name=="BBM1700") scaleSFsUp = 0.733;
   if(name=="BBM1800") scaleSFsUp = 0.731;
 
-  if(name=="BBM900") scaleSFsDn = 1.315;
+  if(name=="BBM900") scaleSFsDn = 1.312;
   if(name=="BBM1000") scaleSFsDn = 1.315;
   if(name=="BBM1100") scaleSFsDn = 1.314;
   if(name=="BBM1200") scaleSFsDn = 1.316;
@@ -238,6 +240,7 @@ void scale_sys_jess(){
           filecontent<< "uncDict['scaleUp'] = {} \n";
           filecontent<< "uncDict['scaleDn'] = {} \n";
   
+          TFile* TTM700 = new TFile(folder+"/TprimeTprime_M-700_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
 	  TFile* TTM1000 = new TFile(folder+"/TprimeTprime_M-1000_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
 	  TFile* TTM1100 = new TFile(folder+"/TprimeTprime_M-1100_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
 	  TFile* TTM1200 = new TFile(folder+"/TprimeTprime_M-1200_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
@@ -251,6 +254,7 @@ void scale_sys_jess(){
 	  std::cout<<" =========="+decay+"==========="<<std::endl;
 	  std::cout<<" Sample | up | down "<<std::endl;
 
+          printSys(TTM700,"TTM700",filecontent);
 	  printSys(TTM1000,"TTM1000",filecontent);
 	  printSys(TTM1100,"TTM1100",filecontent);
 	  printSys(TTM1200,"TTM1200",filecontent);

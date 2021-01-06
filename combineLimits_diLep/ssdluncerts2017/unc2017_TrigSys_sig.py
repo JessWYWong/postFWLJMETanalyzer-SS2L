@@ -39,3 +39,5 @@ uncDict['trigSFUp']['TTM1700']=0.97993
 uncDict['trigSFDn']['TTM1700']=1.02007
 uncDict['trigSFUp']['TTM1800']=0.97978
 uncDict['trigSFDn']['TTM1800']=1.02022
+uncDict['trigSFUp']['TTM700']=0.98021
+uncDict['trigSFDn']['TTM700']=1.01979

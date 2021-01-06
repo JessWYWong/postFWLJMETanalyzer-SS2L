@@ -201,7 +201,8 @@ int main(int argc, char* argv[]){
   fout->WriteTObject(mumu__data_obs);
 
   for (int mass = mass_lowEdge; mass < mass_upEdge+100; mass+=100){
-    if(debug_) std::cout<<"Mass is: "<< mass <<std::endl; 
+    if(debug_) std::cout<<"Mass is: "<< mass <<std::endl;
+    if(mass==800 || mass==900) continue; 
     //now get only the signal one we care about, should be enough to ensure that both mass and chirality are present in name;
     std::vector<Sample*> sigSample; //edited by rizki and everything to do with this.
     //convert mass to string...probably a better way exists

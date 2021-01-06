@@ -39,3 +39,5 @@ uncDict['puUp']['TTM1700']=0.99562
 uncDict['puDn']['TTM1700']=1.00683
 uncDict['puUp']['TTM1800']=1.00149
 uncDict['puDn']['TTM1800']=1.00164
+uncDict['puUp']['TTM700']=1.00332
+uncDict['puDn']['TTM700']=0.99506

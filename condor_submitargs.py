@@ -8,6 +8,7 @@ proxyPath=proxyPath.readline().strip()
 tprimelist = [
 #    'TprimeTprime_M-800',
 #    'TprimeTprime_M-900',
+    'TprimeTprime_M-700',
     #'TprimeTprime_M-1000',
     #'TprimeTprime_M-1100',
     #'TprimeTprime_M-1200',
@@ -51,7 +52,7 @@ bkgdatalist = [
     #'ZZ',
 #    'WWW',
     #'WWZ',
-    'WZZ',
+    #'WZZ',
     #'ZZZ',
     #'WpWp',
 

@@ -54,7 +54,7 @@ if __name__ == '__main__':
         #bkg_samples['TTToHadronic'] = '/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/diLep2017/201125_071932/'
 
 	signal_samples = {}
-        signal_samples['TpTp700'] = '/TprimeTprime_M-700_TuneCP5_13TeV-madgraph-pythia8/diLep2017/201223_041055/'
+        signal_samples['TpTp700'] = '/TprimeTprime_M-700_TuneCP5_13TeV-madgraph-pythia8/diLep2017/210101_010147/'#201223_041055/'
 	#signal_samples['TpTp1000'] = '/TprimeTprime_M-1000_TuneCP5_13TeV-madgraph-pythia8/diLep2017/200916_053646/'#200212_184401/'#200114_193547/'#190904_030455/'
 	#signal_samples['TpTp1100'] = '/TprimeTprime_M-1100_TuneCP5_13TeV-madgraph-pythia8/diLep2017/200916_054050/'#2200114_193647/'#190904_030613/'
 	#signal_samples['TpTp1200'] = '/TprimeTprime_M-1200_TuneCP5_13TeV-madgraph-pythia8/diLep2017/200916_054203/'#2200212_184548/'#190904_030730/'

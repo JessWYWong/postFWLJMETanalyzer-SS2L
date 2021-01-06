@@ -127,6 +127,7 @@ void combinedSignal(TString mass, int BRtype){
   float NEvts;
   //if (mass=="800"){ Xsec = 0.196; NEvts = 795000.;}
   //if (mass=="900"){ Xsec = 0.0903; NEvts = 831200.;}
+  if (mass=="700"){  Xsec = 0.455; NEvts = 973451.16;}
   if (mass=="1000"){ Xsec = 0.0440; NEvts = 1002517.455;} //829600.;}
   if (mass=="1100"){ Xsec = 0.0224; NEvts = 895042.045;}
   if (mass=="1200"){ Xsec = 0.0118; NEvts = 1003441.777;} //832600.;}
@@ -994,6 +995,7 @@ void CombineTTsignal_integral_jess(){
 	for(int i=0;i<23;i++){
 		//combinedSignal("800",i);
 		//combinedSignal("900",i);
+                combinedSignal("700",i);
 		combinedSignal("1000",i);
 		combinedSignal("1100",i);
 		combinedSignal("1200",i);
