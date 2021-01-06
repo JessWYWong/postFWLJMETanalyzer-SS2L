@@ -246,6 +246,8 @@ def add_autoMCstat(cb):
 	thisDir = os.getcwd()
 	mass=0
 	massList = range(1000,1800+1,100)
+	if era == "2017": massList = [700]+massList
+	elif era == "2018": massList = [900]+massList
 	if whichsignal=='BB': massList = range(900,1800+1,100)
 
 	for chn in chns+['cmb']:
@@ -323,6 +325,8 @@ if __name__ == '__main__':
 	for chn in chns: cats[chn] = [(0, '')]
 	
 	masses = ch.ValsFromRange('1000:1800|100')	
+	if era=="2017": masses = ['700']+masses
+	elif era=="2018": masses = ['900']+masses
         if whichsignal=='BB': masses = ch.ValsFromRange('900:1800|100')
 	print 'Found this mass list: ',masses
 

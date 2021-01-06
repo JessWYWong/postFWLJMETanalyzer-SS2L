@@ -39,3 +39,5 @@ uncDict['pdfUp']['TTM1700']=1.00921
 uncDict['pdfDn']['TTM1700']=0.99041
 uncDict['pdfUp']['TTM1800']=1.00375
 uncDict['pdfDn']['TTM1800']=0.99762
+uncDict['pdfUp']['TTM900']=1.00573
+uncDict['pdfDn']['TTM900']=0.99390

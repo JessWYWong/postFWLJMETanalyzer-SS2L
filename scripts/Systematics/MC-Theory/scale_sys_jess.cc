@@ -5,7 +5,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "../../../plugins/SetTDRStyle.cc"
-int TTmass[] = {1000,1100,1200,1300,1400,1500,1600,1700,1800};
+int TTmass[] = {900,1000,1100,1200,1300,1400,1500,1600,1700,1800};
 int BBmass[] = {900,1000,1100,1200,1300,1400,1500,1600,1700,1800};
 
 int nTT = sizeof(TTmass)/sizeof(TTmass[0]);
@@ -245,6 +245,7 @@ void scale_sys_jess(){
           filecontent<< "uncDict['scaleUp'] = {} \n";
           filecontent<< "uncDict['scaleDn'] = {} \n";
   
+          TFile* TTM900 = new TFile(folder+"/TprimeTprime_M-900_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
 	  TFile* TTM1000 = new TFile(folder+"/TprimeTprime_M-1000_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
 	  TFile* TTM1100 = new TFile(folder+"/TprimeTprime_M-1100_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
 	  TFile* TTM1200 = new TFile(folder+"/TprimeTprime_M-1200_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
@@ -258,6 +259,7 @@ void scale_sys_jess(){
 	  std::cout<<" =========="+decay+"==========="<<std::endl;
 	  std::cout<<" Sample | up | down "<<std::endl;
 
+          printSys(TTM900,"TTM900",filecontent);
 	  printSys(TTM1000,"TTM1000",filecontent);
 	  printSys(TTM1100,"TTM1100",filecontent);
 	  printSys(TTM1200,"TTM1200",filecontent);

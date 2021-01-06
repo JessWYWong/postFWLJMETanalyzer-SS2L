@@ -39,3 +39,5 @@ uncDict['idSFUp']['TTM1700']=1.04787
 uncDict['idSFDn']['TTM1700']=0.95352
 uncDict['idSFUp']['TTM1800']=1.04502
 uncDict['idSFDn']['TTM1800']=0.95605
+uncDict['idSFUp']['TTM900']=1.03837
+uncDict['idSFDn']['TTM900']=0.96235

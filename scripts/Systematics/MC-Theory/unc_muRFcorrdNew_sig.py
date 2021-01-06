@@ -39,3 +39,5 @@ uncDict['scaleUp']['TTM1700']=1.01959
 uncDict['scaleDn']['TTM1700']=0.98272
 uncDict['scaleUp']['TTM1800']=1.04031
 uncDict['scaleDn']['TTM1800']=0.96298
+uncDict['scaleUp']['TTM900']=1.00430
+uncDict['scaleDn']['TTM900']=0.99578

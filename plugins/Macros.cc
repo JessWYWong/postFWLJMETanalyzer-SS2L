@@ -23,7 +23,7 @@ std::string eosDirector = "root://cmseos.fnal.gov:/";
 //std::string samplesDir = "/store/group/lpcljm/LJMet94x_2lepTT_2017datasets_2019_3_15_rizki_hadds_Analyzer_elIDv2_nonIsoHTtrig/";
 //std::string samplesDir="/store/group/lpcljm/FWLJMET102X_2lep2017_062719_hadds/"; // FWLJMET era.
 //std::string samplesDir = "/store/group/lpcljm/LJMet94x_2lepTT_2017datasets_2019_3_15_rizki_hadds_Analyzer_elIDv2_nonIsoHTtrig/";
-std::string samplesDir = "/store/user/wywong/FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc/";
+std::string samplesDir = "/store/user/wywong/FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc";
 
 std::vector<Variable*> getVariableVec(){
 
@@ -426,7 +426,7 @@ std::vector<Sample*> getInclusiveSigTTSampleVecForTable(std::string cut, float l
   std::vector<float> vNEvts;
 
   vSigNames.push_back("TprimeTprime_M-800"); vXsec.push_back(0.196); vNEvts.push_back(795000.);
-  vSigNames.push_back("TprimeTprime_M-900"); vXsec.push_back(0.0903); vNEvts.push_back(831200.);
+  //vSigNames.push_back("TprimeTprime_M-900"); vXsec.push_back(0.0903); vNEvts.push_back(831200.);
   //////////////////////////////// Updated by Jess on 28 Nov 2020 //////////////////////////////////
   //vSigNames.push_back("TprimeTprime_M-1000"); vXsec.push_back(0.0440); vNEvts.push_back(802686.);
   //vSigNames.push_back("TprimeTprime_M-1100"); vXsec.push_back(0.0224); vNEvts.push_back(795116.);
@@ -438,7 +438,8 @@ std::vector<Sample*> getInclusiveSigTTSampleVecForTable(std::string cut, float l
   //vSigNames.push_back("TprimeTprime_M-1700"); vXsec.push_back(0.000666); vNEvts.push_back(551326.);
   //vSigNames.push_back("TprimeTprime_M-1800"); vXsec.push_back(0.000391); vNEvts.push_back(467962.);
 
-  //////////////////////////////// Updated by Jess (4LHC) on 6 Dec 2020 //////////////////////////////////
+  //////////////////////////////// Updated by Jess (4LHC) on 30 Dec 2020 //////////////////////////////////
+  vSigNames.push_back("TprimeTprime_M-900");  vXsec.push_back(0.0903); vNEvts.push_back(983788.10);
   vSigNames.push_back("TprimeTprime_M-1000"); vXsec.push_back(0.0440); vNEvts.push_back(988591.585);
   vSigNames.push_back("TprimeTprime_M-1100"); vXsec.push_back(0.0224); vNEvts.push_back(1006338.443);
   vSigNames.push_back("TprimeTprime_M-1200"); vXsec.push_back(0.0118); vNEvts.push_back(1015599.881);
@@ -462,10 +463,10 @@ std::vector<Sample*> getInclusiveSigTTSampleVecForTable(std::string cut, float l
 //   Sample* x53x53m800L = new Sample(vSigNames.at(0),x53x53800Lfile,vWeights.at(0),vXsec.at(0),cut,kBlue,2);
 //   vSigSamples.push_back(x53x53m800L);
 //
-//   std::string lh900 = samplesDir+"test/TprimeTprime_M-900_Mu"+muID+"_El"+elID+"_"+era+".root";
-//   TFile* x53x53900Lfile = TFile::Open(lh900.c_str());
-//   Sample* x53x53m900L = new Sample(vSigNames.at(1),x53x53900Lfile,vWeights.at(1),vXsec.at(1),cut,kRed,2);
-//   vSigSamples.push_back(x53x53m900L);
+  std::string lh900 = samplesDir+"test/TprimeTprime_M-900_Mu"+muID+"_El"+elID+"_"+era+".root";
+  TFile* x53x53900Lfile = TFile::Open(lh900.c_str());
+  Sample* x53x53m900L = new Sample(vSigNames.at(1),x53x53900Lfile,vWeights.at(1),vXsec.at(1),cut,kRed,2);
+  vSigSamples.push_back(x53x53m900L);
 
   std::string lh1000 = samplesDir+"test/TprimeTprime_M-1000_Mu"+muID+"_El"+elID+"_"+era+".root";
   TFile* x53x531000Lfile = TFile::Open(lh1000.c_str());
@@ -564,7 +565,7 @@ std::vector<Sample*> getInclusiveSigTTSampleVecForTable(std::string cut, float l
 
   std::vector<float> vNEvts;
   vSigNames.push_back("TprimeTprime_M-800_"+sigDecay); vXsec.push_back(0.196); vNEvts.push_back(795000.);
-  vSigNames.push_back("TprimeTprime_M-900_"+sigDecay); vXsec.push_back(0.0903); vNEvts.push_back(831200.);
+  //vSigNames.push_back("TprimeTprime_M-900_"+sigDecay); vXsec.push_back(0.0903); vNEvts.push_back(831200.);
 
   //////////////////////////////// Updated by Jess on 28 Nov 2020 //////////////////////////////////
   //vSigNames.push_back("TprimeTprime_M-1000_"+sigDecay); vXsec.push_back(0.0440); vNEvts.push_back(802686.);
@@ -578,6 +579,7 @@ std::vector<Sample*> getInclusiveSigTTSampleVecForTable(std::string cut, float l
   //vSigNames.push_back("TprimeTprime_M-1800_"+sigDecay); vXsec.push_back(0.000391); vNEvts.push_back(467962.);
 
   //////////////////////////////// Updated by Jess (4LHC) on 6 Dec 2020 //////////////////////////////////
+  vSigNames.push_back("TprimeTprime_M-900_"+sigDecay); vXsec.push_back(0.0903); vNEvts.push_back(983788.10);
   vSigNames.push_back("TprimeTprime_M-1000_"+sigDecay); vXsec.push_back(0.0440); vNEvts.push_back(988591.585);
   vSigNames.push_back("TprimeTprime_M-1100_"+sigDecay); vXsec.push_back(0.0224); vNEvts.push_back(1006338.443);
   vSigNames.push_back("TprimeTprime_M-1200_"+sigDecay); vXsec.push_back(0.0118); vNEvts.push_back(1015599.881);
@@ -587,7 +589,6 @@ std::vector<Sample*> getInclusiveSigTTSampleVecForTable(std::string cut, float l
   vSigNames.push_back("TprimeTprime_M-1600_"+sigDecay); vXsec.push_back(0.001148); vNEvts.push_back(988854.229);
   vSigNames.push_back("TprimeTprime_M-1700_"+sigDecay); vXsec.push_back(0.000666); vNEvts.push_back(953395.981);
   vSigNames.push_back("TprimeTprime_M-1800_"+sigDecay); vXsec.push_back(0.000391); vNEvts.push_back(907874.112);
-
 
   //vector to hold weights
   std::vector<float> vWeights;
@@ -609,10 +610,10 @@ std::vector<Sample*> getInclusiveSigTTSampleVecForTable(std::string cut, float l
 //   Sample* x53x53m800L = new Sample(vSigNames.at(0),x53x53800Lfile,vWeights.at(0),vXsec.at(0),cut,kBlue,2);
 //   vSigSamples.push_back(x53x53m800L);
 //
-//   std::string lh900 = samplesDir+subfolder+"/TprimeTprime_M-900_"+sigDecay+"_Mu"+muID+"_El"+elID+"_"+era+".root";
-//   TFile* x53x53900Lfile = TFile::Open(lh900.c_str());
-//   Sample* x53x53m900L = new Sample(vSigNames.at(1),x53x53900Lfile,vWeights.at(1),vXsec.at(1),cut,kRed,2);
-//   vSigSamples.push_back(x53x53m900L);
+  std::string lh900 = eosDirector+samplesDir+subfolder+"/TprimeTprime_M-900_"+sigDecay+"_Mu"+muID+"_El"+elID+"_"+era+".root";
+  TFile* x53x53900Lfile = TFile::Open(lh900.c_str());
+  Sample* x53x53m900L = new Sample(vSigNames.at(1),x53x53900Lfile,vWeights.at(1),vXsec.at(1),cut,kRed,2);
+  vSigSamples.push_back(x53x53m900L);
 
   std::string lh1000 = eosDirector+samplesDir+subfolder+"/TprimeTprime_M-1000_"+sigDecay+"_Mu"+muID+"_El"+elID+"_"+era+".root";
   TFile* x53x531000Lfile = TFile::Open(lh1000.c_str());
@@ -735,7 +736,7 @@ std::vector<Sample*> getInclusiveSigBBSampleVecForTable(std::string cut, float l
   //vSigNames.push_back("BprimeBprime_M-1700_"+sigDecay); vXsec.push_back(0.000666); vNEvts.push_back(832600.);
   //vSigNames.push_back("BprimeBprime_M-1800_"+sigDecay); vXsec.push_back(0.000391); vNEvts.push_back(795400.);
 
-  //////////////////////////////// Updated by Jess (4LHC) on 6 Dec 2020 //////////////////////////////////
+  //////////////////////////////// Updated by Jess (4LHC) on 30 Dec 2020 //////////////////////////////////
   vSigNames.push_back("BprimeBprime_M-900_"+sigDecay); vXsec.push_back(0.0903); vNEvts.push_back(951074.915);
   vSigNames.push_back("BprimeBprime_M-1000_"+sigDecay); vXsec.push_back(0.0440); vNEvts.push_back(1003421.665);
   vSigNames.push_back("BprimeBprime_M-1100_"+sigDecay); vXsec.push_back(0.0224); vNEvts.push_back(1021828.790);

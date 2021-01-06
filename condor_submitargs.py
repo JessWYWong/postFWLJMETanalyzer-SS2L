@@ -7,7 +7,7 @@ proxyPath=proxyPath.readline().strip()
 
 tprimelist = [
 #    #'TprimeTprime_M-800',
-#    #'TprimeTprime_M-900',
+    'TprimeTprime_M-900',
     #'TprimeTprime_M-1000',
     #'TprimeTprime_M-1100',
     #'TprimeTprime_M-1200',
@@ -19,21 +19,21 @@ tprimelist = [
     #'TprimeTprime_M-1800',
 ]
 
-#tprimedecays = ['BWBW','TZTZ','THTH','THBW','TZBW','TZTH']
-tprimedecays = ['TZTZ']
+tprimedecays = ['BWBW','TZTZ','THTH','THBW','TZBW','TZTH']
+#tprimedecays = ['TZTZ']
 
 bprimelist = [
 #    #'BprimeBprime_M-800',
-    'BprimeBprime_M-900',
-    'BprimeBprime_M-1000',
-    'BprimeBprime_M-1100',
-    'BprimeBprime_M-1200',
-    'BprimeBprime_M-1300',
-    'BprimeBprime_M-1400',
-    'BprimeBprime_M-1500',
-    'BprimeBprime_M-1600',
-    'BprimeBprime_M-1700',
-    'BprimeBprime_M-1800',
+    #'BprimeBprime_M-900',
+    #'BprimeBprime_M-1000',
+    #'BprimeBprime_M-1100',
+    #'BprimeBprime_M-1200',
+    #'BprimeBprime_M-1300',
+    #'BprimeBprime_M-1400',
+    #'BprimeBprime_M-1500',
+    #'BprimeBprime_M-1600',
+    #'BprimeBprime_M-1700',
+    #'BprimeBprime_M-1800',
 ]
 
 bprimedecays = ['TWTW','BZBZ','BHBH','BHTW','BZTW','BZBH']

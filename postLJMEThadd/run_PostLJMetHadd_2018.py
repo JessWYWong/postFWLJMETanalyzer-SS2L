@@ -51,7 +51,7 @@ if __name__ == '__main__':
         #bkg_samples['WJets'] = '/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/diLep2018/200916_053410/'#190905_063523/'       
 
 	signal_samples = {}
-	signal_samples['TpTp900']   = '/TprimeTprime_M-900_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/201223_041450/'
+	signal_samples['TpTp900']   = '/TprimeTprime_M-900_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/210101_010418/'#201223_041450/'
 	#signal_samples['TpTp1000'] = '/TprimeTprime_M-1000_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/200916_054647/'#190904_030455/'
 	#signal_samples['TpTp1100'] = '/TprimeTprime_M-1100_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/200916_054753/'#190904_030613/'
 	#signal_samples['TpTp1200'] = '/TprimeTprime_M-1200_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/200916_055230/'#190904_030730/'

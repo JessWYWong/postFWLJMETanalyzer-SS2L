@@ -246,6 +246,8 @@ def add_autoMCstat(cb):
 	thisDir = os.getcwd()
 	mass=0
 	massList = range(1000,1800+1,100)
+	if era=="2017": massList=[700]+massList
+	elif era == "2018": massList=[900]+massList
 	if whichsignal=='BB': massList = range(900,1800+1,100)
 
 	for chn in chns+['cmb']:
@@ -292,7 +294,7 @@ if __name__ == '__main__':
 	if whichsignal=='TT': sig_procs = ['TTM']
         elif whichsignal=='BB': sig_procs = ['BBM']
 
-	masses = ch.ValsFromRange('1000:1800|100')
+	masses = ['700']+ch.ValsFromRange('1000:1800|100')
         if whichsignal=='BB': masses = ch.ValsFromRange('900:1800|100')
         print 'Found this mass list: ',masses
 
@@ -321,6 +323,10 @@ if __name__ == '__main__':
 	for chn in chns: cats[chn] = [(0, '')]
 	
 	go(cb)
+
+        masses = ch.ValsFromRange('900:1800|100')
+        if whichsignal=='BB': masses = ch.ValsFromRange('900:1800|100')
+        print 'Found this mass list: ',masses
 
 	era = "2018"
 	rfile = fileDir18+'/templates_'+whichsignal+'_'+BRconfStr+'_Combine.root'
