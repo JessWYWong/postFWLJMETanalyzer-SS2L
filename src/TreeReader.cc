@@ -194,7 +194,7 @@ Int_t TreeReader::GetEntry(Long64_t entry){
       smearDownPt = (*cleanedAK4JetPtSmearDown)[i];
     }
     cleanedAK4Jets.push_back(new TJet( (*cleanedAK4JetPt)[i], (*cleanedAK4JetEta)[i], (*cleanedAK4JetPhi)[i],(*cleanedAK4JetEnergy)[i],scaleUpPt,scaleDownPt,smearUpPt,smearDownPt) );
-
+    (cleanedAK4Jets.back())->bTag = (*cleanedAK4JetBTag)[i];
   }
 
   //make cleaned jets - only save if not inside (i.e.dR<0.8 of AK8 jets) - DONE IN TREEMAKER NOW
@@ -204,7 +204,7 @@ Int_t TreeReader::GetEntry(Long64_t entry){
     for(unsigned int j=0; j<nAK8Jets; j++){
       //float dR = pow( pow(allAK8Jets.at(j)->eta - (*cleanedAK4JetEta)[i],2) + pow(allAK8Jets.at(j)->phi - (*cleanedAK4JetPhi)[i],2),0.5);
       //if(dR>0.8) newCleanedAK4Jets.push_back(new TJet( (*cleanedAK4JetPt)[i], (*cleanedAK4JetEta)[i], (*cleanedAK4JetPhi)[i],(*cleanedAK4JetEnergy)[i]) );
-      newCleanedAK4Jets.push_back(new TJet( (*cleanedAK4JetPt)[i], (*cleanedAK4JetEta)[i], (*cleanedAK4JetPhi)[i],(*cleanedAK4JetEnergy)[i]) );
+    newCleanedAK4Jets.push_back(new TJet( (*cleanedAK4JetPt)[i], (*cleanedAK4JetEta)[i], (*cleanedAK4JetPhi)[i],(*cleanedAK4JetEnergy)[i]) );
     }
   }
 
@@ -403,6 +403,7 @@ void TreeReader::Init(TTree *treetemp)
   AK4JetPt = 0;
 
   //ak4 jets
+  cleanedAK4JetBTag = 0;
   cleanedAK4JetEnergy = 0;
   cleanedAK4JetEta = 0;
   cleanedAK4JetPhi = 0;
@@ -531,6 +532,7 @@ void TreeReader::Init(TTree *treetemp)
   tree->SetBranchAddress("AK4JetPt_DileptonCalc", &AK4JetPt, &b_AK4JetPt_DileptonCalc);
 
   //cleaned ak4 jets
+  tree->SetBranchAddress("cleanedAK4JetBTag_DileptonCalc", &cleanedAK4JetBTag, &b_cleanedAK4JetBTag_DileptonCalc);
   tree->SetBranchAddress("cleanedAK4JetEnergy_DileptonCalc", &cleanedAK4JetEnergy, &b_cleanedAK4JetEnergy_DileptonCalc);
   tree->SetBranchAddress("cleanedAK4JetEta_DileptonCalc", &cleanedAK4JetEta, &b_cleanedAK4JetEta_DileptonCalc);
   tree->SetBranchAddress("cleanedAK4JetPhi_DileptonCalc", &cleanedAK4JetPhi, &b_cleanedAK4JetPhi_DileptonCalc);

@@ -21,6 +21,15 @@ void TreeMaker::InitTree(std::string treename){
   tree->Branch("ChargeMisIDWeight",&weight_);
   tree->Branch("MCWeight",&MCWeight_);
   tree->Branch("NPWeight",&NPWeight_);
+  tree->Branch("NPWeightElUp",&NPWeightElUp_);
+  tree->Branch("NPWeightElDown",&NPWeightElDown_);
+  tree->Branch("NPWeightMuUp",&NPWeightMuUp_);
+  tree->Branch("NPWeightMuDown",&NPWeightMuDown_);
+  tree->Branch("NPWeightScan",&NPWeightScan_);
+  tree->Branch("NPWeightElPRUp",&NPWeightElPRUp_);
+  tree->Branch("NPWeightElPRDown",&NPWeightElPRDown_);
+  tree->Branch("NPWeightMuPRUp",&NPWeightMuPRUp_);
+  tree->Branch("NPWeightMuPRDown",&NPWeightMuPRDown_);
   tree->Branch("NPAltWeight",&NPAltWeight_);
   tree->Branch("NPSUSYWeight",&NPSUSYWeight_);
   tree->Branch("nTL",&nTL_);
@@ -97,6 +106,7 @@ void TreeMaker::InitTree(std::string treename){
 
   //cleaned jets
   tree->Branch("nCleanAK4Jets",&nCleanAK4Jets_);
+  tree->Branch("nCleanAK4JetsBTag",&nCleanAK4JetsBTag_);
   tree->Branch("nCleanAK4JetsScaleUp",&nCleanAK4JetsScaleUp_);
   tree->Branch("nCleanAK4JetsScaleDown",&nCleanAK4JetsScaleDown_);
   tree->Branch("nCleanAK4JetsSmearUp",&nCleanAK4JetsSmearUp_);
@@ -254,7 +264,7 @@ void TreeMaker::InitTree(std::string treename){
   tree->Branch("nPV",&nPrimaryVert_);
 }
 
-void TreeMaker::FillTree(std::vector<TLepton*> vSSLep, std::vector<TJet*> AK4Jets, std::vector<TJet*> cleanAK4Jets, std::vector<TJet*> simpleCleanAK4Jets, float HTtemp, float METtemp, float DilepMasstemp, int nMu, float weight, std::vector<TLepton*> vNonSSLep,float mcweight, float NPWeighttemp,float NPaltTemp,float SUSYNPTemp, int nTLtemp, float trSF, float trSFup, float trSFdn, float idSF, float idSFup, float idSFdn, float isoSF,float gsfSF, float puwtemp,float puUptemp, float puDowntemp, float amasst, std::vector<TBoostedJet*> AK8Jets,std::vector<THadronicGenJet*> hadronicGenJets,bool mc,int run, int lumi, int event,int nPV, std::vector<double> pdfweightstemp, std::vector<double> renormWeightstemp, std::vector<double> pdfNewWeightstemp, std::vector<double> pdfWeights4LHCtemp, std::vector<double> pdfWeightsMSTWtemp, double pdfNewNominalWeighttemp){
+void TreeMaker::FillTree(std::vector<TLepton*> vSSLep, std::vector<TJet*> AK4Jets, std::vector<TJet*> cleanAK4Jets, std::vector<TJet*> simpleCleanAK4Jets, float HTtemp, float METtemp, float DilepMasstemp, int nMu, float weight, std::vector<TLepton*> vNonSSLep,float mcweight, float NPWeighttemp,float NPWeightElUptemp,float NPWeightElDowntemp,float NPWeightMuUptemp, float NPWeightMuDowntemp,std::vector<float> NPWeightScantemp,float NPWeightElPRUptemp,float NPWeightElPRDowntemp,float NPWeightMuPRUptemp, float NPWeightMuPRDowntemp,float NPaltTemp,float SUSYNPTemp, int nTLtemp, float trSF, float trSFup, float trSFdn, float idSF, float idSFup, float idSFdn, float isoSF,float gsfSF, float puwtemp,float puUptemp, float puDowntemp, float amasst, std::vector<TBoostedJet*> AK8Jets,std::vector<THadronicGenJet*> hadronicGenJets,bool mc,int run, int lumi, int event,int nPV, std::vector<double> pdfweightstemp, std::vector<double> renormWeightstemp, std::vector<double> pdfNewWeightstemp, std::vector<double> pdfWeights4LHCtemp, std::vector<double> pdfWeightsMSTWtemp, double pdfNewNominalWeighttemp){
 
   bool debug = false;
 
@@ -264,6 +274,15 @@ void TreeMaker::FillTree(std::vector<TLepton*> vSSLep, std::vector<TJet*> AK4Jet
   nPrimaryVert_ = nPV;
   weight_=weight;
   NPWeight_=NPWeighttemp;
+  NPWeightElUp_=NPWeightElUptemp;
+  NPWeightElDown_=NPWeightElDowntemp;
+  NPWeightMuUp_=NPWeightMuUptemp;
+  NPWeightMuDown_=NPWeightMuDowntemp;
+  NPWeightScan_ = NPWeightScantemp;
+  NPWeightElPRUp_=NPWeightElPRUptemp;
+  NPWeightElPRDown_=NPWeightElPRDowntemp;
+  NPWeightMuPRUp_=NPWeightMuPRUptemp;
+  NPWeightMuPRDown_=NPWeightMuPRDowntemp;
   NPAltWeight_=NPaltTemp;
   NPSUSYWeight_=SUSYNPTemp;
   nTL_ = nTLtemp;
@@ -351,6 +370,7 @@ void TreeMaker::FillTree(std::vector<TLepton*> vSSLep, std::vector<TJet*> AK4Jet
 
   //cleaned jets
   nCleanAK4Jets_ = cleanAK4Jets.size();
+  nCleanAK4JetsBTag_ = 0;
   nCleanAK4JetsScaleUp_ = 0;
   nCleanAK4JetsScaleDown_ = 0;
   nCleanAK4JetsSmearUp_ = 0;
@@ -367,6 +387,7 @@ void TreeMaker::FillTree(std::vector<TLepton*> vSSLep, std::vector<TJet*> AK4Jet
     cleanAK4HTSmearUp_ += cleanAK4Jets.at(i)->smearUpPt;
     cleanAK4HTSmearDown_ += cleanAK4Jets.at(i)->smearDownPt;
   
+    if(cleanAK4Jets.at(i)->bTag > 0){ nCleanAK4JetsBTag_++; }
     if(cleanAK4Jets.at(i)->scaleUpPt > 30){ nCleanAK4JetsScaleUp_++; }
     if(cleanAK4Jets.at(i)->scaleDownPt > 30){ nCleanAK4JetsScaleDown_++; }
     if(cleanAK4Jets.at(i)->smearUpPt > 30){ nCleanAK4JetsSmearUp_++; }

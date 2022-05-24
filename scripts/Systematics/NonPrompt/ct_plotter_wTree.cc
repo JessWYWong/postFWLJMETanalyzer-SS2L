@@ -37,17 +37,24 @@ void DrawAndSave(TH1F* h_pred, TH1F* h_obs, std::string pdfname, std::string fla
   h_obs->Scale(lumiweight);
   
   Double_t obserr=0.;
-  float obs = h_obs->IntegralAndError(11,26,obserr);
+  float obs = h_obs->IntegralAndError(13,31,obserr);
   Double_t prederr=0.;
-  float pred = h_pred->IntegralAndError(11,26,prederr);
-  //  std::cout<<"bin low edge: "<<h_pred->GetXaxis()->GetBinLowEdge(11)<<std::endl;
+  float pred = h_pred->IntegralAndError(13,31,prederr);
+  std::cout<<"bin low edge: "<<h_pred->GetXaxis()->GetBinLowEdge(13)<<std::endl;
   std::cout<<std::fixed<<setprecision(2)<<lepflavor<<"&"<<flavor<<"&$"<<obs<<"\\pm"<<obserr<<"$&$"<<pred<<"\\pm"<<prederr<<"$\\\\"<<std::endl;
 
+  Double_t obserr_ht=0.;
+  float obs_ht = h_obs->IntegralAndError(11,31,obserr_ht);
+  Double_t prederr_ht=0.;
+  float pred_ht = h_pred->IntegralAndError(11,31,prederr_ht);
+  std::cout<<"bin low edge: "<<h_pred->GetXaxis()->GetBinLowEdge(11)<<std::endl;
+  std::cout<<std::fixed<<setprecision(2)<<lepflavor<<"&"<<flavor<<" ht"<<h_pred->GetXaxis()->GetBinLowEdge(11)<<"&$"<<obs_ht<<"\\pm"<<obserr_ht<<"$&$"<<pred_ht<<"\\pm"<<prederr_ht<<"$\\\\"<<std::endl;
+
   double totobserr=0;
-  float totobs = h_obs->IntegralAndError(1,26,totobserr);
+  float totobs = h_obs->IntegralAndError(1,31,totobserr);
   double totprederr=0;
-  float totpred = h_pred->IntegralAndError(1,26,totprederr);
-  std::cout<<std::fixed<<setprecision(2)<<lepflavor<<"&"<<flavor<<"&$"<<totobs<<"\\pm"<<totobserr<<"$&$"<<totpred<<"\\pm"<<totprederr<<"$\\\\"<<std::endl;
+  float totpred = h_pred->IntegralAndError(1,31,totprederr);
+  std::cout<<std::fixed<<setprecision(2)<<lepflavor<<"&"<<flavor<< "_tot "<<"&$"<<totobs<<"\\pm"<<totobserr<<"$&$"<<totpred<<"\\pm"<<totprederr<<"$\\\\"<<std::endl;
 
 
   h_pred->Draw("hist e");
@@ -92,7 +99,8 @@ void DrawAndSave(TH1F* h_pred, TH1F* h_obs, std::string pdfname, std::string fla
 
 void ct_plotter_wTree(){
 
-  TFile* fRates = new TFile("Sys_FakeRateByFlavor.root");
+  //TFile* fRates = new TFile("Sys_FakeRateByFlavor.root");
+  TFile* fRates = new TFile("Sys_FakeRateDDBKG.root");
   
   TH1F* h_rate_el_light = (TH1F*) fRates->Get("h_rate_el_l_eta");
   TH1F* h_rate_el_charm = (TH1F*) fRates->Get("h_rate_el_c_eta");
@@ -119,17 +127,17 @@ void ct_plotter_wTree(){
   t->SetBranchAddress("LepFlavorSource",&LepSourceFlavor);
   t->SetBranchAddress("Observed",&Observed);
 
-  TH1F* h_el_obs_HT_light = new TH1F("h_el_obs_HT_light","H_{T} Electrons from Light Quarks",25,0,3000);
-  TH1F* h_el_obs_HT_charm = new TH1F("h_el_obs_HT_charm","H_{T} Electrons from Charm Quarks",25,0,3000);
-  TH1F* h_el_obs_HT_bottom = new TH1F("h_el_obs_HT_bottom","H_{T} Electrons from Bottom Quarks",25,0,3000);
-  TH1F* h_el_obs_HT_unmatched = new TH1F("h_el_obs_HT_unmatched","H_{T} Electrons from Unmatched",25,0,3000);
-  TH1F* h_el_obs_HT_fake = new TH1F("h_el_obs_HT_fake","H_{T} Electrons from Fakes",25,0,3000);
+  TH1F* h_el_obs_HT_light = new TH1F("h_el_obs_HT_light","H_{T} Electrons from Light Quarks",30,0,3000);
+  TH1F* h_el_obs_HT_charm = new TH1F("h_el_obs_HT_charm","H_{T} Electrons from Charm Quarks",30,0,3000);
+  TH1F* h_el_obs_HT_bottom = new TH1F("h_el_obs_HT_bottom","H_{T} Electrons from Bottom Quarks",30,0,3000);
+  TH1F* h_el_obs_HT_unmatched = new TH1F("h_el_obs_HT_unmatched","H_{T} Electrons from Unmatched",30,0,3000);
+  TH1F* h_el_obs_HT_fake = new TH1F("h_el_obs_HT_fake","H_{T} Electrons from Fakes",30,0,3000);
 
-  TH1F* h_el_pred_HT_light = new TH1F("h_el_pred_HT_light","H_{T} Electrons from Light Quarks",25,0,3000);
-  TH1F* h_el_pred_HT_charm = new TH1F("h_el_pred_HT_charm","H_{T} Electrons from Charm Quarks",25,0,3000);
-  TH1F* h_el_pred_HT_bottom = new TH1F("h_el_pred_HT_bottom","H_{T} Electrons from Bottom Quarks",25,0,3000);
-  TH1F* h_el_pred_HT_unmatched = new TH1F("h_el_pred_HT_unmatched","H_{T} Electrons from Unmatched",25,0,3000);
-  TH1F* h_el_pred_HT_fake = new TH1F("h_el_pred_HT_fake","H_{T} Electrons from Fakes",25,0,3000);
+  TH1F* h_el_pred_HT_light = new TH1F("h_el_pred_HT_light","H_{T} Electrons from Light Quarks",30,0,3000);
+  TH1F* h_el_pred_HT_charm = new TH1F("h_el_pred_HT_charm","H_{T} Electrons from Charm Quarks",30,0,3000);
+  TH1F* h_el_pred_HT_bottom = new TH1F("h_el_pred_HT_bottom","H_{T} Electrons from Bottom Quarks",30,0,3000);
+  TH1F* h_el_pred_HT_unmatched = new TH1F("h_el_pred_HT_unmatched","H_{T} Electrons from Unmatched",30,0,3000);
+  TH1F* h_el_pred_HT_fake = new TH1F("h_el_pred_HT_fake","H_{T} Electrons from Fakes",30,0,3000);
 
   TH1F* h_el_obs_pt_light = new TH1F("h_el_obs_pt_light","p_{T} Electrons from Light Quarks",15,0,300);
   TH1F* h_el_obs_pt_charm = new TH1F("h_el_obs_pt_charm","p_{T} Electrons from Charm Quarks",15,0,300);
@@ -143,17 +151,17 @@ void ct_plotter_wTree(){
   TH1F* h_el_pred_pt_unmatched = new TH1F("h_el_pred_pt_unmatched","p_{T} Electrons from Unmatched",15,0,300);
   TH1F* h_el_pred_pt_fake = new TH1F("h_el_pred_pt_fake","p_{T} Electrons from Fakes",15,0,300);
 
-  TH1F* h_mu_obs_HT_light = new TH1F("h_mu_obs_HT_light","H_{T} Muons from Light Quarks",25,0,3000);
-  TH1F* h_mu_obs_HT_charm = new TH1F("h_mu_obs_HT_charm","H_{T} Muons from Charm Quarks",25,0,3000);
-  TH1F* h_mu_obs_HT_bottom = new TH1F("h_mu_obs_HT_bottom","H_{T} Muons from Bottom Quarks",25,0,3000);
-  TH1F* h_mu_obs_HT_unmatched = new TH1F("h_mu_obs_HT_unmatched","H_{T} Muons from Unmatched",25,0,3000);
-  TH1F* h_mu_obs_HT_fake = new TH1F("h_mu_obs_HT_fake","H_{T} Muons from Fakes",25,0,3000);
+  TH1F* h_mu_obs_HT_light = new TH1F("h_mu_obs_HT_light","H_{T} Muons from Light Quarks",30,0,3000);
+  TH1F* h_mu_obs_HT_charm = new TH1F("h_mu_obs_HT_charm","H_{T} Muons from Charm Quarks",30,0,3000);
+  TH1F* h_mu_obs_HT_bottom = new TH1F("h_mu_obs_HT_bottom","H_{T} Muons from Bottom Quarks",30,0,3000);
+  TH1F* h_mu_obs_HT_unmatched = new TH1F("h_mu_obs_HT_unmatched","H_{T} Muons from Unmatched",30,0,3000);
+  TH1F* h_mu_obs_HT_fake = new TH1F("h_mu_obs_HT_fake","H_{T} Muons from Fakes",30,0,3000);
 
-  TH1F* h_mu_pred_HT_light = new TH1F("h_mu_pred_HT_light","H_{T} Muons from Light Quarks",25,0,3000);
-  TH1F* h_mu_pred_HT_charm = new TH1F("h_mu_pred_HT_charm","H_{T} Muons from Charm Quarks",25,0,3000);
-  TH1F* h_mu_pred_HT_bottom = new TH1F("h_mu_pred_HT_bottom","H_{T} Muons from Bottom Quarks",25,0,3000);
-  TH1F* h_mu_pred_HT_unmatched = new TH1F("h_mu_pred_HT_unmatched","H_{T} Muons from Unmatched",25,0,3000);
-  TH1F* h_mu_pred_HT_fake = new TH1F("h_mu_pred_HT_fake","H_{T} Muons from Fakes",25,0,3000);
+  TH1F* h_mu_pred_HT_light = new TH1F("h_mu_pred_HT_light","H_{T} Muons from Light Quarks",30,0,3000);
+  TH1F* h_mu_pred_HT_charm = new TH1F("h_mu_pred_HT_charm","H_{T} Muons from Charm Quarks",30,0,3000);
+  TH1F* h_mu_pred_HT_bottom = new TH1F("h_mu_pred_HT_bottom","H_{T} Muons from Bottom Quarks",30,0,3000);
+  TH1F* h_mu_pred_HT_unmatched = new TH1F("h_mu_pred_HT_unmatched","H_{T} Muons from Unmatched",30,0,3000);
+  TH1F* h_mu_pred_HT_fake = new TH1F("h_mu_pred_HT_fake","H_{T} Muons from Fakes",30,0,3000);
 
   TH1F* h_mu_obs_pt_light = new TH1F("h_mu_obs_pt_light","p_{T} Muons from Light Quarks",15,0,300);
   TH1F* h_mu_obs_pt_charm = new TH1F("h_mu_obs_pt_charm","p_{T} Muons from Charm Quarks",15,0,300);

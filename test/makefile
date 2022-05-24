@@ -16,9 +16,15 @@ test:
 
 LJMETanalyzer:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o LJMETanalyzer.o LJMETanalyzer.cc
+LJMETanalyzer_allowLoose:
+	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o LJMETanalyzer_allowLoose.o LJMETanalyzer_allowLoose.cc
+LJMETanalyzer_HEMcorr:
+	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o LJMETanalyzer_HEMcorr.o LJMETanalyzer_HEMcorr.cc
 HighHTCheck:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o HighHTCheck.o HighHTCheck.cc
 
+LJMETanalyzer_CMIDnConst:
+	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o LJMETanalyzer_CMIDnConst.o LJMETanalyzer_CMIDnConst.cc
 
 Plotter:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makePlots.o makePlots.cc
@@ -46,6 +52,9 @@ FakeRate_2017data:
 
 FakeRate_2018data:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o FakeRate_2018data.o FakeRate_2018data.cc
+
+FakeRate_2018data_METcut:
+	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o FakeRate_2018data_METcut.o FakeRate_2018data_METcut.cc
 
 ChargeMisID:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o ChargeMisID.o ChargeMisID.cc

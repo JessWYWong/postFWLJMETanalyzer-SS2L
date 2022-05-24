@@ -96,6 +96,8 @@ int main(int argc, char* argv[]){
   std::stringstream cutSStream_elmu;
   std::stringstream cutSStream_mumu;
   std::string weightstring = "PUWeight * IDSF * IsoSF * trigSF * GsfSF * MCWeight * ChargeMisIDWeight * NPWeight* (";
+  if(sigSample) weightstring = "pdfWeights4LHC[0] * "+weightstring; 
+
   cutSStream_elel<<weightstring<<" ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1)) && (DilepMass>20) && (nConst>="<<nConst<<" ) && (Lep1Pt >"<<lep1cut<<") && (Lep2Pt > "<<lep2cut<<")"<<" && (Channel==0) )";
   cutSStream_elmu<<weightstring<<" ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1)) && (DilepMass>20) && (nConst>="<<nConst<<" ) && (Lep1Pt >"<<lep1cut<<") && (Lep2Pt > "<<lep2cut<<")"<<" && (Channel==1) )";
   cutSStream_mumu<<weightstring<<" ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1)) && (DilepMass>20) && (nConst>="<<nConst<<" ) && (Lep1Pt >"<<lep1cut<<") && (Lep2Pt > "<<lep2cut<<")"<<" && (Channel==2) )";

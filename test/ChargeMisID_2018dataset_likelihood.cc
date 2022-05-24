@@ -17,8 +17,10 @@
 #include <memory>
 #include <fstream>
 
+bool HEMveto = true;
+
 //helper functions
-std::vector<TLepton*> makeLeptons(std::vector<TElectron*> electrons, bool mc, bool FiftyNs, std::string ID);
+std::vector<TLepton*> makeLeptons(std::vector<TElectron*> electrons, bool mc, bool FiftyNs, std::string ID, bool HEMveto = false);
 
 //A script to get the prompt rate for electrons and muons. Usage is ./ChargeMisID.o <Data,MC> <El,Mu>
 
@@ -64,7 +66,7 @@ int main(int argc, char* argv[]){
       if(argv2=="2018A") filename="root://cmseos.fnal.gov//store/"+filedir+"/EGammaRun2018A.root";
       else if(argv2=="2018B") filename="root://cmseos.fnal.gov//store/"+filedir+"/EGammaRun2018B.root";
       else if(argv2=="2018C") filename="root://cmseos.fnal.gov//store/"+filedir+"/EGammaRun2018C.root";
-      else if(argv2=="2018D") filename="root://cmseos.fnal.gov//store/"+filedir+"/EGammaRun2018D.root";
+      else if(argv2=="2018D") filename="root://cmseos.fnal.gov//store/"+filedir+"/EGammaRun2018D_rereco.root";
   }
   else if(argv1=="MC" && argv2=="50ns") {filename="root://cmseos.fnal.gov//store/user/clint/PHYS14/50ns/ljmet_trees/ljmet_DYJets.root"; data=false; FiftyNS=true;}
   else if(argv1=="MC" && argv2=="25ns") {filename="root://cmseos.fnal.gov//store/user/lpctlbsm/clint/Spring16/25ns/Feb16/ljmet_trees/ljmet_DYJets.root"; data=false; FiftyNS=false;}
@@ -77,7 +79,8 @@ int main(int argc, char* argv[]){
   }
 
   //make output folder
-  TString outdir = "ChargeMisID_likelihood_082020";
+  TString outdir = "ChargeMisID_likelihood_082020_rereco_nConst3";
+  if(HEMveto) outdir+="_HEMveto";
   system("mkdir -pv "+outdir);
 
 
@@ -141,8 +144,10 @@ int main(int argc, char* argv[]){
     else weight = tr->MCWeight >=0 ? 1.0 : -1.0;
     if(ient % 100000 ==0) std::cout<<"Completed "<<ient<<" out of "<<nEntries<<" events"<<std::endl;
 
+    if (! (tr->cleanedAK4Jets.size() >= 3)) continue;
+
     //make vector of leptons
-    std::vector<TLepton*> leptons = makeLeptons(tr->allElectrons,!data,FiftyNS,ID);
+    std::vector<TLepton*> leptons = makeLeptons(tr->allElectrons,!data,FiftyNS,ID,HEMveto);
 
     //skip if didn't find at least two tight leptons
     if(leptons.size()<2) continue;
@@ -224,13 +229,17 @@ int main(int argc, char* argv[]){
 }
 
 
-std::vector<TLepton*> makeLeptons(std::vector<TElectron*> electrons, bool mc, bool FiftyNs, std::string ID){
+std::vector<TLepton*> makeLeptons(std::vector<TElectron*> electrons, bool mc, bool FiftyNs, std::string ID, bool HEMveto){
 
   std::vector<TLepton*> Leptons;
 
   //fill with  electrons
   for(unsigned int uiel=0; uiel<electrons.size(); uiel++){
     TElectron* iel = electrons.at(uiel);
+    if(HEMveto){
+      if((iel->phi>-1.57 && iel->phi<-0.87) && ((iel->eta>-2.5 && iel->eta <-1.3) || (iel->eta>-3.0 && iel->eta<-2.5))) continue;
+    }
+
     TLepton* iLep = new TLepton(iel->pt,iel->eta,iel->phi,iel->energy,iel->charge,iel->relIso,iel->miniIso,iel->susyIso);
 
     if(ID=="CBTight"){

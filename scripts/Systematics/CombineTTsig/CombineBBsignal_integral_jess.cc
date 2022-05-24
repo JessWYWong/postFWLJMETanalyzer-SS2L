@@ -23,12 +23,13 @@ float getYields(TTree* t,TString cut){
 
 void combinedSignal(TString mass, int BRtype){
 
-  TString workArea = "/eos/uscms/store/user/wywong/FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc/";
+  TString workArea = "/eos/uscms/store/user/wywong/FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_HEMveto_ANv8/";
+  //"/store/user/wywong/FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc_HEMveto/";
   TString fname = workArea+"BprimeBprime_M-"+mass;
 
   TString elID = "MVA2017TightV2IsoTightRC";
   TString muID = "CBTightMiniIsoTight";
-  TString era = "2018A-D";
+  TString era = "2018A-D_HEMveto";
 
   //--------------------open root files to combine : all the decays
   if(DEBUG)std::cout << "Opening Files ..." << std::endl;

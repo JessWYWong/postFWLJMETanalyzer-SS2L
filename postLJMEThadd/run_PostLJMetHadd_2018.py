@@ -20,7 +20,9 @@ if __name__ == '__main__':
 
 	#folder	= 'FWLJMET102X_2lep2018_wywong_091819'
         #folder = 'FWLJMET102X_2lep2018_wywong_052020'
-        folder = 'FWLJMET102X_2lep2018_wywong_082020'
+        #folder = 'FWLJMET102X_2lep2018_wywong_082020'
+        #folder = 'FWLJMET102X_2lep2018l_wywong_082021_njet3'
+	folder = 'FWLJMET102X_2lep2018_wywong_082021_njet3'
 
 	locdir = 'hadd_jobs_'+folder
 	grp_basedir = '/store/group/lpcljm/'
@@ -34,30 +36,54 @@ if __name__ == '__main__':
 	#################################################
 
 	bkg_samples = {} 	
-	#bkg_samples['TTW'] = '/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/diLep2018/200920_223825/'#190905_035043/'
-	#bkg_samples['TTZ'] = '/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/200920_223928/'#190905_035204/'
-	#bkg_samples['TTH'] = '/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/diLep2018/200921_211136/'#200916_052202/'#190905_034340/'
-	#bkg_samples['TTTT'] = '/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/200916_052321/'#190905_034853/'
+#	bkg_samples['TTW'] = '/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/diLep2018/210827_043917/'#200920_223825/'#190905_035043/'
+#	bkg_samples['TTZ'] = '/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/210827_044017/'#200920_223928/'#190905_035204/'
+#	bkg_samples['TTH'] = '/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/diLep2018/210827_043826/'#200921_211136/'#200916_052202/'#190905_034340/'
+#	bkg_samples['TTTT'] = '/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/210827_044130/'#200916_052321/'#190905_034853/'
 
 	#bkg_samples['WWW'] = '/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/200920_224037/'#190905_063741/'
-	#bkg_samples['WWZ'] = '/WWZ_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/200920_224658/'#190905_064242/'
-	#bkg_samples['WZZ'] = '/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/200920_224807/'#190905_064405/'
+#	bkg_samples['WWZ'] = '/WWZ_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/210827_045037/'#200920_224658/'#190905_064242/'
+	bkg_samples['WZZ'] = '/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/210827_044324/'#200920_224807/'#190905_064405/'
 	#bkg_samples['ZZZ'] = '/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/200920_224914/'#190905_072331/'
 
-	#bkg_samples['WpWp'] = '/WpWpJJ_EWK-QCD_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/200916_054522/'
+#	bkg_samples['WpWp'] = '/WpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8/diLep2018/210827_044603/'#200916_054522/'
 	#bkg_samples['WZ'] = '/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/diLep2018/'#190905_072756/'
-        bkg_samples['WZ'] = '/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/diLep2018/200921_202938/'
-	bkg_samples['ZZ'] = '/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/diLep2018/200920_225041/'#190905_072644/'
+#	bkg_samples['WZ'] = '/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/diLep2018/210827_044753/'#200921_202938/'
+#	bkg_samples['ZZ'] = '/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/diLep2018/210827_044801/'#200920_225041/'#190905_072644/'
         #bkg_samples['WJets'] = '/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/diLep2018/200916_053410/'#190905_063523/'       
 
+	newSignal_samples = {}
+	#newSignal_samples['TTTTsig'] = '/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/211227_221802/'
+	newSignal_samples['TTTTsig0'] = '/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/211227_221802/0000/'
+        newSignal_samples['TTTTsig1'] = '/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/211227_221802/0001/'
+        newSignal_samples['TTTTsig2'] = '/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/211227_221802/0002/'
+        newSignal_samples['TTTTsig3'] = '/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/211227_221802/0003/'
+        newSignal_samples['TTTTsig4'] = '/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/211227_221802/0004/'
+        newSignal_samples['TTTTsig5'] = '/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/diLep2018/211227_221802/0005/'
+
+	newSignal_samples['X53X53M1100LH'] = '/X53X53_M-1100_LH_TuneCP5_13TeV-madgraph-pythia8/diLep2018/211222_232546/'
+	newSignal_samples['X53X53M1200LH'] = '/X53X53_M-1200_LH_TuneCP5_13TeV-madgraph-pythia8/diLep2018/211222_232045/'
+	newSignal_samples['X53X53M1400LH'] = '/X53X53_M-1400_LH_TuneCP5_13TeV-madgraph-pythia8/diLep2018/211222_232252/'
+	newSignal_samples['X53X53M1500LH'] = '/X53X53_M-1500_LH_TuneCP5_13TeV-madgraph-pythia8/diLep2018/211222_232759/'
+	newSignal_samples['X53X53M1700LH'] = '/X53X53_M-1700_LH_TuneCP5_13TeV-madgraph-pythia8/diLep2018/211222_232925/'
+	newSignal_samples['X53X53M1000RH'] = '/X53X53_M-1000_RH_TuneCP5_13TeV-madgraph-pythia8/diLep2018/211222_232713/'
+	newSignal_samples['X53X53M1100RH'] = '/X53X53_M-1100_RH_TuneCP5_13TeV-madgraph-pythia8/diLep2018/211222_232631/'
+	newSignal_samples['X53X53M1200RH'] = '/X53X53_M-1200_RH_TuneCP5_13TeV-madgraph-pythia8/diLep2018/211222_233006/'
+	newSignal_samples['X53X53M1300RH'] = '/X53X53_M-1300_RH_TuneCP5_13TeV-madgraph-pythia8/diLep2018/211222_232210/'
+	newSignal_samples['X53X53M1400RH'] = '/X53X53_M-1400_RH_TuneCP5_13TeV-madgraph-pythia8/diLep2018/211222_232841/'
+	newSignal_samples['X53X53M1500RH'] = '/X53X53_M-1500_RH_TuneCP5_13TeV-madgraph-pythia8/diLep2018/211222_232504/'
+	newSignal_samples['X53X53M1600RH'] = '/X53X53_M-1600_RH_TuneCP5_13TeV-madgraph-pythia8/diLep2018/211222_232126/'
+	newSignal_samples['X53X53M900RH'] = '/X53X53_M-900_RH_TuneCP5_13TeV-madgraph-pythia8/diLep2018/211222_232337/'
+
+
 	signal_samples = {}
-	signal_samples['TpTp900']   = '/TprimeTprime_M-900_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/210101_010418/'#201223_041450/'
-	#signal_samples['TpTp1000'] = '/TprimeTprime_M-1000_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/200916_054647/'#190904_030455/'
+	#signal_samples['TpTp900']   = '/TprimeTprime_M-900_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/210101_010418/'#201223_041450/'
+	signal_samples['TpTp1000'] = '/TprimeTprime_M-1000_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/210901_192132/'#200916_054647/'#190904_030455/'
 	#signal_samples['TpTp1100'] = '/TprimeTprime_M-1100_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/200916_054753/'#190904_030613/'
 	#signal_samples['TpTp1200'] = '/TprimeTprime_M-1200_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/200916_055230/'#190904_030730/'
 	#signal_samples['TpTp1300'] = '/TprimeTprime_M-1300_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/200916_055327/'
 	#signal_samples['TpTp1400'] = '/TprimeTprime_M-1400_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/200916_055423/'#190904_031227/'
-	#signal_samples['TpTp1500'] = '/TprimeTprime_M-1500_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/200916_055139/'#190904_031348/'
+	signal_samples['TpTp1500'] = '/TprimeTprime_M-1500_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/210901_192244/'#200916_055139/'#190904_031348/'
 	#signal_samples['TpTp1600'] = '/TprimeTprime_M-1600_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/200916_055617/'#190904_031559/'
 	#signal_samples['TpTp1700'] = '/TprimeTprime_M-1700_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/200916_055759/'#190904_031713/'
 	#signal_samples['TpTp1800'] = '/TprimeTprime_M-1800_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/200916_055856/'#190904_031826/'
@@ -76,24 +102,25 @@ if __name__ == '__main__':
 
 
 	data_samples = {}
-	#data_samples['DoubleMuonRun2018A'] = '/DoubleMuon/diLep2018/200904_001431/'#200812_043139/0000/'#200506_181706/0000/'
+#	data_samples['DoubleMuonRun2018A'] = '/DoubleMuon/diLep2018/210827_042146/'#210507_002948/'#200904_001431/'#200812_043139/0000/'#200506_181706/0000/'
         #data_samples['DoubleMuonRun2018A1'] = '/DoubleMuon/diLep2018//'#200812_043139/0001/'#200506_181706/0001/'
-	#data_samples['DoubleMuonRun2018B'] = '/DoubleMuon/diLep2018/200904_001829/'#200812_043549/'#200506_181820/'
-	#data_samples['DoubleMuonRun2018C'] = '/DoubleMuon/diLep2018/200904_002437/'#200812_043915/'#200506_181920/'
-	#data_samples['DoubleMuonRun2018D'] = '/DoubleMuon/diLep2018/200904_002820/'#200812_044015/0000/'#200506_182952/0000/'
+#	data_samples['DoubleMuonRun2018B'] = '/DoubleMuon/diLep2018/210827_042438/'#210507_003034/'#200904_001829/'#200812_043549/'#200506_181820/'
+#	data_samples['DoubleMuonRun2018C'] = '/DoubleMuon/diLep2018/210827_185804/'#210507_003118/'#200904_002437/'#200812_043915/'#200506_181920/'
+#	data_samples['DoubleMuonRun2018D'] = '/DoubleMuon/diLep2018/210827_043257/'#210507_003539/'#200904_002820/'#200812_044015/0000/'#200506_182952/0000/'
         #data_samples['DoubleMuonRun2018D1'] = '/DoubleMuon/diLep2018//'#200812_044015/0001/'#200506_182952/0001/'
         #data_samples['DoubleMuonRun2018D2'] = '/DoubleMuon/diLep2018//'#200812_044015/0002/'#200506_182952/0002/'
 
-        #data_samples['EGammaRun2018A'] = '/EGamma/diLep2018/200903_232905/'#200812_044545/0000/'
+#        data_samples['EGammaRun2018A'] = '/EGamma/diLep2018/210827_043723/'#210507_002611/'#200903_232905/'#200812_044545/0000/'
         #data_samples['EGammaRun2018A1'] = '/EGamma/diLep2018//'#200812_044545/0001/'
         #data_samples['EGammaRun2018A2'] = '/EGamma/diLep2018//'#200812_044545/0002/'
         #data_samples['EGammaRun2018A3'] = '/EGamma/diLep2018//'#200812_044545/0003/'
         #data_samples['EGammaRun2018A4'] = '/EGamma/diLep2018//'#200812_044545/0004/'
-	#data_samples['EGammaRun2018B'] = '/EGamma/diLep2018/200903_233256/'#200826_140228/'#200812_044645/'#200506_181207/'
-	#data_samples['EGammaRun2018C'] = '/EGamma/diLep2018/200903_234304/'#200812_044812/0000/'#200506_181305/'
+#	data_samples['EGammaRun2018B'] = '/EGamma/diLep2018/210827_043822/'#210507_002702/'#200903_233256/'#200826_140228/'#200812_044645/'#200506_181207/'
+#	data_samples['EGammaRun2018C'] = '/EGamma/diLep2018/210827_043909/'#210507_002748/'#200903_234304/'#200812_044812/0000/'#200506_181305/'
         #data_samples['EGammaRun2018C1'] = '/EGamma/diLep2018//'#200812_044812/0001/'
         #data_samples['EGammaRun2018C2'] = '/EGamma/diLep2018//'#200812_044812/0002/'
 	#data_samples['EGammaRun2018D'] = '/EGamma/diLep2018/200904_000353/'#200812_045024/0000/'#200506_181605/0000/'
+#        data_samples['EGammaRun2018D_rereco'] = '/EGamma/diLep2018/210827_044006/'#210507_002525/'#210220_231103/'
         #data_samples['EGammaRun2018D1'] = '/EGamma/diLep2018//'#200812_045024/0001/'#200506_181605/0001/'
         #data_samples['EGammaRun2018D2'] = '/EGamma/diLep2018//'#200812_045024/0002/'#200506_181605/0002/'
         #data_samples['EGammaRun2018D3'] = '/EGamma/diLep2018//'#200812_045024/0003/'#200506_181605/0003/'
@@ -103,14 +130,14 @@ if __name__ == '__main__':
         #data_samples['EGammaRun2018D7'] = '/EGamma/diLep2018//'#200812_045024/0007/'#200506_181605/0007/'
         #data_samples['EGammaRun2018D8'] = '/EGamma/diLep2018//'#200812_045024/0008/'#200506_181605/0008/'
 
-	#data_samples['MuonEGRun2018A'] = '/MuonEG/diLep2018/200907_154757/'#190927_154737/'
-	#data_samples['MuonEGRun2018B'] = '/MuonEG/diLep2018/200907_155149/'#190927_161125/'#190904_034033/'
-	#data_samples['MuonEGRun2018C'] = '/MuonEG/diLep2018/200907_155615/'#190927_193636/'#190904_034149/'
-	#data_samples['MuonEGRun2018D'] = '/MuonEG/diLep2018/200907_155806/'#190927_194010/'#190904_034300/'
+#	data_samples['MuonEGRun2018A'] = '/MuonEG/diLep2018/210828_025416/'#210507_004614/'#200907_154757/'#190927_154737/'
+#	data_samples['MuonEGRun2018B'] = '/MuonEG/diLep2018/210827_044251/'#210507_005252/'#200907_155149/'#190927_161125/'#190904_034033/'
+#	data_samples['MuonEGRun2018C'] = '/MuonEG/diLep2018/210828_030237/'#210507_010056/'#200907_155615/'#190927_193636/'#190904_034149/'
+#	data_samples['MuonEGRun2018D'] = '/MuonEG/diLep2018/210828_030603/'#210507_010347/'#200907_155806/'#190927_194010/'#190904_034300/'
         
         rerun_samples={}
-        rerun_samples['WpWp'] = '/WpWpJJ_EWK-QCD_TuneCP5_PSweights_13TeV-madgraph-pythia8/'#diLep2018//'
-        rerun_samples['TpTp1300'] = '/TprimeTprime_M-1300_TuneCP5_PSweights_13TeV-madgraph-pythia8/'#diLep2018//'
+        #rerun_samples['WpWp'] = '/WpWpJJ_EWK-QCD_TuneCP5_PSweights_13TeV-madgraph-pythia8/'#diLep2018//'
+        #rerun_samples['TpTp1300'] = '/TprimeTprime_M-1300_TuneCP5_PSweights_13TeV-madgraph-pythia8/'#diLep2018//'
 #        rerun_samples['BpBp1000'] = '/BprimeBprime_M-1000_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/190806_185500/'
 #        rerun_samples['BpBp1600']='/BprimeBprime_M-1600_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/190806_185643/'
 #        rerun_samples['TpTp1000']='/TprimeTprime_M-1000_TuneCP5_PSweights_13TeV-madgraph-pythia8/diLep2018/190806_190121/'
@@ -125,7 +152,8 @@ if __name__ == '__main__':
 	#samples to include for submission
 	samples_to_process = [
 		#data_samples,
-		signal_samples,
+		#signal_samples,
+		newSignal_samples,
 		#bkg_samples,	
                 #rerun_samples,
 	]

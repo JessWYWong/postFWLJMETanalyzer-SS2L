@@ -24,7 +24,8 @@ int main(int argc, char* argv[]){
 
   //debug, set to true by hand until sure script is working
   bool debug_ = true;
-
+  std::string elID = "MVA2017TightV2IsoTightRC";
+  std::string muID = "CBTightMiniIsoTight";
 
   //check ot make sure enough arguments have been passed
   if(argc<3){
@@ -37,8 +38,8 @@ int main(int argc, char* argv[]){
   float mass=0;
   if(!(arg1>>mass)){ std::cout<<"Invalid number for X53 mass! Exiting..."<<std::endl; return 0;}
   else{arg1>>mass;}
-  std::string chirality(argv[2]);
-  if( chirality.find("RH")==std::string::npos && chirality.find("LH")==std::string::npos) {std::cout<<"Invalid chirality choice! Choose either \'RH\' or \'LH\'. Exiting...."<<std::endl; return 0;}
+  std::string whichSignal(argv[2]);
+  if( whichSignal.find("TT")==std::string::npos && whichSignal.find("BB")==std::string::npos) {std::cout<<"Invalid signal choice! Choose either \'TT\' or \'BB\'. Exiting...."<<std::endl; return 0;}
 
 
   //set cuts by hand
@@ -68,37 +69,88 @@ int main(int argc, char* argv[]){
 //   int nConst = 5; // edited by rizki
 
   //first get our favorite vectors of samples
-  std::vector<Sample*> vMCBkg = getMCBkgSampleVec("sZVeto",lumi,"MVA2016TightRC","CBTightMiniIsoTight",era);
-  std::vector<Sample*> vDDBkg = getDDBkgSampleVec("sZVeto",lumi,"MVA2016TightRC","CBTightMiniIsoTight",era);
+  std::vector<Sample*> vMCBkg = getMCBkgSampleVec("sZVeto",lumi,elID,muID,era);
+  std::vector<Sample*> vDDBkg = getDDBkgSampleVec("sZVeto",lumi,elID,muID,era);
   std::vector<Sample*> vBkg = appendSampleVectors(vMCBkg,vDDBkg);
-//   std::vector<Sample*> vSig = getInclusiveSigSampleVecForTable("sZVeto",lumi,"MVA2016TightRC","CBTightMiniIsoTight",era);
+//   std::vector<Sample*> vSig = getInclusiveSigSampleVecForTable("sZVeto",lumi,elID,muID,era);
 
 
   //get BR for signal  
   int whichBR = std::stoi(argv[7]);
+  std::string BRstr;
+  std::vector<Sample*> vSigSamples1, vSigSamples2, vSigSamples3, vSigSamples4, vSigSamples5, vSigSamples6, vSig;
 
-  //TT SIGNAL <decay> - RIZKI 
-  //int whichBR = 1 ; //0 = singlet, 1 = doublet, 2 = tZ 100%
-  std::vector<Sample*> vSigSamples1 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi,"MVA2016TightRC","CBTightMiniIsoTight",era,"BWBW",whichBR);
-  std::vector<Sample*> vSigSamples2 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi,"MVA2016TightRC","CBTightMiniIsoTight",era,"THBW",whichBR);
-  std::vector<Sample*> vSigSamples3 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi,"MVA2016TightRC","CBTightMiniIsoTight",era,"THTH",whichBR);
-  std::vector<Sample*> vSigSamples4 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi,"MVA2016TightRC","CBTightMiniIsoTight",era,"TZBW",whichBR);
-  std::vector<Sample*> vSigSamples5 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi,"MVA2016TightRC","CBTightMiniIsoTight",era,"TZTH",whichBR);
-  std::vector<Sample*> vSigSamples6 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi,"MVA2016TightRC","CBTightMiniIsoTight",era,"TZTZ",whichBR);
-  std::vector<Sample*> vSig = appendSampleVectors(vSigSamples1,vSigSamples2,vSigSamples3,vSigSamples4,vSigSamples5,vSigSamples6);
+  if(whichSignal == "TT"){
+    if(whichBR==0) BRstr = "bW0p5_tZ0p25_tH0p25";
+    if(whichBR==1) BRstr = "bW0p0_tZ1p0_tH0p0";
+    if(whichBR==2) BRstr = "bW0p0_tZ0p8_tH0p2";
+    if(whichBR==3) BRstr = "bW0p0_tZ0p6_tH0p4";
+    if(whichBR==4) BRstr = "bW0p0_tZ0p4_tH0p6";
+    if(whichBR==5) BRstr = "bW0p0_tZ0p2_tH0p8";
+    if(whichBR==6) BRstr = "bW0p0_tZ0p0_tH0p0";
+    if(whichBR==7) BRstr = "bW0p2_tZ0p8_tH0p0";
+    if(whichBR==8) BRstr = "bW0p2_tZ0p6_tH0p2";
+    if(whichBR==9) BRstr = "bW0p2_tZ0p4_tH0p4";
+    if(whichBR==10) BRstr = "bW0p2_tZ0p2_tH0p6";
+    if(whichBR==11) BRstr = "bW0p2_tZ0p0_tH0p8";
+    if(whichBR==12) BRstr = "bW0p4_tZ0p6_tH0p0";
+    if(whichBR==13) BRstr = "bW0p4_tZ0p4_tH0p2";
+    if(whichBR==14) BRstr = "bW0p4_tZ0p2_tH0p4";
+    if(whichBR==15) BRstr = "bW0p4_tZ0p0_tH0p6";
+    if(whichBR==16) BRstr = "bW0p6_tZ0p4_tH0p0";
+    if(whichBR==17) BRstr = "bW0p6_tZ0p2_tH0p2";
+    if(whichBR==18) BRstr = "bW0p6_tZ0p0_tH0p4";
+    if(whichBR==19) BRstr = "bW0p8_tZ0p2_tH0p0";
+    if(whichBR==20) BRstr = "bW0p8_tZ0p0_tH0p2";
+    if(whichBR==21) BRstr = "bW1p0_tZ0p0_tH0p0";
+    if(whichBR==22) BRstr = "bW0p0_tZ0p5_tH0p5";
 
-  //BB SIGNAL <decay> - RIZKI 
-  //int whichBR = 0 ; //0 = singlet, 1 = doublet, 2 = tW 100%
-//   std::vector<Sample*> vSigSamples1 = getInclusiveSigBBSampleVecForTable("sZVeto", lumi,"MVA2016TightRC","CBTightMiniIsoTight",era,"TWTW",whichBR);
-//   std::vector<Sample*> vSigSamples2 = getInclusiveSigBBSampleVecForTable("sZVeto", lumi,"MVA2016TightRC","CBTightMiniIsoTight",era,"BHTW",whichBR);
-//   std::vector<Sample*> vSigSamples3 = getInclusiveSigBBSampleVecForTable("sZVeto", lumi,"MVA2016TightRC","CBTightMiniIsoTight",era,"BHBH",whichBR);
-//   std::vector<Sample*> vSigSamples4 = getInclusiveSigBBSampleVecForTable("sZVeto", lumi,"MVA2016TightRC","CBTightMiniIsoTight",era,"BZTW",whichBR);
-//   std::vector<Sample*> vSigSamples5 = getInclusiveSigBBSampleVecForTable("sZVeto", lumi,"MVA2016TightRC","CBTightMiniIsoTight",era,"BZBH",whichBR);
-//   std::vector<Sample*> vSigSamples6 = getInclusiveSigBBSampleVecForTable("sZVeto", lumi,"MVA2016TightRC","CBTightMiniIsoTight",era,"BZBZ",whichBR);
-//   std::vector<Sample*> vSig = appendSampleVectors(vSigSamples1,vSigSamples2,vSigSamples3,vSigSamples4,vSigSamples5,vSigSamples6);
+    //TT SIGNAL <decay> - RIZKI 
+    //int whichBR = 1 ; //0 = singlet, 1 = doublet, 2 = tZ 100%
+    vSigSamples1 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi,elID,muID,era,"BWBW",whichBR);
+    vSigSamples2 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi,elID,muID,era,"THBW",whichBR);
+    std::vector<Sample*> vSigSamples3 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi,elID,muID,era,"THTH",whichBR);
+    std::vector<Sample*> vSigSamples4 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi,elID,muID,era,"TZBW",whichBR);
+    std::vector<Sample*> vSigSamples5 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi,elID,muID,era,"TZTH",whichBR);
+    std::vector<Sample*> vSigSamples6 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi,elID,muID,era,"TZTZ",whichBR);
+    std::vector<Sample*> vSig = appendSampleVectors(vSigSamples1,vSigSamples2,vSigSamples3,vSigSamples4,vSigSamples5,vSigSamples6);
+  }
+  else{
+    if(whichBR==0) BRstr = "tW0p5_bZ0p25_bH0p25";
+    if(whichBR==1) BRstr = "tW0p0_bZ1p0_bH0p0";
+    if(whichBR==2) BRstr = "tW0p0_bZ0p8_bH0p2";
+    if(whichBR==3) BRstr = "tW0p0_bZ0p6_bH0p4";
+    if(whichBR==4) BRstr = "tW0p0_bZ0p4_bH0p6";
+    if(whichBR==5) BRstr = "tW0p0_bZ0p2_bH0p8";
+    if(whichBR==6) BRstr = "tW0p0_bZ0p0_bH0p0";
+    if(whichBR==7) BRstr = "tW0p2_bZ0p8_bH0p0";
+    if(whichBR==8) BRstr = "tW0p2_bZ0p6_bH0p2";
+    if(whichBR==9) BRstr = "tW0p2_bZ0p4_bH0p4";
+    if(whichBR==10) BRstr = "tW0p2_bZ0p2_bH0p6";
+    if(whichBR==11) BRstr = "tW0p2_bZ0p0_bH0p8";
+    if(whichBR==12) BRstr = "tW0p4_bZ0p6_bH0p0";
+    if(whichBR==13) BRstr = "tW0p4_bZ0p4_bH0p2";
+    if(whichBR==14) BRstr = "tW0p4_bZ0p2_bH0p4";
+    if(whichBR==15) BRstr = "tW0p4_bZ0p0_bH0p6";
+    if(whichBR==16) BRstr = "tW0p6_bZ0p4_bH0p0";
+    if(whichBR==17) BRstr = "tW0p6_bZ0p2_bH0p2";
+    if(whichBR==18) BRstr = "tW0p6_bZ0p0_bH0p4";
+    if(whichBR==19) BRstr = "tW0p8_bZ0p2_bH0p0";
+    if(whichBR==20) BRstr = "tW0p8_bZ0p0_bH0p2";
+    if(whichBR==21) BRstr = "tW1p0_bZ0p0_bH0p0";
+    if(whichBR==22) BRstr = "tW0p0_bZ0p5_bH0p5";
+    //BB SIGNAL <decay> - RIZKI 
+    //int whichBR = 0 ; //0 = singlet, 1 = doublet, 2 = tW 100%
+    std::vector<Sample*> vSigSamples1 = getInclusiveSigBBSampleVecForTable("sZVeto", lumi,elID,muID,era,"TWTW",whichBR);
+    std::vector<Sample*> vSigSamples2 = getInclusiveSigBBSampleVecForTable("sZVeto", lumi,elID,muID,era,"BHTW",whichBR);
+    std::vector<Sample*> vSigSamples3 = getInclusiveSigBBSampleVecForTable("sZVeto", lumi,elID,muID,era,"BHBH",whichBR);
+    std::vector<Sample*> vSigSamples4 = getInclusiveSigBBSampleVecForTable("sZVeto", lumi,elID,muID,era,"BZTW",whichBR);
+    std::vector<Sample*> vSigSamples5 = getInclusiveSigBBSampleVecForTable("sZVeto", lumi,elID,muID,era,"BZBH",whichBR);
+    std::vector<Sample*> vSigSamples6 = getInclusiveSigBBSampleVecForTable("sZVeto", lumi,elID,muID,era,"BZBZ",whichBR);
+    std::vector<Sample*> vSig = appendSampleVectors(vSigSamples1,vSigSamples2,vSigSamples3,vSigSamples4,vSigSamples5,vSigSamples6);
+  }
 
-
-  Sample* dataSample = getDataSample("sZVeto","MVA2016TightRC","CBTightMiniIsoTight",era);
+  Sample* dataSample = getDataSample("sZVeto",elID,muID,era);
 
   //now get only the signal one we care about, should be enough to ensure that both mass and chirality are present in name;
   std::vector<Sample*> sigSample; //edited by rizki and everything to do with this.
@@ -130,22 +182,22 @@ int main(int argc, char* argv[]){
   //output root file
   std::stringstream rootfilename_all;
 //   rootfilename_all<<"Limits_M"<<mass<<"_"<<chirality<<"_Ch_All_LL"<<lep1cut<<"_SL"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst;
-  rootfilename_all<<"Limits_M"<<mass<<"_Ch_All_LL"<<lep1cut<<"_SL"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst;
+  rootfilename_all<<"Limits_"+whichSignal+"M"<<mass<<"_"<<BRstr<<"_Ch_All_LL"<<lep1cut<<"_SL"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst;
   rootfilename_all<<"_"<<era<<".root";
 
   std::stringstream rootfilename_elel;
 //   rootfilename_elel<<"Limits_M"<<mass<<"_"<<chirality<<"_Ch_ee_LL"<<lep1cut<<"_SL"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst;
-  rootfilename_elel<<"Limits_M"<<mass<<"_Ch_ee_LL"<<lep1cut<<"_SL"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst;
+  rootfilename_elel<<"Limits_"+whichSignal+"M"<<mass<<"_"<<BRstr<<"_Ch_ee_LL"<<lep1cut<<"_SL"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst;
   rootfilename_elel<<"_"<<era<<".root";
 
   std::stringstream rootfilename_elmu;
 //   rootfilename_elmu<<"Limits_M"<<mass<<"_"<<chirality<<"_Ch_emu_LL"<<lep1cut<<"_SL"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst;
-  rootfilename_elmu<<"Limits_M"<<mass<<"_Ch_emu_LL"<<lep1cut<<"_SL"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst;
+  rootfilename_elmu<<"Limits_"+whichSignal+"M"<<mass<<"_"<<BRstr<<"_Ch_emu_LL"<<lep1cut<<"_SL"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst;
   rootfilename_elmu<<"_"<<era<<".root";
 
   std::stringstream rootfilename_mumu;
 //   rootfilename_mumu<<"Limits_M"<<mass<<"_"<<chirality<<"_Ch_mumu_LL"<<lep1cut<<"_SL"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst;
-  rootfilename_mumu<<"Limits_M"<<mass<<"_Ch_mumu_LL"<<lep1cut<<"_SL"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst;
+  rootfilename_mumu<<"Limits_"+whichSignal+"M"<<mass<<"_"<<BRstr<<"_Ch_mumu_LL"<<lep1cut<<"_SL"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst;
   rootfilename_mumu<<"_"<<era<<".root";
 
   TFile* fout = new TFile((rootfilename_all.str()).c_str(),"RECREATE");
@@ -155,7 +207,7 @@ int main(int argc, char* argv[]){
 
   //write observed
   TString erast="";
-  if(era=="2017B-F") erast="BF";
+  if(era.find("2018A-D")!=std::string::npos) erast="2018AD";
   else erast="UnknownEra";
 		       
   //TH1F* All__DATA = new TH1F("All__DATA","",3,0,3);
@@ -221,7 +273,7 @@ int main(int argc, char* argv[]){
   float errMumu_sig = 0;
   
   //need to loop for combining all TT decays -rizki
-  for(int i=0; i<sigSample.size();i++){
+  for(unsigned int i=0; i<sigSample.size();i++){
 
 	  //check to make sure we got the right one
 	  if(debug_) std::cout<<"Samples name is: "<<sigSample.at(i)->name<<std::endl;

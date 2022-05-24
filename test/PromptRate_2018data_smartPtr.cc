@@ -14,6 +14,8 @@
 #include <algorithm>
 #include "../plugins/Macros.cc"
 
+bool rejectHEM2018=true;
+
 //helper functions
 std::unique_ptr<TLepton> makeTagLepton(
     std::vector<TMuon*> muons,
@@ -21,7 +23,8 @@ std::unique_ptr<TLepton> makeTagLepton(
     bool Muons,
     bool mc,
     bool FiftyNs,
-    std::string ID
+    std::string ID,
+    bool vetoEl_4HEM
     );
 std::vector<std::unique_ptr<TLepton>> makeProbeLeptons(
     std::unique_ptr<TLepton>& tag, 
@@ -30,7 +33,8 @@ std::vector<std::unique_ptr<TLepton>> makeProbeLeptons(
     bool Muons, 
     bool mc, 
     bool FiftyNs, 
-    std::string ID
+    std::string ID,
+    bool vetoEl_4HEM
     );
 std::vector<std::unique_ptr<TLepton>> makeAramLeptons(
     std::vector<TMuon*> muons,
@@ -38,7 +42,8 @@ std::vector<std::unique_ptr<TLepton>> makeAramLeptons(
     bool MuonChannel,
     bool mc,
     bool FiftyNs,
-    std::string ID
+    std::string ID,
+    bool vetoEl_4HEM
     );
 std::vector<std::unique_ptr<TLepton>> findBestPair(std::unique_ptr<TLepton>& tag, std::vector<std::unique_ptr<TLepton>>& probes);
 bool sortByPhi(std::unique_ptr<TLepton>& lep1, std::unique_ptr<TLepton>& lep2){return lep1->phi > lep2->phi;};
@@ -124,7 +129,7 @@ int main(int argc, char* argv[]){
       if(argv4=="2018A") filename="root://cmseos.fnal.gov//store/"+eosDir+filedir+"/EGammaRun2018A.root";
       else if(argv4=="2018B") filename="root://cmseos.fnal.gov//store/"+eosDir+filedir+"/EGammaRun2018B.root";
       else if(argv4=="2018C") filename="root://cmseos.fnal.gov//store/"+eosDir+filedir+"/EGammaRun2018C.root";
-      else if(argv4=="2018D") filename="root://cmseos.fnal.gov//store/"+eosDir+filedir+"/EGammaRun2018D.root";
+      else if(argv4=="2018D") filename="root://cmseos.fnal.gov//store/"+eosDir+filedir+"/EGammaRun2018D_rereco.root";
     }
   }
   else { //MC
@@ -134,7 +139,8 @@ int main(int argc, char* argv[]){
   bool FiftyNs=data; // depracated. -- June 28, 2019.
 
   //make output folder
-  TString outdir = "PromptRate2018_082020_"+isoTrigStr+"_passTrig";
+  TString outdir = "PromptRate2018rereco_082020_"+isoTrigStr+"_passTrig";
+  if(rejectHEM2018) outdir+="_HEMveto"; 
   system("mkdir -pv "+outdir);
 
   //make filename for output root file
@@ -236,13 +242,19 @@ int main(int argc, char* argv[]){
 
     if(ient % 100000==0) std::cout<<"Completed "<<ient<<" out of "<<nEntries<<" events"<<std::endl;
 
+    bool vetoEl_4HEM = false;
+    //if(argv4=="2018A"){if(tr->run>=319077) std::cout<<"Problem with picking run to veto electrons in hole (HEM issue)."<<std::endl;}
+    //else{ if(!(tr->run>=319077)) std::cout<<"run "<<tr->run<<" is skipping HEM veto"<<std::endl;}
+    //if(rejectHEM2018 && tr->run >= 319077){vetoEl_4HEM = true;}
+    if(rejectHEM2018){vetoEl_4HEM = true;}
+
     //make tag lepton
-    std::unique_ptr<TLepton> tagLepton = std::move(makeTagLepton(tr->allMuons,tr->allElectrons,MuonChannel,!data,FiftyNs, ID));
+    std::unique_ptr<TLepton> tagLepton = std::move(makeTagLepton(tr->allMuons,tr->allElectrons,MuonChannel,!data,FiftyNs, ID,vetoEl_4HEM));
     
     //if no tag lepton found in the event a dummy is returned with pt==-999 so skip event if it is this value (i.e. if no tag lepton found in event)
     if(tagLepton->pt==-999) {tagLepton.reset(nullptr); continue;}
 
-    std::vector<std::unique_ptr<TLepton>> probeLeptons = std::move(makeProbeLeptons(tagLepton,tr->allMuons,tr->allElectrons,MuonChannel,!data,FiftyNs, ID));
+    std::vector<std::unique_ptr<TLepton>> probeLeptons = std::move(makeProbeLeptons(tagLepton,tr->allMuons,tr->allElectrons,MuonChannel,!data,FiftyNs, ID,vetoEl_4HEM));
     
     std::vector<std::unique_ptr<TLepton>> leptons = std::move(findBestPair(tagLepton, probeLeptons)); //only returns two leptons if a pair is found within z window  
 
@@ -253,7 +265,7 @@ int main(int argc, char* argv[]){
     pairMassHist_all->Fill(pairMass,tr->MCWeight);
     
     //revert to Aram's method
-    std::vector<std::unique_ptr<TLepton>> AramLeptons = std::move(makeAramLeptons(tr->allMuons,tr->allElectrons,MuonChannel,!data,FiftyNs, ID));
+    std::vector<std::unique_ptr<TLepton>> AramLeptons = std::move(makeAramLeptons(tr->allMuons,tr->allElectrons,MuonChannel,!data,FiftyNs, ID,vetoEl_4HEM));
     //make sure we got at least two leptons
     if(AramLeptons.size()>=2){
       //make sure at least one is tight
@@ -285,6 +297,7 @@ int main(int argc, char* argv[]){
     float minDR=999;
     for(unsigned int i=0; i< tr->cleanedAK4Jets.size();i++){
       float drtemp = pow( pow(probe->eta - tr->cleanedAK4Jets.at(i)->eta, 2) + pow( probe->phi - tr->cleanedAK4Jets.at(0)->phi, 2) , 0.5);
+      std::cout<< drtemp<< std::endl;
       if(drtemp<minDR) minDR = drtemp;
     }
     LepMinDR_ = minDR;
@@ -334,7 +347,7 @@ int main(int argc, char* argv[]){
 }
 
 
-std::vector<std::unique_ptr<TLepton>> makeProbeLeptons(std::unique_ptr<TLepton>& tag, std::vector<TMuon*> muons, std::vector<TElectron*> electrons, bool Muons,bool mc, bool FiftyNs, std::string ID){
+std::vector<std::unique_ptr<TLepton>> makeProbeLeptons(std::unique_ptr<TLepton>& tag, std::vector<TMuon*> muons, std::vector<TElectron*> electrons, bool Muons,bool mc, bool FiftyNs, std::string ID, bool vetoEl_4HEM = false){
 
   std::vector<std::unique_ptr<TLepton>> Leptons;
 
@@ -381,6 +394,9 @@ std::vector<std::unique_ptr<TLepton>> makeProbeLeptons(std::unique_ptr<TLepton>&
     //fill with  electrons
     for(unsigned int uiel=0; uiel<electrons.size(); uiel++){
       TElectron* iel = electrons.at(uiel);
+      if(vetoEl_4HEM){
+          if( (iel->phi>-1.57 && iel->phi<-0.87) && ((iel->eta>-2.5 && iel->eta <-1.3) || (iel->eta>-3.0 && iel->eta<-2.5)) ) continue;
+      }
       std::unique_ptr<TLepton> iLep (new TLepton(iel->pt,iel->eta,iel->phi,iel->energy,iel->charge,iel->relIsoEA,iel->miniIso,iel->susyIso));
       //skip if same as tag
       if(iel->pt==tag->pt && iel->eta==tag->eta && iel->phi==tag->eta) {iLep.reset(nullptr); continue;}
@@ -536,7 +552,7 @@ std::vector<std::unique_ptr<TLepton>> findBestPair(std::unique_ptr<TLepton>& tag
 
 }
 
-std::unique_ptr<TLepton> makeTagLepton(std::vector<TMuon*> muons,std::vector<TElectron*> electrons,bool Muons,bool mc,bool FiftyNs,std::string ID){
+std::unique_ptr<TLepton> makeTagLepton(std::vector<TMuon*> muons,std::vector<TElectron*> electrons,bool Muons,bool mc,bool FiftyNs,std::string ID, bool vetoEl_4HEM = false){
     
   std::vector<std::unique_ptr<TLepton>> Leptons;
 
@@ -581,6 +597,9 @@ std::unique_ptr<TLepton> makeTagLepton(std::vector<TMuon*> muons,std::vector<TEl
     //fill with  electrons
     for(unsigned int uiel=0; uiel<electrons.size(); uiel++){
       TElectron* iel = electrons.at(uiel);
+      if(vetoEl_4HEM){
+          if( (iel->phi>-1.57 && iel->phi<-0.87) && ((iel->eta>-2.5 && iel->eta <-1.3) || (iel->eta>-3.0 && iel->eta<-2.5)) ) continue;
+      }
       std::unique_ptr<TLepton> iLep (new TLepton(iel->pt,iel->eta,iel->phi,iel->energy,iel->charge,iel->relIsoEA,iel->miniIso,iel->susyIso));
 
       if(ID=="CBTight"){
@@ -701,7 +720,7 @@ std::unique_ptr<TLepton> makeTagLepton(std::vector<TMuon*> muons,std::vector<TEl
 
 
 
-std::vector<std::unique_ptr<TLepton>> makeAramLeptons(std::vector<TMuon*> muons,std::vector<TElectron*> electrons,bool MuonChannel,bool mc,bool FiftyNs,std::string ID){
+std::vector<std::unique_ptr<TLepton>> makeAramLeptons(std::vector<TMuon*> muons,std::vector<TElectron*> electrons,bool MuonChannel,bool mc,bool FiftyNs,std::string ID, bool vetoEl_4HEM = false){
   std::vector<std::unique_ptr<TLepton>> Leptons;
 
   if(MuonChannel){
@@ -747,6 +766,9 @@ std::vector<std::unique_ptr<TLepton>> makeAramLeptons(std::vector<TMuon*> muons,
     //fill with  electrons
     for(unsigned int uiel=0; uiel<electrons.size(); uiel++){
       TElectron* iel = electrons.at(uiel);
+      if(vetoEl_4HEM){
+          if( (iel->phi>-1.57 && iel->phi<-0.87) && ((iel->eta>-2.5 && iel->eta <-1.3) || (iel->eta>-3.0 && iel->eta<-2.5)) ) continue;
+      }
       std::unique_ptr<TLepton> iLep (new TLepton(iel->pt,iel->eta,iel->phi,iel->energy,iel->charge,iel->relIsoEA,iel->miniIso,iel->susyIso));
       if(ID=="CBTight"){
           iLep->Tight=iel->cutBasedTight25nsSpring15MC();

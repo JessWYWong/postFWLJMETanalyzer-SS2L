@@ -252,6 +252,8 @@ class TreeReader{
   TBranch        *b_AK4JetPt_DileptonCalc;
 
   //get cleaned jets
+  std::vector<int>     *cleanedAK4JetBTag;
+  TBranch        *b_cleanedAK4JetBTag_DileptonCalc;
   std::vector<double>  *cleanedAK4JetEnergy;
   TBranch        *b_cleanedAK4JetEnergy_DileptonCalc;
   std::vector<double>  *cleanedAK4JetEta;

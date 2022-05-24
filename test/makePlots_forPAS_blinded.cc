@@ -96,8 +96,8 @@ float uncMC_WZ=pow(uncSCALE_WZ*uncSCALE_WZ + uncPDF_WZ*uncPDF_WZ,0.5);
 float uncMC_ZZ=pow(uncSCALE_ZZ*uncSCALE_ZZ + uncPDF_ZZ*uncPDF_ZZ,0.5);
 float uncMC_WpWp=pow(uncSCALE_WpWp*uncSCALE_WpWp + uncPDF_WpWp*uncPDF_WpWp,0.5);
 float uncMC_WWZ=pow(uncSCALE_WWZ*uncSCALE_WWZ + uncPDF_WWZ*uncPDF_WWZ,0.5);
-float uncMC_WZZ=pow(uncSCALE_WZZ*uncSCALE_WZZ + uncPDF_WZZ*uncPDF_WZZ,0.5);
-float uncMC_ZZZ=pow(uncSCALE_ZZZ*uncSCALE_ZZZ + uncPDF_ZZZ*uncPDF_ZZZ,0.5);
+//float uncMC_WZZ=pow(uncSCALE_WZZ*uncSCALE_WZZ + uncPDF_WZZ*uncPDF_WZZ,0.5);
+//float uncMC_ZZZ=pow(uncSCALE_ZZZ*uncSCALE_ZZZ + uncPDF_ZZZ*uncPDF_ZZZ,0.5);
 /*
 float uncJES_TTZ=0.04;
 float uncJES_TTW=0.03;
@@ -123,11 +123,11 @@ float uncJER_ZZZ=0;
 */
 
 float lumi1 = 59.74;
-
+std::string era = "2018A-D_HEMveto";
 //folder to save plots - rizki
 // const std::string saveFolder = "plots_nConst4_HT1200_0NonSSLep_NonIsoTrig_Jan30-2019"; //CHECK Macros.cc for input folder!!
 //const std::string saveFolder = "plots_nConst4_HT1200_0NonSSLep_IsoTrig_Jan30-2019"; //CHECK Macros.cc for input folder!!
-const std::string saveFolder = "plots_IsoTrig_blinded_Nov-2020";
+const std::string saveFolder = "plots_IsoTrig_blinded_Jun2021_HEMveto";
 
 void makePlots_forPAS_blinded(std::string elID, std::string muID){
 
@@ -149,9 +149,9 @@ void makePlots_forPAS_blinded(std::string elID, std::string muID){
 
   std::vector<Variable*> vVariables = getVariableVec();
 
-  std::vector<Sample*> vMCBkgSamples = getMCBkgSampleVec("sZVeto", lumi1, elID, muID,"2018A-D");
+  std::vector<Sample*> vMCBkgSamples = getMCBkgSampleVec("sZVeto", lumi1, elID, muID,era);
   std::cout << "DONE Preparing MC bkg samples" << std::endl;
-  std::vector<Sample*> vDDBkgSamples = getDDBkgSampleVec("sZVeto", lumi1, elID, muID,"2018A-D");
+  std::vector<Sample*> vDDBkgSamples = getDDBkgSampleVec("sZVeto", lumi1, elID, muID,era);
   std::cout << "DONE Preparing DDBkg samples" << std::endl;
   std::vector<Sample*> vBkgSamples = appendSampleVectors(vMCBkgSamples, vDDBkgSamples);
   std::cout << "DONE appending Bkg samples" << std::endl;
@@ -160,28 +160,28 @@ void makePlots_forPAS_blinded(std::string elID, std::string muID){
 //   std::vector<Sample*> vSigSamples2 = getInclusiveSigSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H");
 
   //TT SIGNAL <decay> - RIZKI
-  std::vector<Sample*> vSigSamples1 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,"2018A-D","BWBW",0);
+  std::vector<Sample*> vSigSamples1 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,era,"BWBW",0);
   std::cout << "DONE Preparing signal BWBW samples" << std::endl;
 
-  std::vector<Sample*> vSigSamples2 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,"2018A-D","THBW",0);
+  std::vector<Sample*> vSigSamples2 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,era,"THBW",0);
   std::cout << "DONE Preparing signal THBW samples" << std::endl;
 
-  std::vector<Sample*> vSigSamples3 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,"2018A-D","THTH",0);
+  std::vector<Sample*> vSigSamples3 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,era,"THTH",0);
   std::cout << "DONE Preparing signal THTH samples" << std::endl;
 
-  std::vector<Sample*> vSigSamples4 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,"2018A-D","TZBW",0);
+  std::vector<Sample*> vSigSamples4 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,era,"TZBW",0);
   std::cout << "DONE Preparing signal TZBW samples" << std::endl;
 
-  std::vector<Sample*> vSigSamples5 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,"2018A-D","TZTH",0);
+  std::vector<Sample*> vSigSamples5 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,era,"TZTH",0);
   std::cout << "DONE Preparing signal TZTH samples" << std::endl;
 
-  std::vector<Sample*> vSigSamples6 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,"2018A-D","TZTZ",0);
+  std::vector<Sample*> vSigSamples6 = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID,era,"TZTZ",0);
   std::cout << "DONE Preparing signal TZTZ samples" << std::endl;
 
   std::vector<Sample*> vSigSamples = appendSampleVectors(vSigSamples1,vSigSamples2,vSigSamples3,vSigSamples4,vSigSamples5,vSigSamples6);
   std::cout << "DONE appending signal samples" << std::endl;
 
-  Sample* dataSample = getDataSample("sZVeto",elID,muID,"2018A-D");
+  Sample* dataSample = getDataSample("sZVeto",elID,muID,era);
 
   std::cout << "DONE Preparing data samples" << std::endl;
 
@@ -274,8 +274,9 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   leg->SetFillStyle(0);
   leg->SetBorderSize(0);
   //stupid bins for hT
-  double htbins[21] = {0,120,270,420,570,720,870,1020,1170,1320,1470,1620,1770,1920,2070,2220,2370,2520,2670,2820,2970};
-  int nhtbins=20;
+  //double htbins[21] = {0,120,270,420,570,720,870,1020,1170,1320,1470,1620,1770,1920,2070,2220,2370,2520,2670,2820,2970};
+  double htbins[17] = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1600, 3000};
+  int nhtbins=16;
   TH1F* h_err;
   TH1F* h_np;
   TH1F* h_npf;
@@ -293,7 +294,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   TH1F* h_bos ;
   TH1F* h_ttX ;
 
-  if(var->name=="dummycleanAK4HT"){
+  if(var->name=="cleanAK4HTrebinned"){
     //histogram for weights
      h_err = new TH1F("h_err",(var->name).c_str(),nhtbins,htbins);
      h_np = new TH1F("h_np",(var->name).c_str(),nhtbins,htbins);
@@ -341,8 +342,8 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     s->setHist(var,(cutstring.str()).c_str());
   	std::cout << "-------------------------------------->>> Processing:" << s->name <<endl; //added by rizki
     TH1F* h;
-    if(var->name=="dummycleanAK4HT"){
-      h = new TH1F("h",(var->name).c_str(),nhtbins, htbins);
+    if(var->name=="cleanAK4HTrebinned"){
+      h = new TH1F("h","cleanAK4HT",nhtbins, htbins);
     }
     else{
       h = new TH1F("h",(var->name).c_str(), var->nbins, var->xmin, var->xmax);
@@ -350,7 +351,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     h->Sumw2();
     TTree* t = s->tree;
     if(var->name=="Lep1PtEl" || var->name=="Lep1PtMu"){ t->Project("h","Lep1Pt",(cutstring.str()).c_str());/*std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()<<std::endl;*/} //edited by rizki
-    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu"){ t->Project("h","cleanAK4HT",(cutstring.str()).c_str());/*std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()<<std::endl;*/} //edited by rizki
+    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu" || var->name.find("cleanAK4HT")!=std::string::npos){ t->Project("h","cleanAK4HT",(cutstring.str()).c_str());/*std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()<<std::endl;*/} //edited by rizki
     else{ t->Project("h",(var->name).c_str(),(cutstring.str()).c_str()); /*std::cout<<"command:t->Project(h,"<<var->name<<","<<cutstring.str()<<std::endl;*/} //edited by rizki
     //set negative bins to zero - less than or equal to set overflow bin to zero
     for(int hbin=0; hbin <= h->GetNbinsX(); hbin++){
@@ -418,7 +419,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   leg->AddEntry(h_bos,"VV(V)","f");
   h_ttX->SetFillColor(kYellow-3);
   tStack->Add(h_ttX);
-  leg->AddEntry(h_ttX,"t#bar{t} + X","f");
+  leg->AddEntry(h_ttX,"t#bar{t}V + t#bar{t}t#bar{t}","f");
   h_cmid->SetFillColor(kAzure+6);
   tStack->Add(h_cmid);
   leg->AddEntry(h_cmid,"ChargeMisID","f");
@@ -544,7 +545,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     etemp_sys = etemp_sys + pow(uncIsoSF*h_wwz->GetBinContent(ibin),2); //iso
     etemp_sys = etemp_sys + pow(uncIDSF_WWZ*h_wwz->GetBinContent(ibin),2); //id
     //etemp_sys = etemp_sys + 2*pow(0.02*h_wwz->GetBinContent(ibin),2); //id plus iso
-    //WZZ
+    /* //WZZ
     etemp_stat = etemp_stat + pow(h_wzz->GetBinError(ibin),2);//stat
     etemp_sys = etemp_sys + pow(uncMC_WZZ*h_wzz->GetBinContent(ibin),2); //MC
     etemp_sys = etemp_sys + pow(uncJES_WZZ*h_wzz->GetBinContent(ibin),2); //JES
@@ -566,6 +567,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     etemp_sys = etemp_sys + pow(uncIsoSF*h_zzz->GetBinContent(ibin),2); //iso
     etemp_sys = etemp_sys + pow(uncIDSF_ZZZ*h_zzz->GetBinContent(ibin),2); //id
     //etemp_sys = etemp_sys + 2*pow(0.02*h_zzz->GetBinContent(ibin),2); //id plus iso
+    */
 
     //e_temp = etemp_stat + etemp_sys;
 
@@ -612,7 +614,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   tgae_err->SetFillStyle(3344);
   tgae_err->SetFillColor(1);
   tgae_err->Draw("SAME E2");
-  if(var->name=="cleanAK4HT"){
+  if(var->name=="cleanAK4HT" || var->name.find("cleanAK4HT")!=std::string::npos){
     for(unsigned int jb=1; jb<=h_err->GetNbinsX(); jb++){
       float totbkg = h_npf->GetBinContent(jb) + h_cmid->GetBinContent(jb) + h_ttw->GetBinContent(jb) + h_ttz->GetBinContent(jb) + h_wz->GetBinContent(jb) + h_wpwp->GetBinContent(jb) + h_zz->GetBinContent(jb)+h_wwz->GetBinContent(jb) + h_tth->GetBinContent(jb) + h_tttt->GetBinContent(jb) + h_wzz->GetBinContent(jb) + h_zzz->GetBinContent(jb);
     float stacktot = ( (TH1F*)(tStack->GetStack()->Last()))->GetBinContent(jb);
@@ -622,18 +624,28 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   }
 
   //draw signal:
-  TH1F* hSig_1 = new TH1F("hSig_1",(var->name).c_str(), var->nbins, var->xmin, var->xmax);
-  TH1F* hSig_2 = new TH1F("hSig_2",(var->name).c_str(), var->nbins, var->xmin, var->xmax);
+  TH1F* hSig_1;
+  TH1F* hSig_2;
+  if(var->name=="cleanAK4HTrebinned"){
+    hSig_1 = new TH1F("hSig_1","cleanAK4HT",nhtbins, htbins);
+    hSig_2 = new TH1F("hSig_2","cleanAK4HT",nhtbins, htbins);
+  }
+  else{
+    hSig_1 = new TH1F("hSig_1",(var->name).c_str(), var->nbins, var->xmin, var->xmax);
+    hSig_2 = new TH1F("hSig_2",(var->name).c_str(), var->nbins, var->xmin, var->xmax);
+  }
   for(std::vector<Sample*>::size_type i1=0;i1<vSig.size();i1++){
 
     Sample* s = vSig.at(i1);
     if(s->name.find("1200")==std::string::npos) continue;
   	std::cout << "-------------------------------------->>> Processing:" << s->name <<endl; //added by rizki
-    TH1F* h = new TH1F("h",(var->name).c_str(), var->nbins, var->xmin, var->xmax);
+    TH1F* h;
+    if(var->name=="cleanAK4HTrebinned"){h = new TH1F("h","cleanAK4HT",nhtbins, htbins);}
+    else{h = new TH1F("h",(var->name).c_str(), var->nbins, var->xmin, var->xmax);}
     TTree* t = s->tree;
 
     if(var->name=="Lep1PtEl" || var->name=="Lep1PtMu"){ t->Project("h","Lep1Pt",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());}
-    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu"){ t->Project("h","cleanAK4HT",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()+" * pdfWeights4LHC[0] "<<std::endl;}
+    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu" || var->name.find("cleanAK4HT")!=std::string::npos){ t->Project("h","cleanAK4HT",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()+" * pdfWeights4LHC[0] "<<std::endl;}
     else{ t->Project("h",(var->name).c_str(),(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());}
 
     float ovf =  (h)->GetBinContent( (h)->GetNbinsX()+1) + (h)->GetBinContent( (h)->GetNbinsX()) ;
@@ -665,7 +677,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     TTree* t = s->tree;
 
     if(var->name=="Lep1PtEl" || var->name=="Lep1PtMu"){ t->Project("h","Lep1Pt",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());}
-    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu"){ t->Project("h","cleanAK4HT",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()+" * pdfWeights4LHC[0] "<<std::endl;}
+    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu" || var->name.find("cleanAK4HT")!=std::string::npos){ t->Project("h","cleanAK4HT",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()+" * pdfWeights4LHC[0] "<<std::endl;}
     else{ t->Project("h",(var->name).c_str(),(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());}
 
     float ovf =  (h)->GetBinContent( (h)->GetNbinsX()+1) + (h)->GetBinContent( (h)->GetNbinsX()) ;
@@ -698,7 +710,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   if(var->name=="Lep1PtEl" || var->name=="Lep1PtMu"){
     tData->Project("hData","Lep1Pt",(cutstring.str()).c_str());
   }
-  else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu"){
+  else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu" || var->name.find("cleanAK4HT")!=std::string::npos){
     tData->Project("hData","cleanAK4HT",(cutstring.str()).c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()<<std::endl;
   }
   else{

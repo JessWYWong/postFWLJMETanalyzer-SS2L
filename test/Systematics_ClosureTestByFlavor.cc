@@ -45,11 +45,15 @@ int main(int argc, char* argv[]){
   //get input sample
   std::string sample(argv[1]);
   std::string inputname, outname;
-  std::string eosname="root://cmseos.fnal.gov//eos/uscms/store/user/lpcljm/FWLJMET102X_2lepFakeRate2017_wywong_082020_hadds/";
+  std::string eosname="root://cmseos.fnal.gov//eos/uscms/store/user/lpcljm/FWLJMET102X_2lepFakeRate2018_wywong_082020_hadds/";
+  int first = 0;
+  int last = -1;
   if(sample=="TTTo2L2Nu"){ outname="SmartClosure_TTbar_2L2Nu.root"; inputname=eosname+"TTTo2L2Nu.root";}
-  if(sample=="TTTo2L2Nu_1"){ outname="SmartClosure_TTTo2L2Nu_1.root"; inputname=eosname+"TTTo2L2Nu_hadd_1.root";}
-  if(sample=="TTTo2L2Nu_2"){ outname="SmartClosure_TTTo2L2Nu_2.root"; inputname=eosname+"TTTo2L2Nu_hadd_2.root";}
-  if(sample=="TTTo2L2Nu_3"){ outname="SmartClosure_TTTo2L2Nu_3.root"; inputname=eosname+"TTTo2L2Nu_hadd_3.root";}
+  if(sample=="TTTo2L2Nu_1"){ outname="SmartClosure_TTTo2L2Nu_1.root"; inputname=eosname+"TTTo2L2Nu.root"; first=0;last=10000000;}
+  if(sample=="TTTo2L2Nu_2"){ outname="SmartClosure_TTTo2L2Nu_2.root"; inputname=eosname+"TTTo2L2Nu.root"; first=10000000;last=20000000;}
+  if(sample=="TTTo2L2Nu_3"){ outname="SmartClosure_TTTo2L2Nu_3.root"; inputname=eosname+"TTTo2L2Nu.root"; first=20000000;last=30000000;}
+  if(sample=="TTTo2L2Nu_4"){ outname="SmartClosure_TTTo2L2Nu_4.root"; inputname=eosname+"TTTo2L2Nu.root"; first=30000000;last=40000000;}
+  if(sample=="TTTo2L2Nu_5"){ outname="SmartClosure_TTTo2L2Nu_5.root"; inputname=eosname+"TTTo2L2Nu.root"; first=40000000;}
   //if(sample=="TTbar_pt5"){ outname="SmartClosure_TTbar_pt5.root"; inputname=eosname+"ljmet_TTbar_pt5.root";}
   //if(sample=="TTbar_pt6"){ outname="SmartClosure_TTbar_pt6.root"; inputname=eosname+"ljmet_TTbar_pt6.root";}
   //if(sample=="TTbar_pt7"){ outname="SmartClosure_TTbar_pt7.root"; inputname=eosname+"ljmet_TTbar_pt7.root";}
@@ -63,14 +67,19 @@ int main(int argc, char* argv[]){
   //output file
   TFile* fout = new TFile(outname.c_str(),"RECREATE");
   TTree* outTree = new TTree("ClosureTest","ClosureTest");
-  float st,lepEta,lepPt;
+  float st,sumJetPt,lepEta,lepPt;
   int lepFlavor,flavorSource,observed;
+  bool isEE,isEM,isMM;
   outTree->Branch("HT",&st);
+  outTree->Branch("sumJetPt",&sumJetPt);
   outTree->Branch("LepPt",&lepPt);
   outTree->Branch("LepEta",&lepEta);
   outTree->Branch("LepFlavor",&lepFlavor);
   outTree->Branch("LepFlavorSource",&flavorSource);
   outTree->Branch("Observed",&observed);
+  outTree->Branch("isEE", &isEE);
+  outTree->Branch("isEM", &isEM);
+  outTree->Branch("isMM", &isMM);
   //histograms
   TH1F* h_el_obs_light = new TH1F("h_el_obs_light","",1000,0,5000);
   TH1F* h_el_obs_charm = new TH1F("h_el_obs_charm","",1000,0,5000);
@@ -120,13 +129,13 @@ int main(int argc, char* argv[]){
 
 
   int nEntries = t->GetEntries();
-
-  for(int ient=0; ient<nEntries; ient++){
+  if(last<0) last = nEntries;
+  //for(int ient=0; ient<nEntries; ient++){
+  for(int ient=first; ient<last; ient++){
 
     if(ient % 100000 ==0) std::cout<<"Completed "<<ient<<" out of "<<nEntries<<" events"<<std::endl;
     
     tr->GetEntry(ient);
-    
 
     //make vector of good Leptons change based on data/mc   
     std::vector<TLepton*> goodLeptons;
@@ -164,6 +173,10 @@ int main(int argc, char* argv[]){
     for(unsigned int uijet=0; uijet<tr->allAK4Jets.size();uijet++){
       HT+=tr->allAK4Jets.at(uijet)->pt;
     }
+    sumJetPt = 0;
+    for(unsigned int uijet=0; uijet<tr->cleanedAK4Jets.size();uijet++){
+      sumJetPt+=tr->cleanedAK4Jets.at(uijet)->pt;
+    }
 
     //bools for channels
     bool mumu=false;
@@ -174,6 +187,10 @@ int main(int argc, char* argv[]){
     if(vSSLep.at(0)->isMu && vSSLep.at(1)->isMu){ mumu=true;}
     else if( ( vSSLep.at(0)->isEl && vSSLep.at(1)->isMu) || (vSSLep.at(0)->isMu && vSSLep.at(1)->isEl)){ elmu=true;}
     else {elel=true;}
+
+    isEE = elel;
+    isEM = elmu;
+    isMM = mumu;
 
     //since we have the two same-sign leptons, now make sure neither of them reconstructs with any other tight lepton in the event to form a Z
     bool secondaryZVeto = checkSecondaryZVeto(vSSLep,tr->looseMuons,tr->looseElectrons);

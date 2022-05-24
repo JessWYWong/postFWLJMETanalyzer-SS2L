@@ -7,7 +7,7 @@ proxyPath=proxyPath.readline().strip()
 
 tprimelist = [
 #    #'TprimeTprime_M-800',
-    'TprimeTprime_M-900',
+    #'TprimeTprime_M-900',
     #'TprimeTprime_M-1000',
     #'TprimeTprime_M-1100',
     #'TprimeTprime_M-1200',
@@ -20,7 +20,7 @@ tprimelist = [
 ]
 
 tprimedecays = ['BWBW','TZTZ','THTH','THBW','TZBW','TZTH']
-#tprimedecays = ['TZTZ']
+#tprimedecays = ['BWBW']
 
 bprimelist = [
 #    #'BprimeBprime_M-800',
@@ -44,31 +44,53 @@ bprimedecays = ['TWTW','BZBZ','BHBH','BHTW','BZTW','BZBH']
 eras = ['2018A-D']
 
 bkgdatalist = [
-    #'TTH',
-    #'TTW',
-    #'TTZ',
-    #'TTTT',
-    #'WZ',
-    #'ZZ',
+    #'TTTTsig0',
+    #'TTTTsig1',
+    #'TTTTsig2',
+    #'TTTTsig3',
+    #'TTTTsig4',
+    #'TTTTsig5',
+
+    #'X53X53LH_M-1100',
+    #'X53X53LH_M-1200',
+    #'X53X53LH_M-1400',
+    #'X53X53LH_M-1500',
+    #'X53X53LH_M-1700',
+
+    #'X53X53RH_M-900',
+    #'X53X53RH_M-1000',
+    #'X53X53RH_M-1100',
+    #'X53X53RH_M-1200',
+    #'X53X53RH_M-1300',
+    #'X53X53RH_M-1400',
+    #'X53X53RH_M-1600',
+    #'X53X53RH_M-1500',
+
+    'TTH',
+    'TTW',
+    'TTZ',
+    'TTTT',
+    'WZ',
+    'ZZ',
 #    'WWW',
-    #'WWZ',
-    #'WZZ',
-    #'ZZZ',
-    #'WpWp',
+    'WWZ',
+#    'WZZ',
+#    'ZZZ',
+    'WpWp',
 
 
-    #'DataElEl2018A',
-    #'DataElMu2018A',
-    #'DataMuMu2018A',
-    #'DataElEl2018B',
-    #'DataElMu2018B',
-    #'DataMuMu2018B',
-    #'DataElEl2018C',
-    #'DataElMu2018C',
-    #'DataMuMu2018C',
-    #'DataElEl2018D',
-    #'DataElMu2018D',
-    #'DataMuMu2018D',
+    'DataElEl2018A',
+    'DataElMu2018A',
+    'DataMuMu2018A',
+    'DataElEl2018B',
+    'DataElMu2018B',
+    'DataMuMu2018B',
+    'DataElEl2018C',
+    'DataElMu2018C',
+    'DataMuMu2018C',
+    'DataElEl2018D',
+    'DataElMu2018D',
+    'DataMuMu2018D',
 
     #'ChargeMisIDElEl2018A',
     #'ChargeMisIDElMu2018A',
@@ -105,7 +127,10 @@ print 'Relbase:',relBase
 #saveDir = 'LJMet94x_2lepTT_2017datasets_2019_3_15_rizki_hadds_Analyzer_elIDv2_nonIsoHTtrig' #CHECK nonIso_HTtrig and inputFolder in X53Analyzer.cc and compile!!
 #saveDir = 'FWLJMET102X_2lep2017_wywong_081319_hadds_postFWLJMETanalyzer_elIDv2_IsoTrig'
 #saveDir = 'FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig'
-saveDir = 'FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc'
+#saveDir = 'FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_HEMveto_ANv8'
+#saveDir = 'FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_nonIsoTrig_HEMveto_Aug21'
+saveDir = 'FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_nonIsoTrig_HEMveto_Aug21_njet3_3LFR_dFRMu2El8_uPR'#_bTag' #_uPr
+#saveDir = 'FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_nonIsoTrig_HEMveto_Aug21_njet3_3LFRminDR_dFRMu8El10'
 
 ##### added by Jess ######
 PRUNCMode = 0
@@ -130,8 +155,8 @@ if os.path.exists(tarfile):
 else:
     os.chdir(thisDir)
     os.chdir('../')
-    print 'tar --exclude="postFWLJMETanalyzer_2018/.git" --exclude="postFWLJMETanalyzer_2018/test/PromptRate*" --exclude="postFWLJMETanalyzer_2018/test/ChargeMisID*" --exclude="postFWLJMETanalyzer_2018/test/FakeRate*" --exclude="postFWLJMETanalyzer_2018/test/plot*" --exclude="postFWLJMETanalyzer_2018/Limits*" --exclude="postFWLJMETanalyzer_2018/test/csc2015*" -zvcf '+tarfile+' '+thisDir.split('/')[-1]+'/'
-    os.system('tar --exclude="postFWLJMETanalyzer/postLJMEThadd/*" --exclude="postFWLJMETanalyzer_2018/.git" --exclude="postFWLJMETanalyzer_2018/test/PromptRate*" --exclude="postFWLJMETanalyzer_2018/test/ChargeMisID*" --exclude="postFWLJMETanalyzer_2018/test/FakeRate*" --exclude="postFWLJMETanalyzer_2018/test/plot*" --exclude="postFWLJMETanalyzer_2018/Limits*" --exclude="postFWLJMETanalyzer_2018/test/csc2015*" -zvcf '+tarfile+' '+thisDir.split('/')[-1])
+    print 'tar --exclude="postFWLJMETanalyzer_2018/postLJMEThadd/*" --exclude="postFWLJMETanalyzer_2018/.git" --exclude="postFWLJMETanalyzer_2018/test/PromptRate*" --exclude="postFWLJMETanalyzer_2018/test/ChargeMisID*" --exclude="postFWLJMETanalyzer_2018/test/FakeRate*" --exclude="postFWLJMETanalyzer_2018/test/plot*" --exclude="postFWLJMETanalyzer_2018/Limits*" --exclude="postFWLJMETanalyzer_2018/test/csc2015*" --exclude="postFWLJMETanalyzer_2018/test/*.root" --exclude="postFWLJMETanalyzer_2018/combineLimits_diLep/*" --exclude="postFWLJMETanalyzer_2018/scripts/Systematics/*" --exclude="postFWLJMETanalyzer/combineLimits_diLep/*" -zvcf '+tarfile+' '+thisDir.split('/')[-1]+'/'
+    os.system('tar --exclude="postFWLJMETanalyzer_2018/postLJMEThadd/*" --exclude="postFWLJMETanalyzer_2018/.git" --exclude="postFWLJMETanalyzer_2018/test/PromptRate*" --exclude="postFWLJMETanalyzer_2018/test/ChargeMisID*" --exclude="postFWLJMETanalyzer_2018/test/FakeRate*" --exclude="postFWLJMETanalyzer_2018/test/plot*" --exclude="postFWLJMETanalyzer_2018/Limits*" --exclude="postFWLJMETanalyzer_2018/test/csc2015*" --exclude="postFWLJMETanalyzer_2018/test/*.root" --exclude="postFWLJMETanalyzer_2018/combineLimits_diLep/*" --exclude="postFWLJMETanalyzer_2018/scripts/Systematics/*" --exclude="postFWLJMETanalyzer/combineLimits_diLep/*" -zvcf '+tarfile+' '+thisDir.split('/')[-1])
 
 count = 0
 
@@ -208,7 +233,7 @@ for sample in bkgdatalist:
 universe = vanilla
 Executable = %(RUNDIR)s/runLJMETanalyzer.sh
 Should_Transfer_Files = YES
-request_memory = 12000
+request_memory = 50000
 WhenToTransferOutput = ON_EXIT
 Transfer_Input_Files = %(TARFILE)s
 Output = %(SAMPLE)s_%(ERA)s.out

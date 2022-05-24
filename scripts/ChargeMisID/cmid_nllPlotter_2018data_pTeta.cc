@@ -26,9 +26,9 @@ float elEtabins[7]={0.0,0.4,0.8,1.442,1.556,2.0,2.4};
 const Int_t npar_eta = sizeof(elEtabins) / sizeof(float) -1;
 
 TString ID = "MVA2017TightV2IsoTightRC";
-TString dir = "CMID_likelihood2018_082020/";
+TString dir = "CMID_likelihood2018_082020_rereco_HEMveto_nConst3/";
 TString era = "2018All";
-TString indir = "ChargeMisID_likelihood_082020";
+TString indir = "ChargeMisID_likelihood_082020_rereco_HEMveto_nConst3";
 
 TFile* f = new TFile("../../test/"+indir+"/ChargeMisID_likelihood_Data_"+era+"_Electrons_"+ID+".root");
 TH2F * num_lep12_eta = new TH2F("num_lep12_eta","num_lep12_eta", npar_eta, elEtabins, npar_eta, elEtabins);
@@ -130,7 +130,7 @@ void cmid_nllPlotter_2018data_pTeta() {
   }
 
   // Write Ouput
-  TFile* fout = new TFile("ChargeMisID_likelihood_Data_"+era+"_Electrons_"+ID+".root","RECREATE");
+  TFile* fout = new TFile("ChargeMisID_likelihood_Data_"+era+"_Electrons_"+ID+"_nConst3.root","RECREATE");
   system("mkdir -pv "+dir);
 
   num_lep12->Write("num_lep12");
@@ -146,7 +146,7 @@ void cmid_nllPlotter_2018data_pTeta() {
   text1->SetTextFont(42);
   text1->SetTextSizePixels(24);
 
-  TString lumiStr = "41.6 fb^{-1} (13 TeV)";
+  TString lumiStr = "59.74 fb^{-1} (13 TeV)";
   TLatex* text2 = new TLatex(3.570061,23.08044, lumiStr);
   text2->SetNDC();
   text2->SetTextAlign(13);

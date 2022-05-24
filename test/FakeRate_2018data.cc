@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
@@ -18,8 +19,9 @@
 std::vector<TLepton*> makeLeptons(std::vector<TMuon*> muons, std::vector<TElectron*> electrons, bool Muons, std::string ID);
 bool ZVetoCheck(TLepton* lepton, std::vector<TJet*> jets);
 bool AwayJetCheck(TLepton* lepton, std::vector<TJet*> jets);
-bool allPt=false;
+bool allPt=true;
 bool isoTrig=false;
+bool HEMveto=true;
 
 int main(int argc, char* argv[]){
 
@@ -49,7 +51,7 @@ int main(int argc, char* argv[]){
       isoTrigStr = "_isoTrig_forTrilep";
   }
   else{
-      isoTrigStr = "_nonIsoHTTrig";  
+      isoTrigStr = "_nonIsoTrig_1";  
   }
 
   std::string allPt_str = argv[6];
@@ -73,7 +75,8 @@ int main(int argc, char* argv[]){
   
   
   //make output folder
-  TString outdir = "FakeRate"+isoTrigStr+"_OneTrig";
+  TString outdir = "FakeRate"+isoTrigStr+"_byFlav";
+  if(HEMveto) outdir+="_HEMveto";
   system("mkdir -pv "+outdir);
 
   //make output file
@@ -139,7 +142,7 @@ int main(int argc, char* argv[]){
       if(argv4=="2018A") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleMuonRun2018A.root");
       else if(argv4=="2018B") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleMuonRun2018B.root");
       else if(argv4=="2018C") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleMuonRun2018C.root");
-      else if(argv4=="2018D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleMuonRun2018D.root");
+      else if(argv4=="2018D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+filedir+"/SingleMuonRun2018D_rereco.root");
     }
     else if(!MuonChannel){
       //if(argv4=="2018A") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+elfiledir+"/DoubleEG_FR_Run2018A.root");
@@ -149,7 +152,7 @@ int main(int argc, char* argv[]){
       if(argv4=="2018A") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+elfiledir+"/SingleElectronRun2018A.root");
       else if(argv4=="2018B") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+elfiledir+"/SingleElectronRun2018B.root");
       else if(argv4=="2018C") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+elfiledir+"/SingleElectronRun2018C.root");
-      else if(argv4=="2018D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+elfiledir+"/SingleElectronRun2018D.root");
+      else if(argv4=="2018D") filenames.push_back("root://cmseos.fnal.gov//store/group/lpcljm/"+elfiledir+"/SingleElectronRun2018D_rereco.root");
     }
     
   }
@@ -179,8 +182,8 @@ int main(int argc, char* argv[]){
 
     //output tree
     TTree* outTree = new TTree("FakeRate","FakeRate");
-    float LepPt_,LepEta_,LepPhi_,LepE_,LepMiniIso_,LepMinDR_,LepSusyIso_,m_T,MET;
-    int LepIsLoose_,LepIsTight_,LepCharge_;
+    float LepPt_,LepEta_,LepPhi_,LepE_,LepMiniIso_,LepMinDR_,LepSusyIso_,HT_,m_T,MET,massLepJet_,dPhiLepJet_;
+    int LepIsLoose_,LepIsTight_,LepCharge_,nConst_;
     outTree->Branch("LepPt",&LepPt_);
     outTree->Branch("LepEta",&LepEta_);
     outTree->Branch("LepPhi",&LepPhi_);
@@ -191,8 +194,12 @@ int main(int argc, char* argv[]){
     outTree->Branch("LepIsLoose",&LepIsLoose_);
     outTree->Branch("LepIsTight",&LepIsTight_);
     outTree->Branch("LepMinDR",&LepMinDR_);
+    outTree->Branch("nConst",&nConst_);
+    outTree->Branch("HT",&HT_);
     outTree->Branch("mT",&m_T);
     outTree->Branch("MET",&MET);
+    outTree->Branch("massLepJet",&massLepJet_);
+    outTree->Branch("dPhiLepJet",&dPhiLepJet_);
 
     //get tree reader to read in data
     TreeReader* tr= new TreeReader(filenames.at(i).c_str(),"ljmet/ljmet",!data,true);
@@ -212,9 +219,14 @@ int main(int argc, char* argv[]){
     TH1F* etaHist_MT = new TH1F("etaHist_MT","#eta of Leptons after M_{T} cut",12,-5,5);
     TH1F* etaHist_AwayJet = new TH1F("etaHist_AwayJet","#eta of Leptons after AwayJet cut",12,-5,5);
 
+    //write event ID to txt
+    std::ofstream idFile;
+    idFile.open (argv4+"_evt.txt");
 
     //get number of entries and start event loop
     int nEntries = t->GetEntries();
+    int n_passTrig = 0, n_pass1Lep = 0, n_pass1Lep_flav = 0, n_passMET =0 , n_passZVeto = 0, n_passAwayJet = 0 , n_passMT = 0;
+    int n_Tight = 0;
     for(int ient=0; ient<nEntries; ient++){
 
       
@@ -223,14 +235,14 @@ int main(int argc, char* argv[]){
       if(ient % 100000 ==0) std::cout<<"Completed "<<ient<<" out of "<<nEntries<<" events"<<std::endl;
       
       //make sure correct trigger was fired -- Following AN2018_230 analysis.
-      bool muTrig_nonIso = tr->HLT_Mu8;
-      bool muTrig_nonIso_2 = tr->HLT_Mu17;
-      bool muTrig_Iso = tr->HLT_Mu17; //tr->HLT_Mu8_TrkIsoVVL;
-      bool muTrig_Iso_2 = true; //tr->HLT_Mu20;//tr->HLT_Mu17_TrkIsoVVL;
+      bool muTrig_nonIso = tr->HLT_Mu20;//tr->HLT_Mu8;
+      bool muTrig_nonIso_2 = false; //tr->HLT_Mu27;//tr->HLT_Mu17;
+      bool muTrig_Iso = tr->HLT_Mu17_TrkIsoVVL; //tr->HLT_Mu8_TrkIsoVVL;
+      bool muTrig_Iso_2 = false; //tr->HLT_Mu20;//tr->HLT_Mu17_TrkIsoVVL;
       //bool elTrig = tr->HLT_Ele17Iso;
-      bool elTrig_nonIso = tr->HLT_Ele8_CaloIdM_TrackIdM_PFJet30_v;
-      bool elTrig_nonIso_2 = tr->HLT_Ele17_CaloIdM_TrackIdM_PFJet30_v;
-      bool elTrig_Iso = true; //tr->HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v;
+      bool elTrig_nonIso = tr->HLT_Ele23_CaloIdL_TrackIdL_IsoVL_PFJet30_v;//HLT_Ele17_CaloIdM_TrackIdM_PFJet30_v;
+      bool elTrig_nonIso_2 = false; //tr->HLT_Ele23_CaloIdM_TrackIdM_PFJet30_v;
+      bool elTrig_Iso = false; //tr->HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v;
       bool elTrig_Iso_2 = tr->HLT_Ele23_CaloIdL_TrackIdL_IsoVL_PFJet30_v;
       bool analyze = false;
       if(data){ 
@@ -254,18 +266,27 @@ int main(int argc, char* argv[]){
       
 
       if (!analyze) continue;
+      n_passTrig ++;
       //std::cout << "Entry "<< ient << "pass trigger"<< std::endl;
 
       //make vector of leptons
+      if(ient==214) std::cout<<"Evt "<<ient<<" makeLeptons"<<std::endl;
       std::vector<TLepton*> leptons = makeLeptons(tr->allMuons,tr->allElectrons,MuonChannel, ID);
 
+      if(ient==214) std::cout<<"nLep = "<<leptons.size()<<std::endl;
       //veto on events with more than one lepton or no leptons
       if((leptons.size()==0) || (leptons.size() >1) ) continue;      
+      n_pass1Lep++;
+      idFile <<tr->run<< ";"<<tr->lumi<<";"<<tr->event<<"\n";
       //now just take the lepton remaining
       TLepton* lep = leptons.at(0);
+
       //skip if not the correct flavor
       if(MuonChannel && !(leptons.at(0)->isMu)) continue;
       if(!MuonChannel && !(leptons.at(0)->isEl)) continue;
+      n_pass1Lep_flav++;
+      //skip events if is electron and found in hot spot
+      if(HEMveto && (lep->isEl && lep->eta>-2.5 && lep->eta<-1.479 && lep->phi>-1.55 && lep->phi<-0.9)) continue;
       //skip if it has pt not between 25 and 35 - REMOVE THIS TO STUDY FAKE RATE VS PT
       //if(allPt){
       //    if( !(lep->pt < 35 && lep->pt>25)) continue;
@@ -274,17 +295,21 @@ int main(int argc, char* argv[]){
 
       //make sure not much met in event to veto on leptons from Ws -relaxed for now to do more in depth studies
       if(tr->MET > 25) continue;
+      n_passMET++;
       etaHist_MET->Fill(lep->eta);
       //std::cout<<"lepton eta after MET cut : "<<lep->eta<<std::endl;      
       //check transverse mass is less than 25 GeV
       //search through jet collection to check for jet mass
+      if(tr->cleanedAK4Jets.size()==0) continue;
       bool Zveto = ZVetoCheck(lep,tr->cleanedAK4Jets);
       if(Zveto) continue;
+      n_passZVeto++;
       etaHist_ZVeto->Fill(lep->eta);
 
       //check for away jet
       bool awayJet = AwayJetCheck(lep,tr->cleanedAK4Jets);
       if(!awayJet) continue;
+      n_passAwayJet++;
       etaHist_AwayJet->Fill(lep->eta);
       
       float et = tr->MET+lep->energy;
@@ -304,6 +329,8 @@ int main(int argc, char* argv[]){
       //std::cout<<"Clint mt: "<<mT<<" Aram mt: "<<mt<<std::endl;
 
       if(mt>25) continue; //change to Arams value
+      n_passMT++;
+      if(lep->Tight) n_Tight++;
       etaHist_MT->Fill(lep->eta);      
 
       //Now just fill histograms
@@ -320,19 +347,26 @@ int main(int argc, char* argv[]){
       LepSusyIso_ = lep->susyIso;
       LepIsTight_ = (int) lep->Tight;
       LepIsLoose_ = (int) lep->Loose;
+      nConst_ = tr->cleanedAK4Jets.size();
+      HT_ = 0.;
       m_T = mt;
       MET = tr->MET;
       //find minDR
       float minDR=999;
+      int closestJet = -1;
       for(unsigned int i=0; i< tr->cleanedAK4Jets.size();i++){
+        HT_ += tr->cleanedAK4Jets.at(i)->pt;
         float drtemp = pow( pow(lep->eta - tr->cleanedAK4Jets.at(i)->eta, 2) + pow( lep->phi - tr->cleanedAK4Jets.at(0)->phi, 2) , 0.5);
-        if(drtemp<minDR) minDR = drtemp;
+        if(drtemp<minDR) {minDR = drtemp; closestJet = i;}
       }
       LepMinDR_ = minDR;
+      massLepJet_ = (lep->lv + (tr->cleanedAK4Jets.at(closestJet))->lv).M();
+      dPhiLepJet_ = LepPhi_ - tr->cleanedAK4Jets.at(closestJet)->phi;
       outTree->Fill();
 
     }//end event loop
     
+    idFile.close();
     fout->WriteTObject(outTree);
     fout->Append(ptNumHist);
     fout->Append(ptDenHist);
@@ -353,6 +387,17 @@ int main(int argc, char* argv[]){
     fout->Write();
     fout->Close();
 
+    std::cout<< "All Events   " << nEntries << std::endl;
+    std::cout<< "passTrig     " << n_passTrig << std::endl;
+    std::cout<< "pass1Lep     " << n_pass1Lep << std::endl;
+    std::cout<< "pass1Lep_flav" << n_pass1Lep_flav << std::endl;
+    std::cout<< "passMET      " << n_passMET << std::endl;
+    std::cout<< "passZVeto    " << n_passZVeto << std::endl;
+    std::cout<< "passAwayJet  " << n_passAwayJet << std::endl;
+    std::cout<< "passMT       " << n_passMT << std::endl;
+    std::cout<< "Tight        " << n_Tight << std::endl;
+
+
     //delete tree reader to free up space
     delete tr;
   }//end loop over filenames
@@ -366,9 +411,9 @@ std::vector<TLepton*> makeLeptons(std::vector<TMuon*> muons, std::vector<TElectr
   for(unsigned int uimu=0; uimu<muons.size(); uimu++){
     TMuon* imu = muons.at(uimu);
     TLepton* iLep = new TLepton(imu->pt,imu->eta,imu->phi,imu->energy,imu->charge,imu->relIso,imu->miniIso,imu->susyIso);
-    if(ID=="CBTight"){
-      iLep->Tight=imu->cutBasedTight();
-      iLep->Loose=imu->cutBasedLoose();
+    if(ID=="CBTight"){ // || ID=="MVA2017TightV2RC"){
+      iLep->Tight=imu->cutBasedTight_NoIso();
+      iLep->Loose=imu->cutBasedLoose_NoIso();
     }
     else if(ID=="CBLoose"){
       iLep->Tight=imu->cutBasedLoose();
@@ -379,14 +424,15 @@ std::vector<TLepton*> makeLeptons(std::vector<TMuon*> muons, std::vector<TElectr
       //iLep->Tight=imu->cutBasedTightMiniIsoTight();
       iLep->Loose=imu->cutBasedLooseMiniIso();
     }
-    else if(ID=="CBTightMiniIsoTight"){
+    else if(ID=="CBTightMiniIsoTight"){ // || ID=="MVA2017TightV2IsoTightRC"){
       iLep->Tight=imu->cutBasedTightMiniIsoTight();
       iLep->Loose=imu->cutBasedLooseMiniIso();
     }
+    else{iLep->Tight=false;iLep->Loose=false;}
     iLep->isMu = true;
     iLep->isEl = false;
     //only save if at least loose
-    if(iLep->Tight || iLep->Loose){
+    if(Muons && (iLep->Tight || iLep->Loose)){
       //apply pt cut
 //       if(iLep->pt>20){ Leptons.push_back(iLep);}
 //       if(iLep->pt>25 && iLep->pt<35) Leptons.push_back(iLep);
@@ -497,23 +543,26 @@ std::vector<TLepton*> makeLeptons(std::vector<TMuon*> muons, std::vector<TElectr
       iLep->Tight=iel->mva94XTightV1_RC(); // following clints def, so that can be processed directly by his scripts
       iLep->Loose=iel->mva94XLooseV1_Iso_RC();
     }
-    else if(ID=="MVA2017TightV2RC"){
+    else if(ID=="MVA2017TightV2RC"){ // || ID=="CBTight"){
       iLep->Tight=iel->mva94XTightV2_90_RC();
-      iLep->Loose=iel->mva94XLooseV2_Iso_RC(); // following clints def, so that can be processed directly by his scripts consistently, Apr 3, 2019
+      iLep->Loose=iel->mva94XLooseV2_RC(); // following clints def, so that can be processed directly by his scripts consistently, Apr 3, 2019
     }
     else if(ID=="MVA2017TightV2IsoRC"){
       iLep->Tight=iel->mva94XTightV2_90_Iso_RC();
       iLep->Loose=iel->mva94XLooseV2_Iso_RC();
     }
-    else if(ID=="MVA2017TightV2IsoTightRC"){
+    else if(ID=="MVA2017TightV2IsoTightRC"){ // || ID=="CBTightMiniIsoTight"){
       iLep->Tight=iel->mva94XTightV2_90_IsoTight_RC();
       iLep->Loose=iel->mva94XLooseV2_Iso_RC();
+    }
+    else{
+      iLep->Tight=false; iLep->Loose=false;
     }
  
     iLep->isMu = false;
     iLep->isEl = true;
     //only save if at least loose
-    if((iLep->Tight || iLep->Loose) && (fabs(iLep->eta)<1.4442 || fabs(iLep->eta)>1.566)){
+    if(!Muons && (iLep->Tight || iLep->Loose) && (fabs(iLep->eta)<1.4442 || fabs(iLep->eta)>1.566) ){
       //apply pt cut
 //       if(iLep->pt>25 && iLep->pt<35) Leptons.push_back(iLep); 
 //       if(iLep->pt>20){ Leptons.push_back(iLep);}
@@ -560,7 +609,7 @@ bool AwayJetCheck(TLepton* lep, std::vector<TJet*> jets){
   for(std::vector<TJet*>::size_type i=0; i<jets.size();i++){
     TJet* ijet = jets.at(i);
     float dr = pow( pow(lep->eta - ijet->eta,2) + pow(lep->phi - ijet->phi,2) , 0.5);
-    if(ijet->pt>40 && dr>1.0){ awayJet=true; break;}
+    if(ijet->pt>30 && dr>1.0){ awayJet=true; break;}
     //if(ijet->pt>30 && dr>1.0){ awayJet=true; break;}
   }
 

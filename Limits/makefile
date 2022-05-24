@@ -35,3 +35,32 @@ makeLimitRootFiles_Boosted:
 makeLimitRootFiles_miniIso:
 	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makeLimitRootFiles_miniIso.o makeLimitRootFiles_miniIso.cc
 
+makeTemplate_Combine:
+	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makeTemplate_Combine.o makeTemplate_Combine.cc
+
+makeTemplateCat_Combine:
+	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makeTemplateCat_Combine.o makeTemplateCat_Combine.cc
+
+makeTemplateCat_CombineNewSig:
+	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makeTemplateCat_CombineNewSig.o makeTemplateCat_CombineNewSig.cc
+
+makeTemplateCat_Combine_nConst3:
+	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makeTemplateCat_Combine_nConst3.o makeTemplateCat_Combine_nConst3.cc
+
+makeTemplateCat_Combine_tttt:
+	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makeTemplateCat_Combine_tttt.o makeTemplateCat_Combine_tttt.cc
+
+makeTemplateCat_Combine_nConstEq:
+	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makeTemplateCat_Combine_nConstEq.o makeTemplateCat_Combine_nConstEq.cc
+
+makeTemplateCat_CombineVar:
+	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makeTemplateCat_CombineVar.o makeTemplateCat_CombineVar.cc
+
+makeTemplateCat_CombineVar_nConst3:
+	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o makeTemplateCat_CombineVar_nConst3.o makeTemplateCat_CombineVar_nConst3.cc
+
+checkBinning:
+	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o checkBinning.o checkBinning.cc
+
+checkBinning_nConst3:
+	$(CXX) $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o checkBinning_nConst3.o checkBinning_nConst3.cc

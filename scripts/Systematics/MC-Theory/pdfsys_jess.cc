@@ -346,7 +346,7 @@ void pdfsys_jess(){
 
   TString elID = "MVA2017TightV2IsoTightRC";
   TString muID = "CBTightMiniIsoTight";
-  TString era = "2018A-D";
+  TString era = "2018A-D_HEMveto";
 
   TString folder ="/uscms_data/d3/wywong/VLQ/CMSSW_10_2_10/src/postFWLJMETanalyzer_2018/scripts/Systematics/CombineTTsig";
   TString decay;
@@ -627,7 +627,7 @@ void pdfsys_jess(){
 
 //   TString MCfolder ="/uscms_data/d3/rsyarif/CERN2017/produceLjmetNtuples_TTSSdilep/CMSSW_8_0_26_patch1/src/PostLJMet/X53ThirteenTeVAnalysisCode/test/ProcessedByJulie_Oct18-2017/test/";
 //  TString MCfolder ="/uscms_data/d3/rsyarif/CERN2017/produceLjmetNtuples_TTSSdilep/CMSSW_8_0_26_patch1/src/PostLJMet/X53ThirteenTeVAnalysisCode/test/ProcessedByJulie_Oct20-2017/test/";
-  TString MCfolder ="/eos/uscms/store/user/wywong/FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc/";
+  TString MCfolder ="/eos/uscms/store/user/wywong/FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_HEMveto_ANv8/";
 
   std::ofstream outfile;
   outfile.open("unc_pdfNew_MCBkg.py");
@@ -662,8 +662,8 @@ void pdfsys_jess(){
   getPDFUnc(ZZ,"ZZ","",filecontent,false);
   getPDFUnc(WpWp,"WpWp","",filecontent,false);
   getPDFUnc(WWZ,"WWZ","",filecontent,false);
-  getPDFUnc(WZZ,"WZZ","",filecontent,false);
-  getPDFUnc(ZZZ,"ZZZ","",filecontent,false);
+  //getPDFUnc(WZZ,"WZZ","",filecontent,false);
+  //getPDFUnc(ZZZ,"ZZZ","",filecontent,false);
 
   outfile<<filecontent.str();
   outfile.close();

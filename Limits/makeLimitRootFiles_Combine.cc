@@ -61,6 +61,11 @@ int main(int argc, char* argv[]){
   float lumi = std::atof(argv[6]); // fb^{-1}
   //get era
   std::string era(argv[7]);
+  bool isCR = false;
+  float maxHT = 2990;
+  std::cout<<"argc = "<<argc<<std::endl;
+  if(argc>9) { std::string argv9(argv[9]); std::cout<<argv9<<std::endl; if (argv9=="CR") isCR = true; maxHT = 500; HTcut = 0;}
+
   /*  std::istringstream arg4(argv[4]);
   int nConstShift=0;
   if(!(arg4>>nConstShift)){ std::cout<<"Invalid number for nConst shift! Exiting..."<<std::endl; return 0;}
@@ -162,11 +167,13 @@ int main(int argc, char* argv[]){
   std::vector<std::string> vCutString;
   std::stringstream cutSStream;
   cutSStream<<" ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1)) && (DilepMass>20) && (nConst>="<<nConst<<" ) && (Lep1Pt >"<<lep1cut<<") && (Lep2Pt > "<<lep2cut<<") && ( cleanAK4HT > "<<HTcut<<") && ( nNonSSLeps == 0)"; //added by rizki, add exactly 2 leptons (SS) only.
+  if(isCR) cutSStream<< " && ( cleanAK4HT < "<<maxHT<<")";
   vCutString.push_back(cutSStream.str());
 
   if(debug_) std::cout<<"Cutstring is: "<<cutSStream.str()<<std::endl;
 
   std::stringstream dirName;
+  if(isCR) dirName<< "CR_maxHT"<<maxHT<<"_";
   dirName<< "2018_Lep1Pt"<<lep1cut<<"_Lep2Pt"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst<<"/Templates_rootfiles_Combine/" ;
   system(("mkdir -pv "+dirName.str()).c_str() ); 
   std::stringstream rootfilename;
@@ -175,7 +182,7 @@ int main(int argc, char* argv[]){
 
   //write observed
   TString erast="";
-  if(era=="2018A-D") erast="2018AD";
+  if(era.find("2018A-D")!=std::string::npos) erast="2018AD";
   else erast="UnknownEra";
 
   TH1F* elel__data_obs = new TH1F("elel"+erast+"__data_obs","",1,0,1);

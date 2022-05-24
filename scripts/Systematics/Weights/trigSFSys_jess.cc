@@ -132,7 +132,7 @@ void trigSFSys_jess(){
 
   TString elID = "MVA2017TightV2IsoTightRC";
   TString muID = "CBTightMiniIsoTight";
-  TString era = "2018A-D";
+  TString era = "2018A-D_HEMveto";
 
   TString folder ="/uscms_data/d3/wywong/VLQ/CMSSW_10_2_10/src/postFWLJMETanalyzer_2018/scripts/Systematics/CombineTTsig";
   TString decay;
@@ -364,7 +364,7 @@ void trigSFSys_jess(){
 
 //   TString MCfolder ="/uscms_data/d3/rsyarif/CERN2017/produceLjmetNtuples_TTSSdilep/CMSSW_8_0_26_patch1/src/PostLJMet/X53ThirteenTeVAnalysisCode/test/ProcessedByJulie_Oct18-2017/test/";
   //TString MCfolder ="/uscms_data/d3/rsyarif/CERN2017/produceLjmetNtuples_TTSSdilep/CMSSW_8_0_26_patch1/src/PostLJMet/X53ThirteenTeVAnalysisCode/test/ProcessedByJulie_Oct20-2017/test/";
-  TString MCfolder ="/eos/uscms/store/user/wywong/FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc";
+  TString MCfolder ="/eos/uscms/store/user/wywong/FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_HEMveto_ANv8";
   
   std::ofstream outfile;
   outfile.open("unc_TrigSys_MCBkg.py");
@@ -387,8 +387,8 @@ void trigSFSys_jess(){
   printLineMCBkg("ZZ",MCfolder+"/ZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
   printLineMCBkg("WpWp",MCfolder+"/WpWp_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
   printLineMCBkg("WWZ",MCfolder+"/WWZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
-  printLineMCBkg("WZZ",MCfolder+"/WZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
-  printLineMCBkg("ZZZ",MCfolder+"/ZZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
+  //printLineMCBkg("WZZ",MCfolder+"/WZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
+  //printLineMCBkg("ZZZ",MCfolder+"/ZZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
 
   outfile<<filecontent.str();
   outfile.close();

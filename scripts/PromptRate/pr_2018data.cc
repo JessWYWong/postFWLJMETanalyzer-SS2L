@@ -53,8 +53,8 @@ TGraphAsymmErrors* getEtaGraph(TTree* t, float looseMiniIsoCut,float tightMiniIs
 
 TGraphAsymmErrors* getPtGraph(TTree* t, float looseMiniIsoCut,float tightMiniIsoCut, bool mu){
 
-  string cutstring = Form("LepIsTight == 1 && LepMiniIso < %f",tightMiniIsoCut);
-  string loosecut = Form("LepMiniIso < %f",looseMiniIsoCut);
+  string cutstring = Form("LepIsTight == 1 && LepMiniIso < %f && LepMinDR>0.4",tightMiniIsoCut);
+  string loosecut = Form("LepMiniIso < %f && LepMinDR>0.4",looseMiniIsoCut);
 //   float ptbins[15] = {30,40,50,60,70,80,90,100,125,150,200,300,400,500,1000};
 //   TH1D* num = new TH1D("num","PromptRate",14,ptbins);  
 //   TH1D* den = new TH1D("den","den",14,ptbins);
@@ -146,11 +146,11 @@ void pr_2018data(TString trig_, int doEl_=1, int doMu_=1){
    eras.push_back("All");
 
   // Make output directoty
-  TString outDir = "Outputs_2018data_"+trig+"/"; //all era's
+  TString outDir = "Outputs_2018data_"+trig+"_minDR/"; //all era's
   system("mkdir -vp "+outDir);
   
   //Input folder
-  TString path = "../../test/PromptRate2018_082020__"+trig+"_passTrig";
+  TString path = "../../test/PromptRate2018rereco_082020__"+trig+"_passTrig_HEMveto";
   //TString path = "/eos/uscms/store/user/wywong/postFWLJMETanalyzer/PromptRate_"+trig;
 
   for(unsigned int i=0; i < eras.size(); i++){

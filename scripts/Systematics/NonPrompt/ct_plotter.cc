@@ -51,7 +51,7 @@ void DrawAndSave(TH1F* h_pred, TH1F* h_obs, std::string pdfname, std::string fla
   h_obs->SetMarkerColor(kBlack);
 
   //make lumi weight
-  float lumiweight = 2110 * (831.76 / 115091972);
+  float lumiweight = 59.74*1000 * (687.1 / 100728760);
   if(flavor.find("qcd")==std::string::npos){
     h_pred->Scale(lumiweight);
     h_obs->Scale(lumiweight);

@@ -201,7 +201,7 @@ void scale_sys_jess(){
 
   TString elID = "MVA2017TightV2IsoTightRC";
   TString muID = "CBTightMiniIsoTight";
-  TString era = "2018A-D";
+  TString era = "2018A-D_HEMveto";
 
   TString folder ="/uscms_data/d3/wywong/VLQ/CMSSW_10_2_10/src/postFWLJMETanalyzer_2018/scripts/Systematics/CombineTTsig";
   TString decay;
@@ -473,7 +473,7 @@ void scale_sys_jess(){
   c2->SaveAs("plot_unc_muRFcorrdNew_BB.pdf");
 
   ///----------MC Bkg-------
-  TString MCfolder ="/eos/uscms/store/user/wywong/FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc/";
+  TString MCfolder ="/eos/uscms/store/user/wywong/FWLJMET102X_2lep2018_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_HEMveto_ANv8/";
 
   std::ofstream outfile;
   outfile.open("unc_muRFcorrdNew_MCBkg.py");
@@ -493,8 +493,8 @@ void scale_sys_jess(){
   TFile* ZZ = new TFile(MCfolder+"/ZZ_Mu"+muID+"_El"+elID+"_"+era+".root");
   TFile* WpWp = new TFile(MCfolder+"/WpWp_Mu"+muID+"_El"+elID+"_"+era+".root");
   TFile* WWZ = new TFile(MCfolder+"/WWZ_Mu"+muID+"_El"+elID+"_"+era+".root");
-  TFile* WZZ = new TFile(MCfolder+"/WZZ_Mu"+muID+"_El"+elID+"_"+era+".root");
-  TFile* ZZZ = new TFile(MCfolder+"/ZZZ_Mu"+muID+"_El"+elID+"_"+era+".root");
+  //TFile* WZZ = new TFile(MCfolder+"/WZZ_Mu"+muID+"_El"+elID+"_"+era+".root");
+  //TFile* ZZZ = new TFile(MCfolder+"/ZZZ_Mu"+muID+"_El"+elID+"_"+era+".root");
 
   std::cout<<" ==========MC Bkg==========="<<std::endl;
 // 	  std::cout<<" Sample | RMSup*SF | RMSdown*SF "<<std::endl;
@@ -508,8 +508,8 @@ void scale_sys_jess(){
   printSys(ZZ,"ZZ",filecontent);
   printSys(WpWp,"WpWp",filecontent);
   printSys(WWZ,"WWZ",filecontent);
-  printSys(WZZ,"WZZ",filecontent);
-  printSys(ZZZ,"ZZZ",filecontent);
+  //printSys(WZZ,"WZZ",filecontent);
+  //printSys(ZZZ,"ZZZ",filecontent);
 
   outfile<<filecontent.str();
   outfile.close();

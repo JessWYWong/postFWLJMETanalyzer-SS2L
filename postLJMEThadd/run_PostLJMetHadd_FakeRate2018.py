@@ -78,16 +78,18 @@ if __name__ == '__main__':
 	#samples['DoubleEG_FR_Run2018C'] = '/EGamma/diLepFakeRate2018/200903_231550/'#200521_182937/'
 	#samples['DoubleEG_FR_Run2018D'] = '/EGamma/diLepFakeRate2018/200903_231825/'#200521_183323/'
 
-	samples['SingleElectronRun2018A'] = '/EGamma/diLepFakeRate2018/200925_211110/'
-	samples['SingleElectronRun2018B'] = '/EGamma/diLepFakeRate2018/200925_211319/'
-	samples['SingleElectronRun2018C'] = '/EGamma/diLepFakeRate2018/200925_213143/'
-	samples['SingleElectronRun2018D'] = '/EGamma/diLepFakeRate2018/200925_214133/'
+	samples['SingleElectronRun2018A'] = '/EGamma/diLepFakeRate2018/210507_013146/'#200925_211110/'
+	samples['SingleElectronRun2018B'] = '/EGamma/diLepFakeRate2018/210507_013026/'#2200925_211319/'
+	samples['SingleElectronRun2018C'] = '/EGamma/diLepFakeRate2018/210507_013106/'#2200925_213143/'
+	#samples['SingleElectronRun2018D'] = '/EGamma/diLepFakeRate2018/200925_214133/'
+	samples['SingleElectronRun2018D_rereco'] = '/EGamma/diLepFakeRate2018/210507_012906/'#2210220_233147/'
 
-	samples['SingleMuonRun2018A'] = '/SingleMuon/diLepFakeRate2018/200925_215707/'
-	samples['SingleMuonRun2018B'] = '/SingleMuon/diLepFakeRate2018/200925_215911/'
-	samples['SingleMuonRun2018C'] = '/SingleMuon/diLepFakeRate2018/200926_163807/'
-	samples['SingleMuonRun2018D'] = '/SingleMuon/diLepFakeRate2018/200926_163956/'
-	
+	samples['SingleMuonRun2018A'] = '/SingleMuon/diLepFakeRate2018/210507_013226/'#2200925_215707/'
+	samples['SingleMuonRun2018B'] = '/SingleMuon/diLepFakeRate2018/210507_013347/'#2200925_215911/'
+	samples['SingleMuonRun2018C'] = '/SingleMuon/diLepFakeRate2018/210507_013307/'#2200926_163807/'
+	#samples['SingleMuonRun2018D'] = '/SingleMuon/diLepFakeRate2018/200926_163956/'
+	samples['SingleMuonRun2018D_rereco'] = '/SingleMuon/diLepFakeRate2018/210507_012945/'#2210220_233306/'
+
 	#################################################
 	### Main driver
 	#################################################
