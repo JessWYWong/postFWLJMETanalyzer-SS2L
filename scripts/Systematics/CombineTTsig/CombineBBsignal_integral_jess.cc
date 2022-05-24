@@ -23,7 +23,8 @@ float getYields(TTree* t,TString cut){
 
 void combinedSignal(TString mass, int BRtype){
 
-  TString workArea = "/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc_nPU/";
+  TString workArea = "/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_ANv8/";
+  //"/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc_nPU/";
   TString fname = workArea+"BprimeBprime_M-"+mass;
 
   TString elID = "MVA2017TightV2IsoTightRC";
@@ -138,7 +139,7 @@ void combinedSignal(TString mass, int BRtype){
   if (mass=="1800"){ Xsec = 0.000391; NEvts= 915634.724;} //833000.;}
   
   //float lumi = 17.68; //fb^-1  
-  float lumi = 41.56; //fb^-1  
+  float lumi = 41.53; //fb^-1  
 
   //vector to hold weights
   float Weights_TWTW;

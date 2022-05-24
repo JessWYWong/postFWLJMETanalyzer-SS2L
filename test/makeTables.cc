@@ -21,6 +21,11 @@ std::stringstream& printChargeMisIDTable_lpt(std::stringstream& chargeMisIDTable
 std::stringstream& printChargeMisIDTable_hpt(std::stringstream& chargeMisIDTable);
 std::stringstream& printChargeMisIDTable_hhpt(std::stringstream& chargeMisIDTable);
 
+std::vector<std::string> samples_ttv{"TTZ","TTW","TTH"};
+std::vector<std::string> samples_tttt{"TTTT"};
+std::vector<std::string> samples_vvvww{"WpWp","WWZ"};
+std::vector<std::string> samples_vv{"WZ","ZZ"};
+
 /*
 float uncPU_TTZ=0.06;
 float uncPU_TTW=0.01;
@@ -100,7 +105,7 @@ void makeTables(){
 //   outfile.open("table_miniIsoTight_NonIsoTrigHT_37invfb_Mar27-2019.txt"); //Check Macros.cc for input folder!! and adjust nonisoTrigHT below
 //   outfile.open("table_miniIsoTight_NonIsoTrigHT_41invfb_Mar27-2019.txt"); //Check Macros.cc for input folder!! and adjust nonisoTrigHT below
   //outfile.open("table_miniIsoTight_IsoTrigHT_ElPRUnity_Jan2-2019.txt"); //Check Macros.cc for input folder!! and adjust nonisoTrigHT below
-  outfile.open("table_miniIsoTight_IsoTrig_Nov-2020.txt");  
+  outfile.open("table_miniIsoTight_IsoTrig_Jul2021_41p53.txt");  
 
   //set which cuts for which trigger
   bool isoTrig = true; // turned on by Jess
@@ -111,7 +116,7 @@ void makeTables(){
   //set precision
 
   //set desired luminosity
-  float lumi1 = 41.56; //fb^-1 yr_eras = 2017B-F
+  float lumi1 = 41.53; //fb^-1 yr_eras = 2017B-F
 //  float lumi1 = 37.6; //fb^-1 yr_eras = 2017C-F
 
   //get list of signal samples starting with ssdl cut
@@ -133,7 +138,15 @@ void makeTables(){
   std::vector<Sample*> vSigSamples4a = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"TZBW",whichBR);
   std::vector<Sample*> vSigSamples5a = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"TZTH",whichBR);
   std::vector<Sample*> vSigSamples6a = getInclusiveSigTTSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"TZTZ",whichBR);
+  std::vector<Sample*> vSigSamples1b = getInclusiveSigBBSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"TWTW",whichBR);
+  std::vector<Sample*> vSigSamples2b = getInclusiveSigBBSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"BHTW",whichBR);
+  std::vector<Sample*> vSigSamples3b = getInclusiveSigBBSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"BHBH",whichBR);
+  std::vector<Sample*> vSigSamples4b = getInclusiveSigBBSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"BZTW",whichBR);
+  std::vector<Sample*> vSigSamples5b = getInclusiveSigBBSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"BZBH",whichBR);
+  std::vector<Sample*> vSigSamples6b = getInclusiveSigBBSampleVecForTable("sZVeto", lumi1, elID, muID, yr_eras,"BZBZ",whichBR);
+
   std::vector<Sample*> vSig2017BF = appendSampleVectors(vSigSamples1a,vSigSamples2a,vSigSamples3a,vSigSamples4a,vSigSamples5a,vSigSamples6a);
+  //std::vector<Sample*> vSig2017BF = appendSampleVectors(vSigSamples1b,vSigSamples2b,vSigSamples3b,vSigSamples4b,vSigSamples5b,vSigSamples6b);
 //   std::vector<Sample*> vSigSamples1b = getInclusiveSigTTSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H","BWBW",whichBR);
 //   std::vector<Sample*> vSigSamples2b = getInclusiveSigTTSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H","THBW",whichBR);
 //   std::vector<Sample*> vSigSamples3b = getInclusiveSigTTSampleVecForTable("sZVeto", lumi2, elID, muID,"2016E-H","THTH",whichBR);
@@ -477,7 +490,7 @@ std::stringstream& printEffTable_v2(std::stringstream& tablestring,std::vector<C
     tablestring<<vCC.at(i)->samplename;
     for(size_t j =0; j < (vCC.at(i)->nEvents).size(); j++){
     
-      float lumi = 41.56*1000.; // inv pb
+      float lumi = 41.53*1000.; // inv pb
 
 	  float BR=0.;
 	
@@ -564,6 +577,7 @@ std::stringstream& printEffTable_v2(std::stringstream& tablestring,std::vector<C
       float Xsec=0;
       //if(vCC.at(i)->samplename.find("TprimeTprime_M-800")!=std::string::npos){ nSigEvts = 795000.; Xsec=0.196 ;}       
       //if(vCC.at(i)->samplename.find("TprimeTprime_M-900")!=std::string::npos){ nSigEvts = 831200.; Xsec=0.0903 ;}
+      if(vCC.at(i)->samplename.find("TprimeTprime_M-900")!=std::string::npos){ nSigEvts = 973451.16; Xsec=0.903 ;}
       if(vCC.at(i)->samplename.find("TprimeTprime_M-1000")!=std::string::npos){ nSigEvts = 1002517.455; Xsec=0.0440 ;}
       if(vCC.at(i)->samplename.find("TprimeTprime_M-1100")!=std::string::npos){ nSigEvts = 895042.045; Xsec=0.0224 ;}
       if(vCC.at(i)->samplename.find("TprimeTprime_M-1200")!=std::string::npos){ nSigEvts = 1003441.777; Xsec=0.0118 ;}
@@ -1375,8 +1389,18 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
   float sigErr_ee;
   float sig2_ee;
   float sig2Err_ee;
+  float sig3_ee;
+  float sig3Err_ee;
   float mcbkg_ee;
   float mcbkgErr_ee;
+  float ttv_ee;
+  float ttvErr_ee;
+  float tttt_ee;
+  float ttttErr_ee;
+  float vvvww_ee;
+  float vvvwwErr_ee;
+  float vv_ee;
+  float vvErr_ee;
   float np_ee;
   float npErr_ee;
   float chmid_ee;
@@ -1389,8 +1413,18 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
   float sigErr_em;
   float sig2_em;
   float sig2Err_em;
+  float sig3_em;
+  float sig3Err_em;
   float mcbkg_em;
   float mcbkgErr_em;
+  float ttv_em;
+  float ttvErr_em;
+  float tttt_em;
+  float ttttErr_em;
+  float vvvww_em;
+  float vvvwwErr_em;
+  float vv_em;
+  float vvErr_em;
   float np_em;
   float npErr_em;
   float chmid_em;
@@ -1403,8 +1437,18 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
   float sigErr_mm;
   float sig2_mm;
   float sig2Err_mm;
+  float sig3_mm;
+  float sig3Err_mm;
   float mcbkg_mm;
   float mcbkgErr_mm;
+  float ttv_mm;
+  float ttvErr_mm;
+  float tttt_mm;
+  float ttttErr_mm;
+  float vvvww_mm;
+  float vvvwwErr_mm;
+  float vv_mm;
+  float vvErr_mm;
   float np_mm;
   float npErr_mm;
   float chmid_mm;
@@ -1425,7 +1469,7 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
     CutClass* cutSig = 0;
     std::vector<CutClass*> cutSig_M1000; //added by rizki
     std::vector<CutClass*> cutSig_M1200; //added by rizki
-
+    std::vector<CutClass*> cutSig_M1500; //added by jess
 
     std::vector<CutClass*> vCutBkg;
     vCutBkg = vCutBkgBF;
@@ -1435,6 +1479,7 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
     for(unsigned int j=0; j<vCutSig.size();j++){
       if(vCutSig.at(j)->samplename.find("1000")!=std::string::npos) cutSig_M1000.push_back(vCutSig.at(j)); //edited by rizki
       if(vCutSig.at(j)->samplename.find("1200")!=std::string::npos) cutSig_M1200.push_back(vCutSig.at(j)); //edited by rizki
+      if(vCutSig.at(j)->samplename.find("1500")!=std::string::npos) cutSig_M1500.push_back(vCutSig.at(j)); //edited by jess
     }
 
 
@@ -1445,6 +1490,14 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
     //first machinery to get events in nice format
     float events_mctot=0;
     float errors_mctot=0;
+    float events_ttv=0;
+    float errors_ttv=0;
+    float events_tttt=0;
+    float errors_tttt=0;
+    float events_vvvww=0;
+    float errors_vvvww=0;
+    float events_vv=0;
+    float errors_vv=0;
     float events_nptot=0;
     float errors_nptot=0;
     float events_cmtot=0;
@@ -1504,6 +1557,10 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
 
 		  events_tot = events_tot + (vCutBkg.at(i)->nEvents).at(j);
 		  errors_tot = errors_tot + err;
+                  for(auto name : samples_ttv)  {if(vCutBkg.at(i)->samplename==name){events_ttv += (vCutBkg.at(i)->nEvents).at(j);   errors_ttv += err; break;}}
+                  for(auto name : samples_tttt) {if(vCutBkg.at(i)->samplename==name){events_tttt += (vCutBkg.at(i)->nEvents).at(j);  errors_tttt += err; break;}}
+                  for(auto name : samples_vvvww){if(vCutBkg.at(i)->samplename==name){events_vvvww += (vCutBkg.at(i)->nEvents).at(j); errors_vvvww += err; break;}}
+                  for(auto name : samples_vv)   {if(vCutBkg.at(i)->samplename==name){events_vv += (vCutBkg.at(i)->nEvents).at(j);    errors_vv += err; break;}}
 		}      
 		else if(vCutBkg.at(i)->samplename!="NonPrompt" && vCutBkg.at(i)->samplename=="ChargeMisID"){ //only add together if MC background
 		  events_tot = events_tot + (vCutBkg.at(i)->nEvents).at(j);
@@ -1550,6 +1607,17 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
     }
 	float errsys_sig2 = sys*pow(sig2,2); //added by rizki
 	errors_sig2 = errsys_sig2 + errstat_sig2;	 //added by rizki
+
+    float sig3 = 0; //added by jess
+    float errors_sig3=0; ; //added by jess
+        float errstat_sig3 =0; //added by jess         
+    for(int i=0; i<cutSig_M1500.size();i++){
+        sig3 = sig3+(cutSig_M1500.at(i)->nEvents).at( (cutSig_M1500.at(i)->nEvents).size()-1); //added by jess
+                errstat_sig3 = errstat_sig3 + pow((cutSig_M1500.at(i)->vErr).at( (cutSig_M1500.at(i)->nEvents).size()-1),2); //added by jess 
+        std::cout << "  " << cutSig_M1500.at(i)->samplename << " : "<< (cutSig_M1500.at(i)->nEvents).at( (cutSig_M1500.at(i)->nEvents).size()-1) << " +- " << (cutSig_M1500.at(i)->vErr).at( (cutSig_M1500.at(i)->nEvents).size()-1) << "(stat)" << std::endl;
+    }
+        float errsys_sig3 = sys*pow(sig3,2); //added by jess
+        errors_sig3 = errsys_sig3 + errstat_sig3;        //added by jess
     
     //ok now I have all background, so get observed with no errors
    float obs =  (cutData->nEvents).at( (cutData->nEvents).size()-1);
@@ -1563,8 +1631,18 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
 	  sigErr_ee=pow(errors_sig,0.5);
 	  sig2_ee=sig2;
 	  sig2Err_ee=pow(errors_sig2,0.5);
+          sig3_ee=sig3;
+          sig3Err_ee=pow(errors_sig3,0.5);
 	  mcbkg_ee=events_mctot;
 	  mcbkgErr_ee=pow(errors_mctot,0.5);
+          ttv_ee=events_ttv;
+          ttvErr_ee=pow(errors_ttv,0.5);
+          tttt_ee=events_tttt;
+          ttttErr_ee=pow(errors_tttt,0.5);
+          vvvww_ee=events_vvvww;
+          vvvwwErr_ee=pow(errors_vvvww,0.5);
+          vv_ee=events_vv;
+          vvErr_ee=pow(errors_vv,0.5);
 	  np_ee=events_nptot;
 	  npErr_ee=pow(errors_nptot,0.5);
 	  chmid_ee=events_cmtot;
@@ -1578,8 +1656,18 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
 	  sigErr_em=pow(errors_sig,0.5);
 	  sig2_em=sig2;
 	  sig2Err_em=pow(errors_sig2,0.5);
+          sig3_em=sig3;
+          sig3Err_em=pow(errors_sig3,0.5);
 	  mcbkg_em=events_mctot;
 	  mcbkgErr_em=pow(errors_mctot,0.5);
+          ttv_em=events_ttv;
+          ttvErr_em=pow(errors_ttv,0.5);
+          tttt_em=events_tttt;
+          ttttErr_em=pow(errors_tttt,0.5);
+          vvvww_em=events_vvvww;
+          vvvwwErr_em=pow(errors_vvvww,0.5);
+          vv_em=events_vv;
+          vvErr_em=pow(errors_vv,0.5);
 	  np_em=events_nptot;
 	  npErr_em=pow(errors_nptot,0.5);
 	  chmid_em=events_cmtot;
@@ -1593,8 +1681,18 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
 	  sigErr_mm=pow(errors_sig,0.5);
 	  sig2_mm=sig2;
 	  sig2Err_mm=pow(errors_sig2,0.5);
+          sig3_mm=sig3;
+          sig3Err_mm=pow(errors_sig3,0.5);
 	  mcbkg_mm=events_mctot;
 	  mcbkgErr_mm=pow(errors_mctot,0.5);
+          ttv_mm=events_ttv;
+          ttvErr_mm=pow(errors_ttv,0.5);
+          tttt_mm=events_tttt;
+          ttttErr_mm=pow(errors_tttt,0.5);
+          vvvww_mm=events_vvvww;
+          vvvwwErr_mm=pow(errors_vvvww,0.5);
+          vv_mm=events_vv;
+          vvErr_mm=pow(errors_vv,0.5);
 	  np_mm=events_nptot;
 	  npErr_mm=pow(errors_nptot,0.5);
 	  chmid_mm=events_cmtot;
@@ -1607,12 +1705,18 @@ std::stringstream& printFinalTable_v4(std::stringstream& tablestring,std::vector
   
   tablestring<<"T$\\bar{T}$ (1.0) &$"<<sig_ee<<"\\pm"<<sigErr_ee<<"$ & $"<<sig_em<<"\\pm"<<sigErr_em<<"$ & $"<<sig_mm<<"\\pm"<<sigErr_mm<<"$ \\\\\n";  //added by rizki  
   tablestring<<"T$\\bar{T}$ (1.2) &$"<<sig2_ee<<"\\pm"<<sig2Err_ee<<"$ & $"<<sig2_em<<"\\pm"<<sig2Err_em<<"$ & $"<<sig2_mm<<"\\pm"<<sig2Err_mm<<"$  \\\\ \\hline\n";  //added by rizki  
+  tablestring<<"T$\\bar{T}$ (1.5) &$"<<sig3_ee<<"\\pm"<<sig3Err_ee<<"$&$"<<sig3_em<<"\\pm"<<sig3Err_em<<"$&$"<<sig3_mm<<"\\pm"<<sig3Err_mm<<"$  \\\\ \\hline\n";  //added by jess  
   tablestring<<"MC &$"<<mcbkg_ee<<"\\pm"<<mcbkgErr_ee<<"$ & $"<<mcbkg_em<<"\\pm"<<mcbkgErr_em<<"$ & $"<<mcbkg_mm<<"\\pm"<<mcbkgErr_mm<<"$ \\\\\n";  //added by rizki
   tablestring<<"Non-prompt &$"<<np_ee<<"\\pm"<<npErr_ee<<"$ & $"<<np_em<<"\\pm"<<npErr_em<<"$ & $"<<np_mm<<"\\pm"<<npErr_mm<<"$ \\\\\n";  //added by rizki
   tablestring<<"Chargemis-ID &$"<<chmid_ee<<"\\pm"<<chmidErr_ee<<"$ & $"<<chmid_em<<"\\pm"<<chmidErr_em<<"$ & $"<<chmid_mm<<"\\pm"<<chmidErr_mm<<"$ \\\\ \\hline\n";  //added by rizki
   tablestring<<"Total Bkg &$"<<totalbkg_ee<<"\\pm"<<totalbkgErr_ee<<"$ & $"<<totalbkg_em<<"\\pm"<<totalbkgErr_em<<"$ & $"<<totalbkg_mm<<"\\pm"<<totalbkgErr_mm<<"$ \\\\\n";  //added by rizki
   tablestring<<"Data &$"<<data_ee<<"$ & $"<<data_em<<"$ & $"<<data_mm<<"$ \\\\ \\hline\n";  //added by rizki
   tablestring<<"Data/Bkg &$"<<data_ee/totalbkg_ee<<"\\pm"<<data_ee/totalbkg_ee*pow( (1/data_ee) + pow(totalbkgErr_ee/totalbkg_ee,2),0.5)<<"$ & $"<<data_em/totalbkg_em<<"\\pm"<<data_em/totalbkg_em*pow((1/data_em)+pow(totalbkgErr_em/totalbkg_em,2),0.5)<<"$ & $"<<data_mm/totalbkg_mm<<"\\pm"<<data_mm/totalbkg_mm*pow((1/data_mm)+pow(totalbkgErr_mm/totalbkg_mm,2),0.5)<<"$ \\\\\n";  //added by rizki
+
+  tablestring<<"TTV &$"<<ttv_ee<<"\\pm"<<ttvErr_ee<<"$&$"<<ttv_em<<"\\pm"<<ttvErr_em<<"$&$"<<ttv_mm<<"\\pm"<<ttvErr_mm<<"$ \\\\\n";  //added by jess
+  tablestring<<"TTTT &$"<<tttt_ee<<"\\pm"<<ttttErr_ee<<"$&$"<<tttt_em<<"\\pm"<<ttttErr_em<<"$&$"<<tttt_mm<<"\\pm"<<ttttErr_mm<<"$ \\\\\n";  //added by jess
+  tablestring<<"VVV+WW &$"<<vvvww_ee<<"\\pm"<<vvvwwErr_ee<<"$&$"<<vvvww_em<<"\\pm"<<vvvwwErr_em<<"$&$"<<vvvww_mm<<"\\pm"<<vvvwwErr_mm<<"$ \\\\\n";  //added by jess
+  tablestring<<"WZ+ZZ &$"<<vv_ee<<"\\pm"<<vvErr_ee<<"$&$"<<vv_em<<"\\pm"<<vvErr_em<<"$&$"<<vv_mm<<"\\pm"<<vvErr_mm<<"$ \\\\\n";  //added by jess
 
   tablestring<<"\\hline \n\\end{tabular} \n"<<label<<'\n'<<"\\end{table} \n\n";
 

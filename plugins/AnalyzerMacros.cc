@@ -13,8 +13,12 @@ PUweights PUweightsMap;
 #include "TMath.h"
 #include "Math/ProbFunc.h"
 
-std::string area = "/uscms_data/d3/clint/using_git/T53/ljmet/2016/EGamma80XID/CMSSW_8_0_26_patch1/src/AnalysisCode/X53ThirteenTeVAnalysisCode/";
-std::string MCarea = "/uscms_data/d3/clint/using_git/T53/ljmet/2016/EGamma80XID/CMSSW_8_0_26_patch1/src/AnalysisCode/X53ThirteenTeVAnalysisCode/";
+//std::string area = "/uscms_data/d3/clint/using_git/T53/ljmet/2016/EGamma80XID/CMSSW_8_0_26_patch1/src/AnalysisCode/X53ThirteenTeVAnalysisCode/";
+//std::string MCarea = "/uscms_data/d3/clint/using_git/T53/ljmet/2016/EGamma80XID/CMSSW_8_0_26_patch1/src/AnalysisCode/X53ThirteenTeVAnalysisCode/";
+//std::string area = "/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_ANv8/";
+//std::string MCarea = "/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_ANv8/";
+std::string area = "/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082021_hadds_postFWLJMETanalyzer_nonIsoTrig_Aug21_njet3/";
+std::string MCarea = "/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082021_hadds_postFWLJMETanalyzer_nonIsoTrig_Aug21_njet3/";
 
 std::vector<Variable*> getVariableVec(){
 
@@ -677,20 +681,21 @@ std::vector<Sample*> getBkgSampleVec(std::string cut, float lumi, std::string el
   vBkgNames.push_back("ZZZ");    vXsec.push_back(0.01398); vNEvts.push_back(250000* 0.8554);
 */
 
-  /////////////Updated on Dec 18 2019 + Checked on Nov 10 2020 by Jess ////////////////////
-  vBkgNames.push_back("TTZ");    vXsec.push_back(0.2432);  vNEvts.push_back(3745298); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8
-  vBkgNames.push_back("TTW");    vXsec.push_back(0.2149);  vNEvts.push_back(2716007); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8
-  vBkgNames.push_back("TTH");    vXsec.push_back(0.5638);  vNEvts.push_back(7522972); // obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8
-  vBkgNames.push_back("TTTT");   vXsec.push_back(0.008213);vNEvts.push_back(373734); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTTT_TuneCP5_13TeV-amcatnlo-pythia8
-  vBkgNames.push_back("WZ");     vXsec.push_back(5.052);   vNEvts.push_back(6820606); // obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8
-  vBkgNames.push_back("ZZ");     vXsec.push_back(1.325);   vNEvts.push_back(15912322); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DZZTo4L_13TeV_powheg_pythia8
-  vBkgNames.push_back("WpWp");   vXsec.push_back(0.04932); vNEvts.push_back(148394); //obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8
+  /////////////Updated May 2021 by Jess ////////////////////
+  //https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#TT_X
+  vBkgNames.push_back("TTZ");    vXsec.push_back(0.2529);  vNEvts.push_back(3745298); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("TTW");    vXsec.push_back(0.2043);  vNEvts.push_back(2716007); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8
+  vBkgNames.push_back("TTH");    vXsec.push_back(0.215);  vNEvts.push_back(7806984); 
+  vBkgNames.push_back("TTTT");   vXsec.push_back(0.009103);vNEvts.push_back(373734); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DTTTT_TuneCP5_13TeV-amcatnlo-pythia8
+  vBkgNames.push_back("WZ");     vXsec.push_back(4.42965);   vNEvts.push_back(6820606); // obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8
+  vBkgNames.push_back("ZZ");     vXsec.push_back(1.256);   vNEvts.push_back(15912322); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DZZTo4L_13TeV_powheg_pythia8
+  vBkgNames.push_back("WpWp");   vXsec.push_back(0.03711); vNEvts.push_back(148394); //obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8
 //  vBkgNames.push_back("WJets");  vXsec.push_back(52940.0); vNEvts.push_back(33043732); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8
 //  vBkgNames.push_back("WWW");    vXsec.push_back(0.2086); vNEvts.push_back(203246); //(v14-v1 value for v14-v2 sample) https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWWW_4F_TuneCP5_13TeV-amcatnlo-pythia8
   vBkgNames.push_back("WWZ");    vXsec.push_back(0.1651); vNEvts.push_back(219964); //(v14-v1 value for v14-v2 sample) obtained from https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWWZ_4F_TuneCP5_13TeV-amcatnlo-pythia
   vBkgNames.push_back("WZZ");    vXsec.push_back(0.05565); vNEvts.push_back(219660); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DWZZ_TuneCP5_13TeV-amcatnlo-pythia8
   vBkgNames.push_back("ZZZ");    vXsec.push_back(0.01398); vNEvts.push_back(214318); // https://cms-gen-dev.cern.ch/xsdb/?columns=37879808&currentPage=0&ordDirection=1&ordFieldName=cross_section&pageSize=10&searchQuery=DAS%3DZZZ_TuneCP5_13TeV-amcatnlo-pythia8
-  ///////////// End updated on Dec 18 2019 by Jess ////////////////////
+  ///////////// End updated on May 12 2021 by Jess ////////////////////
   
   //******* Non Prompt**********
   //vBkgNames.push_back("NonPromptMC");  vXsec.push_back(831.76);  vNEvts.push_back(42730273 * 0.331582);
@@ -886,7 +891,8 @@ std::pair<float,float> getNEvtsAndError(Sample* s, std::string cut, int nMu, boo
 
   //std::string cutstring= " PUWeight* MCWeight*ChargeMisIDWeight * NPWeight* ( "+cut+channel.str()+")";
   std::string cutstring= " PUWeight * IDSF * IsoSF * trigSF * GsfSF * MCWeight * ChargeMisIDWeight * NPWeight* prefireWeight * ( "+cut+channel.str()+")";
-  if( (s->name).find("Tprime") || (s->name).find("Bprime")  ) cutstring = "pdfWeights4LHC[0] * " + cutstring; 
+  if( (s->name).find("Tprime")!=std::string::npos || (s->name).find("Bprime")!=std::string::npos  ) cutstring = "pdfWeights4LHC[0] * " + cutstring; 
+  else  cutstring = " 1/abs(MCWeight) * " + cutstring;
 
   //draw the last variable to cut on just to be safe though it shouldn't matter
   t->Project("hdummy","AK4HT",cutstring.c_str());
@@ -2038,21 +2044,21 @@ std::vector<float> getTrigSF(std::vector<TLepton*> vLep,std::string era){
     unsigned int eta2Bin = std::distance(muTrigSFetabin,std::find_if(muTrigSFetabin,muTrigSFetabin+5,[&eta2](float x){return x>eta2;}))-1;
     if (pt1>pt2) sf = mmTrigLead[eta1Bin][pt1Bin] * mmTrigTrail[eta2Bin][pt2Bin];
     else sf = mmTrigLead[eta2Bin][pt2Bin] * mmTrigTrail[eta1Bin][pt1Bin];
-    sf_up = sf + 2*0.01;
-    sf_dn = sf - 2*0.01;
+    sf_up = sf + TMath::Sqrt(2*pow(0.01+0.02,2.0));
+    sf_dn = sf - TMath::Sqrt(2*pow(0.01+0.02,2.0));
   }
   else if(vLep.at(0)->isEl && vLep.at(1)->isEl){//dielectron channel
     unsigned int eta1Bin = std::distance(elTrigSFetabin,std::find_if(elTrigSFetabin,elTrigSFetabin+4,[&eta1](float x){return x>eta1;}))-1;
     unsigned int eta2Bin = std::distance(elTrigSFetabin,std::find_if(elTrigSFetabin,elTrigSFetabin+4,[&eta2](float x){return x>eta2;}))-1;
     if (pt1>pt2){
       sf = eeTrigLead[eta1Bin][pt1Bin] * eeTrigTrail[eta2Bin][pt2Bin];
-      sf_up = sf + eeTrigLeadUp[eta1Bin][pt1Bin]+0.01+0.003;
-      sf_dn = sf - eeTrigLeadDn[eta1Bin][pt1Bin]-0.01-0.003;
+      sf_up = sf + TMath::Sqrt(pow(eeTrigLeadUp[eta1Bin][pt1Bin]+0.02,2.0)+pow(0.01+0.02,2.0)+0.003*0.003);
+      sf_dn = sf - TMath::Sqrt(pow(eeTrigLeadDn[eta1Bin][pt1Bin]+0.02,2.0)+pow(0.01+0.02,2.0)+0.003*0.003);
     }
     else{
       sf = eeTrigLead[eta2Bin][pt2Bin] * eeTrigTrail[eta1Bin][pt1Bin];
-      sf_up = sf + eeTrigLeadUp[eta2Bin][pt2Bin]+0.01+0.003;
-      sf_dn = sf - eeTrigLeadDn[eta2Bin][pt2Bin]-0.01-0.003;
+      sf_up = sf + TMath::Sqrt(pow(eeTrigLeadUp[eta2Bin][pt2Bin]+0.02,2.0)+pow(0.01+0.02,2.0)+0.003*0.003);
+      sf_dn = sf - TMath::Sqrt(pow(eeTrigLeadDn[eta2Bin][pt2Bin]+0.02,2.0)+pow(0.01+0.02,2.0)+0.003*0.003);
     }
   }
   else{ //cross channel
@@ -2062,16 +2068,16 @@ std::vector<float> getTrigSF(std::vector<TLepton*> vLep,std::string era){
       unsigned int eta2Bin = std::distance(muTrigSFetabin,std::find_if(muTrigSFetabin,muTrigSFetabin+5,[&eta2](float x){return x>eta2;}))-1;
       if (pt1>pt2) sf = emTrigLead[eta1Bin][pt1Bin] * emTrigTrail[eta2Bin][pt2Bin];
       else sf = meTrigLead[eta2Bin][pt2Bin] * meTrigTrail[eta1Bin][pt1Bin];
-      sf_up = sf + 2*0.01;
-      sf_dn = sf - 2*0.01;
+      sf_up = sf + TMath::Sqrt(2*pow(0.01+0.02,2.0));
+      sf_dn = sf - TMath::Sqrt(2*pow(0.01+0.02,2.0));
     }
     else{ //elEff is for subleading
       unsigned int eta1Bin = std::distance(muTrigSFetabin,std::find_if(muTrigSFetabin,muTrigSFetabin+5,[&eta1](float x){return x>eta1;}))-1;
       unsigned int eta2Bin = std::distance(elTrigSFetabin,std::find_if(elTrigSFetabin,elTrigSFetabin+4,[&eta2](float x){return x>eta2;}))-1;
       if (pt1>pt2) sf = meTrigLead[eta1Bin][pt1Bin] * meTrigTrail[eta2Bin][pt2Bin];
       else sf = emTrigLead[eta2Bin][pt2Bin] * emTrigTrail[eta1Bin][pt1Bin];
-      sf_up = sf + 2*0.01;
-      sf_dn = sf - 2*0.01;
+      sf_up = sf + TMath::Sqrt(2*pow(0.01+0.02,2.0));
+      sf_dn = sf - TMath::Sqrt(2*pow(0.01+0.02,2.0));
     }//end check on electron being subleading or leading
   }//end cross channel
 
@@ -2281,11 +2287,11 @@ float getLepIDSF(TLepton* lep){
   return sf;
 }
 
-float getLepIDSFunc(TLepton* lep){
+float getElIDSFunc(TLepton* lep){
 
   float sf_unc;
   //added by Jess Nov 2020 MVA90 noiso unc
-  if(lep->isMu){ sf_unc = 0.02; }
+  if(lep->isMu){ sf_unc = 0.0; }
   else{
     if (lep->pt < 20){
         if( lep->eta < -2.000) sf_unc = 0.014 ;
@@ -2369,11 +2375,12 @@ std::vector<float> getLepIDSF(std::vector<TLepton*> vLep){
   sf1 = getLepIDSF(vLep.at(0));
   sf2 = getLepIDSF(vLep.at(1));
   float sf1_unc,sf2_unc;
-  sf1_unc = getLepIDSFunc(vLep.at(0));
-  sf2_unc = getLepIDSFunc(vLep.at(1));
+  sf1_unc = getElIDSFunc(vLep.at(0));
+  sf2_unc = getElIDSFunc(vLep.at(1));
   float sf = sf1*sf2;
-  float sf_up = (sf1+sf1_unc)*(sf2+sf2_unc);
-  float sf_dn = (sf1-sf1_unc)*(sf2-sf2_unc);
+  float dsf = sf1_unc+sf2_unc;
+  float sf_up = sf+dsf;
+  float sf_dn = sf-dsf;
   std::vector<float> sf_vec{sf, sf_up, sf_dn};
   return sf_vec;
 

@@ -99,7 +99,7 @@ int main(int argc, char* argv[]){
   if(data)outname=outdir+"/"+"ChargeMisID_likelihood_Data_"+argv2+"_Electrons_"+ID+".root";
   else outname=outdir+"/"+"ChargeMisID_likelihood_MC_"+argv2+"_Electrons_"+ID+".root";
 
-  if(argv1=="MC") std::cout<< "outname : "<< outname<< endl;
+  if(argv1=="MC") std::cout<< "outname : "<< outname<< std::endl;
 
   //open output file
   TFile* fout= new TFile(outname,"RECREATE");
@@ -154,6 +154,8 @@ int main(int argc, char* argv[]){
     if(data) weight =1.0;
     else weight = tr->MCWeight >=0 ? 1.0 : -1.0;
     if(ient % 100000 ==0) std::cout<<"Completed "<<ient<<" out of "<<nEntries<<" events"<<std::endl;
+
+    if((tr->run==299480 && tr->lumi==7)||(tr->run==301397 && tr->lumi==518)||(tr->run==305366 && tr->lumi==395)) continue;
 
     //make vector of leptons
     std::vector<TLepton*> leptons = makeLeptons(tr->allElectrons,!data,FiftyNS,ID);

@@ -61,6 +61,11 @@ int main(int argc, char* argv[]){
   float lumi = std::atof(argv[6]); // fb^{-1}
   //get era
   std::string era(argv[7]);
+  bool isCR = false;
+  float maxHT = 2990;
+  std::cout<<"argc = "<<argc<<std::endl;
+  if(argc>9) { std::string argv9(argv[9]); std::cout<<argv9<<std::endl; if (argv9=="CR") isCR = true; maxHT = 500; HTcut = 0;}
+
   /*  std::istringstream arg4(argv[4]);
   int nConstShift=0;
   if(!(arg4>>nConstShift)){ std::cout<<"Invalid number for nConst shift! Exiting..."<<std::endl; return 0;}
@@ -159,12 +164,14 @@ int main(int argc, char* argv[]){
   std::vector<std::string> vCutString;
   std::stringstream cutSStream;
   cutSStream<<" ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1)) && (DilepMass>20) && (nConst>="<<nConst<<" ) && (Lep1Pt >"<<lep1cut<<") && (Lep2Pt > "<<lep2cut<<") && ( cleanAK4HT > "<<HTcut<<") && ( nNonSSLeps == 0)"; //added by rizki, add exactly 2 leptons (SS) only.
+  if(isCR) cutSStream<< " && ( cleanAK4HT < "<<maxHT<<")";
   vCutString.push_back(cutSStream.str());
 
   if(debug_) std::cout<<"Cutstring is: "<<cutSStream.str()<<std::endl;
 
   std::stringstream dirName;
-  dirName<< "Lep1Pt"<<lep1cut<<"_Lep2Pt"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst<<"/Templates_rootfiles_Combine/" ;
+  if(isCR) dirName<< "CR_maxHT"<<maxHT<<"_";
+  dirName<< "Lep1Pt"<<lep1cut<<"_Lep2Pt"<<lep2cut<<"_HT"<<HTcut<<"_nConst"<<nConst<<"/cutNcount_Templates_rootfiles_Combine/" ;
   system(("mkdir -pv "+dirName.str()).c_str() ); 
   std::stringstream rootfilename;
   rootfilename<<"templates_"+whichSignal<<"_"<<BRstr<<"_Combine.root";
@@ -202,7 +209,6 @@ int main(int argc, char* argv[]){
 
   for (int mass = mass_lowEdge; mass < mass_upEdge+100; mass+=100){
     if(debug_) std::cout<<"Mass is: "<< mass <<std::endl;
-    if(mass==800 || mass==900) continue; 
     //now get only the signal one we care about, should be enough to ensure that both mass and chirality are present in name;
     std::vector<Sample*> sigSample; //edited by rizki and everything to do with this.
     //convert mass to string...probably a better way exists
@@ -210,7 +216,7 @@ int main(int argc, char* argv[]){
     std::string mstring = mss.str();
     for(std::vector<Sample*>::size_type i=0; i< vSig.size(); i++){
       //if( vSig.at(i)->name.find(mstring)!=std::string::npos && vSig.at(i)->name.find(chirality)!=std::string::npos){
-      if( vSig.at(i)->name.find(mstring)!=std::string::npos){
+      if( vSig.at(i)->name.find("M-"+mstring)!=std::string::npos){
         sigSample.push_back(vSig.at(i));
         //break;
       }

@@ -50,11 +50,12 @@ int main(int argc, char* argv[]){
   //std::string eosname="root://cmseos.fnal.gov//eos/uscms/store/user/lpctlbsm/clint/Spring16/25ns/Jan09/ljmet_trees/";
   std::string eosname="/eos/uscms/store/user/lpcljm/FWLJMET102X_2lepFakeRate2017_wywong_082020_hadds/";
   if(sample=="TTTo2L2Nu"){ outname="SmartClosure_TTTo2L2Nu.root"; inputname=eosname+"TTTo2L2Nu.root";}
-  if(sample=="TTTo2L2Nu_1"){ outname="SmartClosure_TTTo2L2Nu_1.root"; inputname=eosname+"TTTo2L2Nu_hadd_1.root";}
-  if(sample=="TTTo2L2Nu_2"){ outname="SmartClosure_TTTo2L2Nu_2.root"; inputname=eosname+"TTTo2L2Nu_hadd_2.root";}
-  if(sample=="TTTo2L2Nu_3"){ outname="SmartClosure_TTTo2L2Nu_3.root"; inputname=eosname+"TTTo2L2Nu_hadd_3.root";}
-  if(sample=="TTTo2L2Nu_4"){ outname="SmartClosure_TTTo2L2Nu_4.root"; inputname=eosname+"TTTo2L2Nu_hadd_4.root";}
-  if(sample=="TTTo2L2Nu_5"){ outname="SmartClosure_TTTo2L2Nu_5.root"; inputname=eosname+"TTTo2L2Nu_hadd_5.root";}
+  if(sample=="TTTo2L2Nu_1"){ outname="SmartClosure_TTTo2L2Nu_1.root"; inputname=eosname+"TTTo2L2Nu_1.root";}
+  if(sample=="TTTo2L2Nu_2"){ outname="SmartClosure_TTTo2L2Nu_2.root"; inputname=eosname+"TTTo2L2Nu_2.root";}
+  if(sample=="TTTo2L2Nu_3"){ outname="SmartClosure_TTTo2L2Nu_3.root"; inputname=eosname+"TTTo2L2Nu_3.root";}
+  if(sample=="TTTo2L2Nu_4"){ outname="SmartClosure_TTTo2L2Nu_4.root"; inputname=eosname+"TTTo2L2Nu_4.root";}
+  if(sample=="TTTo2L2Nu_5"){ outname="SmartClosure_TTTo2L2Nu_5.root"; inputname=eosname+"TTTo2L2Nu_5.root";}
+  if(sample=="TTTo2L2Nu_6"){ outname="SmartClosure_TTTo2L2Nu_6.root"; inputname=eosname+"TTTo2L2Nu_6.root";}
   //if(sample=="TTbar_pt5"){ outname="SmartClosure_TTbar_pt5.root"; inputname=eosname+"ljmet_TTbar_pt5.root";}
   //if(sample=="TTbar_pt6"){ outname="SmartClosure_TTbar_pt6.root"; inputname=eosname+"ljmet_TTbar_pt6.root";}
   //if(sample=="TTbar_pt7"){ outname="SmartClosure_TTbar_pt7.root"; inputname=eosname+"ljmet_TTbar_pt7.root";}
@@ -68,14 +69,19 @@ int main(int argc, char* argv[]){
   //output file
   TFile* fout = new TFile(outname.c_str(),"RECREATE");
   TTree* outTree = new TTree("ClosureTest","ClosureTest");
-  float st,lepEta,lepPt;
+  float st,sumJetPt,lepEta,lepPt;
   int lepFlavor,flavorSource,observed;
+  bool isEE,isEM,isMM;
   outTree->Branch("HT",&st);
+  outTree->Branch("sumJetPt",&sumJetPt);
   outTree->Branch("LepPt",&lepPt);
   outTree->Branch("LepEta",&lepEta);
   outTree->Branch("LepFlavor",&lepFlavor);
   outTree->Branch("LepFlavorSource",&flavorSource);
   outTree->Branch("Observed",&observed);
+  outTree->Branch("isEE", &isEE);
+  outTree->Branch("isEM", &isEM);
+  outTree->Branch("isMM", &isMM);
   //histograms
   TH1F* h_el_obs_light = new TH1F("h_el_obs_light","",1000,0,5000);
   TH1F* h_el_obs_charm = new TH1F("h_el_obs_charm","",1000,0,5000);
@@ -170,6 +176,10 @@ int main(int argc, char* argv[]){
     for(unsigned int uijet=0; uijet<tr->allAK4Jets.size();uijet++){
       HT+=tr->allAK4Jets.at(uijet)->pt;
     }
+    sumJetPt = 0;
+    for(unsigned int uijet=0; uijet<tr->cleanedAK4Jets.size();uijet++){
+      sumJetPt+=tr->cleanedAK4Jets.at(uijet)->pt;
+    }
 
     //bools for channels
     bool mumu=false;
@@ -185,6 +195,9 @@ int main(int argc, char* argv[]){
     bool secondaryZVeto = checkSecondaryZVeto(vSSLep,tr->looseMuons,tr->looseElectrons);
     if(secondaryZVeto) continue;
 
+    isEE = elel;
+    isEM = elmu;
+    isMM = mumu;
 
     st = vSSLep.at(0)->pt + vSSLep.at(1)->pt;
     for(unsigned int j=0; j < vNonSSLep.size(); j++){

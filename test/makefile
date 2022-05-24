@@ -47,6 +47,9 @@ FakeRate_2017data:
 FakeRate_2017data_min1Jet:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o FakeRate_2017data_min1Jet.o FakeRate_2017data_min1Jet.cc
 
+FakeRate_2017data_nTightLE1:
+	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o FakeRate_2017data_nTightLE1.o FakeRate_2017data_nTightLE1.cc
+
 ChargeMisID:
 	$(CXX) -g -DDEBUG $(ROOTIL) -L$(PWD)/../lib -I$(TOOLDIR) -lObjects -lz -O2 -Wall -o ChargeMisID.o ChargeMisID.cc
 

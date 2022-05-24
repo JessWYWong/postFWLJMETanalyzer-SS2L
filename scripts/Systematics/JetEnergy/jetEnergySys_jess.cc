@@ -10,7 +10,7 @@
 
 bool DEBUG = false;
 
-int TTmass[] = {700,1000,1100,1200,1300,1400,1500,1600,1700,1800};
+int TTmass[] = {900,1000,1100,1200,1300,1400,1500,1600,1700,1800};
 int BBmass[] = {900,1000,1100,1200,1300,1400,1500,1600,1700,1800};
 
 int nTT = sizeof(TTmass)/sizeof(TTmass[0]);
@@ -592,7 +592,7 @@ void jetEnergySys_jess(){
 
   ///----------MC Bkg-------
 
-  TString MCfolder = "/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc_nPU/";
+  TString MCfolder = "/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_ANv8/";
 
   std::ofstream outfile;
   outfile.open("unc_jec_jer_MCBkg.py");
@@ -617,8 +617,8 @@ void jetEnergySys_jess(){
   printLineMCBkg("ZZ",MCfolder+"/ZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
   printLineMCBkg("WpWp",MCfolder+"/WpWp_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
   printLineMCBkg("WWZ",MCfolder+"/WWZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
-  printLineMCBkg("WZZ",MCfolder+"/WZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
-  printLineMCBkg("ZZZ",MCfolder+"/ZZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
+  //printLineMCBkg("WZZ",MCfolder+"/WZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
+  //printLineMCBkg("ZZZ",MCfolder+"/ZZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
 
   outfile<<filecontent.str();
   outfile.close();

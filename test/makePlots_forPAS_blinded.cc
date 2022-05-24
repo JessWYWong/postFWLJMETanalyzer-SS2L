@@ -108,8 +108,8 @@ float uncMC_WZ=pow(uncSCALE_WZ*uncSCALE_WZ + uncPDF_WZ*uncPDF_WZ,0.5);
 float uncMC_ZZ=pow(uncSCALE_ZZ*uncSCALE_ZZ + uncPDF_ZZ*uncPDF_ZZ,0.5);
 float uncMC_WpWp=pow(uncSCALE_WpWp*uncSCALE_WpWp + uncPDF_WpWp*uncPDF_WpWp,0.5);
 float uncMC_WWZ=pow(uncSCALE_WWZ*uncSCALE_WWZ + uncPDF_WWZ*uncPDF_WWZ,0.5);
-float uncMC_WZZ=pow(uncSCALE_WZZ*uncSCALE_WZZ + uncPDF_WZZ*uncPDF_WZZ,0.5);
-float uncMC_ZZZ=pow(uncSCALE_ZZZ*uncSCALE_ZZZ + uncPDF_ZZZ*uncPDF_ZZZ,0.5);
+//float uncMC_WZZ=pow(uncSCALE_WZZ*uncSCALE_WZZ + uncPDF_WZZ*uncPDF_WZZ,0.5);
+//float uncMC_ZZZ=pow(uncSCALE_ZZZ*uncSCALE_ZZZ + uncPDF_ZZZ*uncPDF_ZZZ,0.5);
 
 /*
 float uncJES_TTZ=0.0388;
@@ -135,11 +135,11 @@ float uncJER_WZZ=0.0;
 float uncJER_ZZZ=0.0;
 */
 
-float lumi1 = 41.56; //fb^-1
+float lumi1 = 41.53; //fb^-1
 
 //folder to save plots - rizki
 // const std::string saveFolder = "plots_nConst4_HT1200_0NonSSLep_NonIsoTrig_Jan30-2019"; //CHECK Macros.cc for input folder!!
-const std::string saveFolder = "plots_IsoTrig_blinded_Nov2020"; //CHECK Macros.cc for input folder!!
+const std::string saveFolder = "plots_IsoTrig_blinded_Jun2021_lumi41p53"; //CHECK Macros.cc for input folder!!
 
 
 void makePlots_forPAS_blinded(std::string elID, std::string muID){
@@ -287,8 +287,9 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   leg->SetFillStyle(0);
   leg->SetBorderSize(0);
   //stupid bins for hT
-  double htbins[21] = {0,120,270,420,570,720,870,1020,1170,1320,1470,1620,1770,1920,2070,2220,2370,2520,2670,2820,2970};
-  int nhtbins=20;
+  //double htbins[21] = {0,120,270,420,570,720,870,1020,1170,1320,1470,1620,1770,1920,2070,2220,2370,2520,2670,2820,2970};
+  double htbins[18] = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1600, 1800, 3000};
+  int nhtbins=17;
   TH1F* h_err;
   TH1F* h_np;
   TH1F* h_npf;
@@ -306,7 +307,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   TH1F* h_bos ;
   TH1F* h_ttX ;
 
-  if(var->name=="dummycleanAK4HT"){
+  if(var->name=="cleanAK4HTrebinned"){
     //histogram for weights
      h_err = new TH1F("h_err",(var->name).c_str(),nhtbins,htbins);
      h_np = new TH1F("h_np",(var->name).c_str(),nhtbins,htbins);
@@ -348,13 +349,14 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   //*******Now fill in THStack
   float lastbin = 0;
   for(std::vector<Sample*>::size_type uk=0; uk<vBkg.size(); uk++){
-
+    
     //vBkg.at(uk)->setHist(var);
+    if( (vBkg.at(uk)->name).find("ZZZ")!=std::string::npos || (vBkg.at(uk)->name).find("WZZ")!=std::string::npos) continue;
     Sample* s = vBkg.at(uk);
     s->setHist(var,(cutstring.str()).c_str());
   	std::cout << "-------------------------------------->>> Processing:" << s->name <<endl; //added by rizki
     TH1F* h;
-    if(var->name=="dummycleanAK4HT"){
+    if(var->name=="cleanAK4HTrebinned"){
       h = new TH1F("h",(var->name).c_str(),nhtbins, htbins);
     }
     else{
@@ -363,7 +365,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     h->Sumw2();
     TTree* t = s->tree;
     if(var->name=="Lep1PtEl" || var->name=="Lep1PtMu"){ t->Project("h","Lep1Pt",(cutstring.str()).c_str());/*std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()<<std::endl;*/} //edited by rizki
-    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu"){ t->Project("h","cleanAK4HT",(cutstring.str()).c_str());/*std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()<<std::endl;*/} //edited by rizki
+    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu" || var->name.find("cleanAK4HT")!=std::string::npos){ t->Project("h","cleanAK4HT",(cutstring.str()).c_str());/*std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()<<std::endl;*/} //edited by rizki
     else{ t->Project("h",(var->name).c_str(),(cutstring.str()).c_str()); /*std::cout<<"command:t->Project(h,"<<var->name<<","<<cutstring.str()<<std::endl;*/} //edited by rizki
     //set negative bins to zero - less than or equal to set overflow bin to zero
     for(int hbin=0; hbin <= h->GetNbinsX(); hbin++){
@@ -393,8 +395,8 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     if(s->name=="WZ") h_wz->Add(h);
     if(s->name=="ZZ") h_zz->Add(h);
     if(s->name=="WWZ") h_wwz->Add(h);
-    if(s->name=="WZZ") h_wzz->Add(h);
-    if(s->name=="ZZZ") h_zzz->Add(h);
+    //if(s->name=="WZZ") h_wzz->Add(h);
+    //if(s->name=="ZZZ") h_zzz->Add(h);
     if(s->name=="WpWp") h_wpwp->Add(h);
 
     //add to legend
@@ -405,8 +407,8 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     else if(s->name=="WZ") h_bos->Add(h);
     else if(s->name=="ZZ") h_bos->Add(h);
     else if(s->name=="WWZ") h_bos->Add(h);
-    else if(s->name=="WZZ") h_bos->Add(h);
-    else if(s->name=="ZZZ") h_bos->Add(h);
+    //else if(s->name=="WZZ") h_bos->Add(h);
+    //else if(s->name=="ZZZ") h_bos->Add(h);
     else if(s->name=="WpWp") h_bos->Add(h);
 
     else if(s->name=="NonPrompt") h_npf->Add(h);
@@ -431,7 +433,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   leg->AddEntry(h_bos,"VV(V)","f");
   h_ttX->SetFillColor(kYellow-3);
   tStack->Add(h_ttX);
-  leg->AddEntry(h_ttX,"t#bar{t} + X","f");
+  leg->AddEntry(h_ttX,"t#bar{t}V + t#bar{t}t#bar{t}","f");
   h_cmid->SetFillColor(kAzure+6);
   tStack->Add(h_cmid);
   leg->AddEntry(h_cmid,"ChargeMisID","f");
@@ -445,30 +447,55 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   h_err->Add(h_cmid);
   h_err->Add(h_npf);
 
-
   //make errors
   TGraphAsymmErrors *tgae_err = new TGraphAsymmErrors(); //for some reason this shifts the bins by 1.
+  TGraphAsymmErrors *tgae_dummy = new TGraphAsymmErrors();
   std::vector<float> errs;
   for(unsigned int ibin=1; ibin<= h_err->GetNbinsX(); ibin++){
 
     tgae_err->SetPoint(ibin,h_err->GetBinCenter(ibin),h_err->GetBinContent(ibin)); //make sure h_err = tgae_err
+    tgae_dummy->SetPoint(ibin,h_err->GetBinCenter(ibin),h_err->GetBinContent(ibin)); // just a dummy, can be any value
 
     //check bin contents vs error hist - just doing this here since looping over bins anyway
     std::cout<<"Bin: "<<ibin<<" ("<< h_err->GetBinLowEdge(ibin) <<")" << " err hist content: "<<h_err->GetBinContent(ibin)<<", summed bkg: "<<(h_ttX->GetBinContent(ibin)+h_bos->GetBinContent(ibin)+h_cmid->GetBinContent(ibin)+h_npf->GetBinContent(ibin))<<" NP bkg: "<<h_npf->GetBinContent(ibin)<<" CMID: "<<h_cmid->GetBinContent(ibin)<<" TTX: "<<h_ttX->GetBinContent(ibin)<<" BOSON: "<<h_bos->GetBinContent(ibin)<<std::endl;
 
+    //if(var->name=="Lep1Pt" || var->name=="Lep1PtEl" || var->name=="Lep1PtMu") std::cout<<"     |    stat    |    syst    |" << std::endl;
+    //if(var->name=="Lep1Pt" || var->name=="Lep1PtEl" || var->name=="Lep1PtMu") std::cout<<"npf  | " << h_npf->GetBinError(ibin)<< " | " << unc_NP*h_npf->GetBinContent(ibin) << std::endl;
+    //if(var->name=="Lep1Pt" || var->name=="Lep1PtEl" || var->name=="Lep1PtMu") std::cout<<"cmid | " << h_cmid->GetBinError(ibin) << " | "<< unc_CMID*h_cmid->GetBinContent(ibin) << std::endl;
     //nonprompt
     float etemp = 0.0;
     float etemp_stat = 0.0;
     float etemp_sys = 0.0;
+
+    float etemp_stat_checkpt = 0.0;
+    float etemp_sys_checkpt = 0.0;
     //if(h_npf->GetBinContent(ibin)!=0) etemp_stat = etemp_stat + pow(h_npf->GetBinError(ibin),2); //stat
     //else etemp_stat = etemp_stat + 1.8*1.8; //stat
     etemp_stat= etemp_stat + pow(h_npf->GetBinError(ibin),2); //NP stat
     etemp_sys = etemp_sys + pow( unc_NP*h_npf->GetBinContent(ibin),2);//NP sys
+    if(var->name=="Lep1Pt"){
+      etemp = poissonErrors(tgae_dummy,h_npf,pow(unc_NP*h_npf->GetBinContent(ibin),2),ibin); 
+      etemp = pow(etemp,0.5);
+      h_npf->SetBinError(ibin,etemp);
+      etemp_stat_checkpt = etemp_stat;
+      etemp_sys_checkpt = etemp_sys;
+      etemp = 0.0; 
+      std::cout<<"npf error update"<<std::endl;
+    }
     //chargemisID
     //if(h_cmid->GetBinContent(ibin)!=0) etemp_stat = etemp_stat + pow(h_cmid->GetBinError(ibin),2);//stat
     //else etemp_stat = etemp_stat+1.8*1.8; //stat
     etemp_stat = etemp_stat + pow(h_cmid->GetBinError(ibin),2); //CMID stat
     etemp_sys = etemp_sys + pow(unc_CMID*h_cmid->GetBinContent(ibin),2);//CMID sys
+    if(var->name=="Lep1Pt"){
+      etemp = poissonErrors(tgae_dummy,h_cmid,pow(unc_CMID*h_cmid->GetBinContent(ibin),2),ibin);
+      etemp = pow(etemp,0.5);
+      h_cmid->SetBinError(ibin,etemp);
+      etemp_stat_checkpt = etemp_stat;
+      etemp_sys_checkpt = etemp_sys;
+      etemp = 0.0;
+      std::cout<<"cmid error update"<<std::endl;
+    }
     //TTZ
     etemp_stat= etemp_stat + pow(h_ttz->GetBinError(ibin),2);//stat
     etemp_sys = etemp_sys + pow(uncMC_TTZ*h_ttz->GetBinContent(ibin),2); //MC
@@ -516,6 +543,15 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     etemp_sys = etemp_sys + pow(uncPrefire_TTTT*h_tttt->GetBinContent(ibin),2); //prefire
     etemp_sys = etemp_sys + pow(uncIsoSF*h_tttt->GetBinContent(ibin),2); //iso
     etemp_sys = etemp_sys + pow(uncIDSF_TTTT*h_tttt->GetBinContent(ibin),2); //id
+    if(var->name=="Lep1Pt"){
+      etemp = poissonErrors(tgae_dummy,h_ttX,etemp_sys-etemp_sys_checkpt,ibin);
+      etemp = pow(etemp,0.5);
+      h_ttX->SetBinError(ibin,etemp);
+      etemp_stat_checkpt = etemp_stat;
+      etemp_sys_checkpt = etemp_sys;
+      etemp = 0.0;
+      std::cout<<"ttX error update"<<std::endl;
+    }
     //etemp_sys = etemp_sys + 2*pow(0.02*h_tttt->GetBinContent(ibin),2); //id plus iso
     //WZ
     etemp_stat = etemp_stat + pow(h_wz->GetBinError(ibin),2);//stat
@@ -565,7 +601,8 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     etemp_sys = etemp_sys + pow(uncIsoSF*h_wwz->GetBinContent(ibin),2); //iso
     etemp_sys = etemp_sys + pow(uncIDSF_WWZ*h_wwz->GetBinContent(ibin),2); //id
     //etemp_sys = etemp_sys + 2*pow(0.02*h_wwz->GetBinContent(ibin),2); //id plus iso
-    //WZZ
+
+    /* //WZZ
     etemp_stat = etemp_stat + pow(h_wzz->GetBinError(ibin),2);//stat
     etemp_sys = etemp_sys + pow(uncMC_WZZ*h_wzz->GetBinContent(ibin),2); //MC
     etemp_sys = etemp_sys + pow(uncJES_WZZ*h_wzz->GetBinContent(ibin),2); //JES
@@ -589,7 +626,33 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     etemp_sys = etemp_sys + pow(uncIsoSF*h_zzz->GetBinContent(ibin),2); //iso
     etemp_sys = etemp_sys + pow(uncIDSF_ZZZ*h_zzz->GetBinContent(ibin),2); //id
     //etemp_sys = etemp_sys + 2*pow(0.02*h_zzz->GetBinContent(ibin),2); //id plus iso
+    */
 
+    if(var->name=="Lep1Pt"){
+      etemp = poissonErrors(tgae_dummy,h_bos,etemp_sys-etemp_sys_checkpt,ibin);
+      etemp = pow(etemp,0.5);
+      h_bos->SetBinError(ibin,etemp);
+      etemp_stat_checkpt = etemp_stat;
+      etemp_sys_checkpt = etemp_sys;
+      etemp = 0.0;
+      std::cout<<"bos error update"<<std::endl;
+    }
+
+    //if(var->name=="Lep1Pt" || var->name=="Lep1PtEl" || var->name=="Lep1PtMu") std::cout<<"tot  | " << etemp_stat << " | "<< etemp_sys << std::endl;
+  if(var->name=="Lep1Pt"){
+    h_bos->SetName(((var->name)+"_bos_nMu"+to_string(nMu)+"_Mu"+muID+"_El"+elID).c_str());
+    h_ttX->SetName(((var->name)+"_ttX_nMu"+to_string(nMu)+"_Mu"+muID+"_El"+elID).c_str());
+    h_cmid->SetName(((var->name)+"_cmid_nMu"+to_string(nMu)+"_Mu"+muID+"_El"+elID).c_str());
+    h_npf->SetName(((var->name)+"_npf_nMu"+to_string(nMu)+"_Mu"+muID+"_El"+elID).c_str());
+    outfile->WriteTObject(h_bos);
+    outfile->WriteTObject(h_ttX);
+    outfile->WriteTObject(h_cmid);
+    outfile->WriteTObject(h_npf);
+    h_bos->SetName("h_bos");
+    h_ttX->SetName("h_ttX");
+    h_cmid->SetName("h_cmid");
+    h_npf->SetName("h_npf");
+  }
     //e_temp = etemp_stat + etemp_sys;
 
 	//process stat error with Asymm poisson error and combine with sys:
@@ -635,7 +698,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   tgae_err->SetFillStyle(3344);
   tgae_err->SetFillColor(1);
   tgae_err->Draw("SAME E2");
-  if(var->name=="cleanAK4HT"){
+  if(var->name=="cleanAK4HT" || var->name.find("cleanAK4HT")!=std::string::npos){
     for(unsigned int jb=1; jb<=h_err->GetNbinsX(); jb++){
       float totbkg = h_npf->GetBinContent(jb) + h_cmid->GetBinContent(jb) + h_ttw->GetBinContent(jb) + h_ttz->GetBinContent(jb) + h_wz->GetBinContent(jb) + h_wpwp->GetBinContent(jb) + h_zz->GetBinContent(jb)+h_wwz->GetBinContent(jb) + h_tth->GetBinContent(jb) + h_tttt->GetBinContent(jb) + h_wzz->GetBinContent(jb) + h_zzz->GetBinContent(jb);
     float stacktot = ( (TH1F*)(tStack->GetStack()->Last()))->GetBinContent(jb);
@@ -645,18 +708,27 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   }
 
   //draw signal:
-  TH1F* hSig_1 = new TH1F("hSig_1",(var->name).c_str(), var->nbins, var->xmin, var->xmax);
-  TH1F* hSig_2 = new TH1F("hSig_2",(var->name).c_str(), var->nbins, var->xmin, var->xmax);
+  TH1F* hSig_1;
+  TH1F* hSig_2;
+  if(var->name=="cleanAK4HTrebinned"){
+    hSig_1 = new TH1F("hSig_1","cleanAK4HT",nhtbins, htbins);
+    hSig_2 = new TH1F("hSig_2","cleanAK4HT",nhtbins, htbins);
+  }else{
+    hSig_1 = new TH1F("hSig_1",(var->name).c_str(), var->nbins, var->xmin, var->xmax);
+    hSig_2 = new TH1F("hSig_2",(var->name).c_str(), var->nbins, var->xmin, var->xmax);
+  }
   for(std::vector<Sample*>::size_type i1=0;i1<vSig.size();i1++){
 
     Sample* s = vSig.at(i1);
     if(s->name.find("1200")==std::string::npos) continue;
   	std::cout << "-------------------------------------->>> Processing:" << s->name <<endl; //added by rizki
-    TH1F* h = new TH1F("h",(var->name).c_str(), var->nbins, var->xmin, var->xmax);
+    TH1F* h;
+    if(var->name=="cleanAK4HTrebinned"){ h = new TH1F("h","cleanAK4HT",nhtbins, htbins);}
+    else{ h = new TH1F("h",(var->name).c_str(), var->nbins, var->xmin, var->xmax);}
     TTree* t = s->tree;
 
     if(var->name=="Lep1PtEl" || var->name=="Lep1PtMu"){ t->Project("h","Lep1Pt",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());}
-    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu"){ t->Project("h","cleanAK4HT",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()+" * pdfWeights4LHC[0] "<<std::endl;}
+    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu" || var->name.find("cleanAK4HT")!=std::string::npos){ t->Project("h","cleanAK4HT",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()+" * pdfWeights4LHC[0] "<<std::endl;}
     else{ t->Project("h",(var->name).c_str(),(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());}
 
     float ovf =  (h)->GetBinContent( (h)->GetNbinsX()+1) + (h)->GetBinContent( (h)->GetNbinsX()) ;
@@ -688,7 +760,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
     TTree* t = s->tree;
 
     if(var->name=="Lep1PtEl" || var->name=="Lep1PtMu"){ t->Project("h","Lep1Pt",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());}
-    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu"){ t->Project("h","cleanAK4HT",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()+" * pdfWeights4LHC[0] "<<std::endl;}
+    else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu" || var->name.find("cleanAK4HT")!=std::string::npos){ t->Project("h","cleanAK4HT",(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()+" * pdfWeights4LHC[0] "<<std::endl;}
     else{ t->Project("h",(var->name).c_str(),(cutstring.str()+" * pdfWeights4LHC[0] ").c_str());}
 
     float ovf =  (h)->GetBinContent( (h)->GetNbinsX()+1) + (h)->GetBinContent( (h)->GetNbinsX()) ;
@@ -721,7 +793,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   if(var->name=="Lep1PtEl" || var->name=="Lep1PtMu"){
     tData->Project("hData","Lep1Pt",(cutstring.str()).c_str());
   }
-  else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu"){
+  else if(var->name=="cleanAK4HTEl" || var->name=="cleanAK4HTMu" || var->name.find("cleanAK4HT")!=std::string::npos){
     tData->Project("hData","cleanAK4HT",(cutstring.str()).c_str());std::cout<<"command: t->Project(h,Lep1Pt,"<<cutstring.str()<<std::endl;
   }
   else{
@@ -764,7 +836,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
 
   //draw latex
   cmstex->DrawLatex(0.15,0.96,"CMS Preliminary");
-  lumitex->DrawLatex(0.65,0.96,Form("%2f fb^{-1} (13 TeV)",lumi1));
+  lumitex->DrawLatex(0.65,0.96,Form("%.2f fb^{-1} (13 TeV)",lumi1));
 
   //draw latex for channels
   TLatex* chantex = new TLatex();

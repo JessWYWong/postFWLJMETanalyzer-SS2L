@@ -8,7 +8,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "../../../plugins/SetTDRStyle.cc"
-int TTmass[] = {700,1000,1100,1200,1300,1400,1500,1600,1700,1800};
+int TTmass[] = {900,1000,1100,1200,1300,1400,1500,1600,1700,1800};
 int BBmass[] = {900,1000,1100,1200,1300,1400,1500,1600,1700,1800};
 
 int nTT = sizeof(TTmass)/sizeof(TTmass[0]);
@@ -45,7 +45,7 @@ void printLineMCBkg(std::string sample, TString filename,std::stringstream& file
   TString Upcut =   baseWeight+"IDSFup * MCWeight * (Lep1Pt>40 && nConst >=4 && (DilepMass>20) && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && cleanAK4HT> 1200)";
   TString Downcut = baseWeight+"IDSFdn * MCWeight * (Lep1Pt>40 && nConst >=4 && (DilepMass>20) && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && cleanAK4HT > 1200)";
 */
-  TString nomcut = "ChargeMisIDWeight * NPWeight * IsoSF * trigSF * GsfSF * prefireWeight * PUWeight * IDSF * MCWeight * (Lep1Pt>40 && Lep2Pt>30 && nConst >=4 && (DilepMass>20) && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) ) && cleanAK4HT > 1200)";
+  TString nomcut = "ChargeMisIDWeight * NPWeight * IsoSF * trigSF * GsfSF * prefireWeight * PUWeight * IDSF * MCWeight * (Lep1Pt>40 && Lep2Pt>30 && nConst >=4 && (DilepMass>20) && ( (Channel!=0) ||(DilepMass<76.1 || DilepMass >106.1) )  && cleanAK4HT > 1200)";
   TRegexp re("IDSF");
   TString Upcut = nomcut; Upcut(re) = "IDSFup";
   TString Downcut = nomcut; Downcut(re) = "IDSFdn";
@@ -365,7 +365,7 @@ void idSFSys_jess(){
 
 //   TString MCfolder ="/uscms_data/d3/rsyarif/CERN2017/produceLjmetNtuples_TTSSdilep/CMSSW_8_0_26_patch1/src/PostLJMet/X53ThirteenTeVAnalysisCode/test/ProcessedByJulie_Oct18-2017/test/";
   //TString MCfolder ="/uscms_data/d3/rsyarif/CERN2017/produceLjmetNtuples_TTSSdilep/CMSSW_8_0_26_patch1/src/PostLJMet/X53ThirteenTeVAnalysisCode/test/ProcessedByJulie_Oct20-2017/test/";
-  TString MCfolder ="/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc_nPU";
+  TString MCfolder ="/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_ANv8";
   
   std::ofstream outfile;
   outfile.open("unc_lepIdSys_MCBkg.py");
@@ -388,8 +388,8 @@ void idSFSys_jess(){
   printLineMCBkg("ZZ",MCfolder+"/ZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
   printLineMCBkg("WpWp",MCfolder+"/WpWp_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
   printLineMCBkg("WWZ",MCfolder+"/WWZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
-  printLineMCBkg("WZZ",MCfolder+"/WZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
-  printLineMCBkg("ZZZ",MCfolder+"/ZZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
+  //printLineMCBkg("WZZ",MCfolder+"/WZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
+  //printLineMCBkg("ZZZ",MCfolder+"/ZZZ_Mu"+muID+"_El"+elID+"_"+era+".root",filecontent);
 
   outfile<<filecontent.str();
   outfile.close();

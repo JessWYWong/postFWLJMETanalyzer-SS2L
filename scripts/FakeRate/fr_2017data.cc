@@ -9,10 +9,14 @@
 #include "TGraphAsymmErrors.h"
 using namespace std;
 
-TGraphAsymmErrors* getEtaGraph(TTree* t, float looseMiniIsoCut,float tightMiniIsoCut,bool mu){
+TGraphAsymmErrors* getEtaGraph(TTree* t, float looseMiniIsoCut,float tightMiniIsoCut,bool mu, bool allPt){
 
-  string cutstring = Form("MET < 25 && mT < 25 && LepPt > 25 && LepPt < 35 && LepIsTight == 1 && LepMiniIso < %f",tightMiniIsoCut);
-  string loosecut = Form("MET < 25 && mT < 25 && LepPt > 25 && LepPt < 35 && LepMiniIso < %f",looseMiniIsoCut);
+  string cutstring = Form("nConst>=2 && MET < 25 && mT < 25 && LepIsTight == 1 && LepMiniIso < %f",tightMiniIsoCut);
+  string loosecut = Form("nConst>=2 && MET < 25 && mT < 25 && LepMiniIso < %f",looseMiniIsoCut);
+  if(!allPt){
+      cutstring += " && LepPt > 25 && LepPt < 35";
+      loosecut  += " && LepPt > 25 && LepPt < 35";
+  }
 //   float muEtabins[11]{-2.4,-2.1,-1.2,-0.9,-0.4,0.0,0.4,0.9,1.2,2.1,2.4};
 //   float elEtabins[11]={-2.4,-1.566,-1.4442,-0.8,-0.4,0.0,0.4,0.8,1.4442,1.566,2.4};
   float muEtabins[10]{-2.4,-2.1,-1.2,-0.9,-0.4,0.4,0.9,1.2,2.1,2.4};
@@ -46,8 +50,8 @@ TGraphAsymmErrors* getEtaGraph(TTree* t, float looseMiniIsoCut,float tightMiniIs
 
 TGraphAsymmErrors* getPtGraph(TTree* t, float looseMiniIsoCut,float tightMiniIsoCut,bool mu){
 
-  string cutstring = Form("MET < 25 && mT < 25 && LepPt > 25 && LepPt < 35 && LepIsTight == 1 && LepMiniIso < %f",tightMiniIsoCut);
-  string loosecut = Form("MET < 25 && mT < 25 && LepPt > 25 && LepPt < 35 && LepMiniIso < %f",looseMiniIsoCut);
+  string cutstring = Form("MET < 25 && mT < 25 && LepIsTight == 1 && LepMiniIso < %f",tightMiniIsoCut);
+  string loosecut = Form("MET < 25 && mT < 25  && LepMiniIso < %f",looseMiniIsoCut);
   TH1D* num= new TH1D("num","",20,0,200);
   TH1D* den= new TH1D("den","",20,0,200);
   t->Project("num","LepPt",cutstring.c_str());
@@ -64,9 +68,61 @@ TGraphAsymmErrors* getPtGraph(TTree* t, float looseMiniIsoCut,float tightMiniIso
   return g;
 }
 
-std::pair<float,float> getFakeRate(TTree* t,float looseMiniIsoCut,float tightMiniIsoCut){
-  string cutstring = Form("MET < 25 && mT < 25 && LepPt > 25 && LepPt < 35 && LepIsTight == 1 && LepMiniIso < %f",tightMiniIsoCut);
-  string loosecut = Form("MET < 25 && mT < 25 && LepPt > 25 && LepPt < 35 && LepMiniIso < %f",looseMiniIsoCut);
+TGraphAsymmErrors* getnConstGraph(TTree* t, float looseMiniIsoCut,float tightMiniIsoCut,bool mu){
+
+  string cutstring = Form("MET < 25 && mT < 25 && LepIsTight == 1 && LepMiniIso < %f",tightMiniIsoCut);
+  string loosecut = Form("MET < 25 && mT < 25  && LepMiniIso < %f",looseMiniIsoCut);
+  float nConstbins[5]{1,2,3,4,10};
+  TH1D* num= new TH1D("num","",4,nConstbins);
+  TH1D* den= new TH1D("den","",4,nConstbins);
+  t->Project("num","nConst",cutstring.c_str());
+  t->Project("den","nConst",loosecut.c_str());
+
+  TGraphAsymmErrors* g = new TGraphAsymmErrors(num,den);
+
+  for(int i=0; i< 4;i++){
+        std::cout << "nJet bin: " << g->GetX()[i] << ", FR: "<< g->GetY()[i] << " +/- " << g->GetErrorY(i) <<std::endl;
+  }
+
+  g->GetXaxis()->SetTitle("nJet");
+  g->GetYaxis()->SetTitle("Fake Rates");
+
+  delete num; delete den;
+  return g;
+}
+
+TGraphAsymmErrors* getHTGraph(TTree* t, float looseMiniIsoCut,float tightMiniIsoCut,bool mu){
+
+  string addCut = "";
+  if (mu) {addCut = "nConst>=2 && HT>=90.0 &&";}
+  string cutstring = Form("%sMET < 25 && mT < 25 && LepIsTight == 1 && LepMiniIso < %f",addCut.c_str(),tightMiniIsoCut);
+  string loosecut = Form("%sMET < 25 && mT < 25  && LepMiniIso < %f",addCut.c_str(),looseMiniIsoCut);
+  float HTbins[6]{90,120,220,320,420,2000};
+  TH1D* num= new TH1D("num","",5,HTbins);
+  TH1D* den= new TH1D("den","",5,HTbins);
+  t->Project("num","HT",cutstring.c_str());
+  t->Project("den","HT",loosecut.c_str());
+
+  TGraphAsymmErrors* g = new TGraphAsymmErrors(num,den);
+
+  for(int i=0; i< 5;i++){
+        std::cout << "HT bin: " << g->GetX()[i] << ", FR: "<< g->GetY()[i] << " +/- " << g->GetErrorY(i) <<std::endl;
+  }
+
+  g->GetXaxis()->SetTitle("H_T");
+  g->GetYaxis()->SetTitle("Fake Rates");
+
+  delete num; delete den;
+  return g;
+}
+
+std::pair<float,float> getFakeRate(TTree* t,float looseMiniIsoCut,float tightMiniIsoCut,bool allPt){
+  string cutstring = Form("MET < 25 && mT < 25 && LepIsTight == 1 && LepMiniIso < %f",tightMiniIsoCut);
+  string loosecut = Form("MET < 25 && mT < 25  && LepMiniIso < %f",looseMiniIsoCut);
+  if(!allPt){
+      cutstring += " && LepPt > 25 && LepPt < 35";
+      loosecut  += " && LepPt > 25 && LepPt < 35";
+  }
   TH1D* num = new TH1D("num","",1,0,10000);
   TH1D* den = new TH1D("den","",1,0,10000);
   t->Project("num","LepPt",cutstring.c_str());
@@ -81,39 +137,41 @@ std::pair<float,float> getFakeRate(TTree* t,float looseMiniIsoCut,float tightMin
   return pair;
 }
 
-void fr_2017data(TString trig_){
+void fr_2017data(TString trig_, TString postfix_=""){
 
   TString elID = "MVA2017TightV2IsoTightRC";  
   TString muID = "CBTightMiniIsoTight";
+  //TString elID = "MVA2017TightV2RC";
+  //TString muID = "CBTight";
   TString trig = trig_;
+  TString trig_lower = ToLower(trig+postfix_);
 //   std::string trig = "nonIsoHTTrig";
 //   std::string trig = "isoTrig_forTrilep";
+
+  bool allPt = false;
+  if(trig_lower.Contains("allpt")) {allPt = true; std::cout<<"Using allPt option"<<std::endl;}
 
   // Fail safe
   if(trig=="")trig = "nonIsoHTTrig";  //default
   //if(trig != "nonIsoHTTrig" && trig != "isoTrig_forTrilep"){
-  if(!(trig.Contains("nonIsoHTTrig")) && !(trig.Contains("isoTrig_forTrilep"))){
+  if(!(trig.Contains("nonIsoTrig")) && !(trig.Contains("isoTrig_forTrilep"))){
       std::cout<<"Trigger selecton not recognized."<<std::endl;
       std::cout<<"Choose between nonIsoHTTrig and isoTrig_forTrilep -- June 29, 2019."<<std::endl;      
       gApplication->Terminate();
       
-    }
+  }
 
   std::cout << "Trigger: " << trig << std::endl;
 
   std::vector<TString> eras; 
-//   eras.push_back("2017C");
-//   eras.push_back("2017D");
-//   eras.push_back("2017E");
-//  eras.push_back("2017F");
   eras.push_back("2017All");
 
   // Input directory
-  TString indir = "FakeRate_"+trig+"_OneTrig/";
+  TString indir = "FakeRate_"+trig+postfix_+"/";//"_OneTrig/";
   TString workDir = "../../test/"+indir;
   
   // Make output directoty
-  TString outDir = "plots_082020_"+indir+"/"; //all era's
+  TString outDir = "plots_081621_"+indir+"/"; //all era's
   system("mkdir -vp "+outDir);
   bool doEl = true;
   bool doMu = true;
@@ -123,7 +181,7 @@ void fr_2017data(TString trig_){
     std::cout<<"working on era: "<<era<<std::endl;
     //make output file to save graph
     TFile* fout = new TFile(outDir+"FakeRate_Graph_"+era+"_"+elID+".root","RECREATE");
-    // Electron
+    //Electron
     if (doEl){
       TFile* fEle = new TFile(workDir+"FakeRate_Data_"+era+"Electrons_"+elID+"_2017dataset_"+trig+".root");
       TTree* tEle = (TTree*) fEle->Get("FakeRate");
@@ -131,14 +189,13 @@ void fr_2017data(TString trig_){
       gEle->SetName("ElectronFakeRate");
       for(int i =1; i<41; i++){
         float cut = 0.01*i;
-        std::pair<float,float> rateAndErr = getFakeRate(tEle,0.4,cut);
+        std::pair<float,float> rateAndErr = getFakeRate(tEle,0.4,cut,allPt);
         float fakerate = rateAndErr.first;
         float err = rateAndErr.second;
         gEle->SetPoint(i,cut,fakerate);
         gEle->SetPointError(i,0.,err);
         std::cout<<"Electron Fake Rate for miniIso cut < "<<cut<<" is: "<<fakerate<< " +/- " << err<<std::endl;
       }
-      
       gEle->SetMarkerStyle(22);
       gEle->SetMarkerColor(kBlue);
       gEle->SetMaximum(0.68);
@@ -149,7 +206,7 @@ void fr_2017data(TString trig_){
       
       //getEtagraphs for 0.1 cut
       std::cout<< "\nEl:"<<std::endl;
-      TGraphAsymmErrors* gEtaEl = getEtaGraph(tEle,0.4,0.1,false);
+      TGraphAsymmErrors* gEtaEl = getEtaGraph(tEle,0.4,0.1,false,allPt);
       TCanvas* cEtaEl = new TCanvas();
       gEtaEl->SetMaximum(0.6);
       gEtaEl->SetMinimum(0.0);
@@ -162,11 +219,27 @@ void fr_2017data(TString trig_){
       TCanvas* cPtEl = new TCanvas();
       gPtEl->Draw("ap");
       cPtEl->Print(outDir+"ElectronFakeRate-vs-Pt_"+era+"_"+elID+"_"+trig+".pdf");
-  
+
+      std::cout<< "\nEl:"<<std::endl;
+      TGraphAsymmErrors* gnConstEl = getnConstGraph(tEle,0.4,0.1,true);
+      TCanvas* cnConstEl = new TCanvas();
+      gnConstEl->SetTitle("ElectronFakeRate-vs-nConst");
+      gnConstEl->Draw("ap");
+      cnConstEl->Print(outDir+"ElectronFakeRate-vs-nConst_"+era+"_"+muID+"_"+trig+".pdf");
+
+      std::cout<< "\nEl:"<<std::endl;
+      TGraphAsymmErrors* gHTEl = getHTGraph(tEle,0.4,0.1,true);
+      TCanvas* cHTEl = new TCanvas();
+      gHTEl->SetTitle("ElectronFakeRate-vs-HT");
+      gHTEl->Draw("ap");
+      cHTEl->Print(outDir+"ElectronFakeRate-vs-HT_"+era+"_"+muID+"_"+trig+".pdf");
+ 
       //save graphs
       fout->WriteTObject(gEle);
       fout->WriteTObject(gEtaEl,"ElectronEtaFakeRate");
       fout->WriteTObject(gPtEl,"ElectronPtFakeRate");
+      fout->WriteTObject(gnConstEl,"ElectronnConstFakeRate");
+      fout->WriteTObject(gHTEl,"ElectronHTFakeRate");
     }
 
     // Muon
@@ -177,14 +250,13 @@ void fr_2017data(TString trig_){
       gMu->SetName("MuonFakeRate");
       for(int i =1; i<41; i++){
         float cut = 0.01*i;
-        std::pair<float,float> rateAndErr = getFakeRate(tMu,0.4,cut);
+        std::pair<float,float> rateAndErr = getFakeRate(tMu,0.4,cut,allPt);
         float fakerate = rateAndErr.first;
         float err = rateAndErr.second;
         gMu->SetPoint(i,cut,fakerate);
         gMu->SetPointError(i,0.,err);
         std::cout<<"Muon Fake Rate for miniIso cut < "<<cut<<" is: "<<fakerate<<" +/- " << err<<std::endl;
       }
-      
       gMu->SetMarkerStyle(22);
       gMu->SetMarkerColor(kBlue);
       gMu->SetMaximum(1.025);
@@ -194,7 +266,7 @@ void fr_2017data(TString trig_){
       c1->Print(outDir+"MuonFakeRate-vs-MiniIso_"+era+"_"+trig+".pdf");
   
       std::cout<< "\nMu:"<<std::endl;
-      TGraphAsymmErrors* gEtaMu = getEtaGraph(tMu,0.4,0.1,true);
+      TGraphAsymmErrors* gEtaMu = getEtaGraph(tMu,0.4,0.1,true,allPt);
       TCanvas* cEtaMu = new TCanvas();
       gEtaMu->SetMaximum(1.0);
       gEtaMu->SetMinimum(0.0);
@@ -208,13 +280,30 @@ void fr_2017data(TString trig_){
       gPtMu->Draw("ap");
       cPtMu->Print(outDir+"MuonFakeRate-vs-Pt_"+era+"_"+muID+"_"+trig+".pdf");
   
+      std::cout<< "\nMu:"<<std::endl;
+      TGraphAsymmErrors* gnConstMu = getnConstGraph(tMu,0.4,0.1,true);
+      TCanvas* cnConstMu = new TCanvas();
+      gnConstMu->SetTitle("MuonFakeRate-vs-nConst");
+      gnConstMu->Draw("ap");
+      cnConstMu->Print(outDir+"MuonFakeRate-vs-nConst_"+era+"_"+muID+"_"+trig+".pdf");
+
+      std::cout<< "\nMu:"<<std::endl;
+      TGraphAsymmErrors* gHTMu = getHTGraph(tMu,0.4,0.1,true);
+      TCanvas* cHTMu = new TCanvas();
+      gHTMu->SetTitle("MuonFakeRate-vs-HT");
+      gHTMu->Draw("ap");
+      cHTMu->SetLogx();
+      cHTMu->Print(outDir+"MuonFakeRate-vs-HT_"+era+"_"+muID+"_"+trig+".pdf");
+
       //save graphs
       fout->WriteTObject(gMu);
       fout->WriteTObject(gEtaMu,"MuonEtaFakeRate");
       fout->WriteTObject(gPtMu,"MuonPtFakeRate");
+      fout->WriteTObject(gnConstMu,"MuonnConstFakeRate");
+      fout->WriteTObject(gHTMu,"MuonHTFakeRate");
     }
-
     fout->Close();
+
   }
   
   gApplication->Terminate();

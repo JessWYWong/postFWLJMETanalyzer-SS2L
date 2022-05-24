@@ -474,6 +474,8 @@ class TreeReader{
   bool HLT_Mu17_TrkIsoVVL;
   bool HLT_Mu19_TrkIsoVVL;
   bool HLT_Mu3_PFJet40;
+  bool HLT_IsoMu27;
+  bool HLT_IsoMu24;
 
   TBranch* b_HLT_Mu8_DileptonCalc;
   TBranch* b_HLT_Mu17_DileptonCalc;
@@ -484,6 +486,8 @@ class TreeReader{
   TBranch* b_HLT_Mu17_TrkIsoVVL_DileptonCalc;
   TBranch* b_HLT_Mu19_TrkIsoVVL_DileptonCalc;
   TBranch* b_HLT_Mu3_PFJet40_DileptonCalc;
+  TBranch* b_HLT_IsoMu27_DileptonCalc;
+  TBranch* b_HLT_IsoMu24_DileptonCalc;
 
   //cross triggers
   bool HLT_Mu37Ele27;

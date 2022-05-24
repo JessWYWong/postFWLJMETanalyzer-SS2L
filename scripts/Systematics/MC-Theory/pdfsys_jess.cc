@@ -4,7 +4,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "../../../plugins/SetTDRStyle.cc"
-int TTmass[] = {700,1000,1100,1200,1300,1400,1500,1600,1700,1800};
+int TTmass[] = {900,1000,1100,1200,1300,1400,1500,1600,1700,1800};
 int BBmass[] = {900,1000,1100,1200,1300,1400,1500,1600,1700,1800};
 
 int nTT = sizeof(TTmass)/sizeof(TTmass[0]);
@@ -62,7 +62,7 @@ void getPDFUnc(TFile* f, TString name, TString decay,std::stringstream& filecont
 
   if(!usepdfSFsSym){ // SF from Julie (updated by Jess Jan 2021) https://github.com/jmhogan/singleLepAnalyzer/blob/tptp_2017/makeTemplates/modifyBinning_byyear.py
 
-          if(name=="TTM700") pdfSFsUp = 0.957;
+          if(name=="TTM900") pdfSFsUp = 0.957;
           if(name=="TTM1000") pdfSFsUp = 0.954;
           if(name=="TTM1100") pdfSFsUp = 0.951;
           if(name=="TTM1200") pdfSFsUp = 0.947;
@@ -73,7 +73,7 @@ void getPDFUnc(TFile* f, TString name, TString decay,std::stringstream& filecont
           if(name=="TTM1700") pdfSFsUp = 0.911;
           if(name=="TTM1800") pdfSFsUp = 0.898;
 
-          if(name=="TTM700") pdfSFsDn = 1.047;
+          if(name=="TTM900") pdfSFsDn = 1.047;
           if(name=="TTM1000") pdfSFsDn = 1.050;
           if(name=="TTM1100") pdfSFsDn = 1.054;
           if(name=="TTM1200") pdfSFsDn = 1.060;
@@ -108,7 +108,7 @@ void getPDFUnc(TFile* f, TString name, TString decay,std::stringstream& filecont
 
   }
   else{ //pdfsym
-          if(name=="TTM700") pdfSFsSym = 0.045;
+          if(name=="TTM900") pdfSFsSym = 0.045;
           if(name=="TTM1000") pdfSFsSym = 0.048;
           if(name=="TTM1100") pdfSFsSym = 0.051;
           if(name=="TTM1200") pdfSFsSym = 0.056;
@@ -400,7 +400,7 @@ void pdfsys_jess(){
  	  filecontent<< "uncDict['pdfUp'] = {} \n";
 	  filecontent<< "uncDict['pdfDn'] = {} \n";
  
-          TFile* TTM700 = new TFile(folder+"/TprimeTprime_M-700_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root"); 
+          TFile* TTM900 = new TFile(folder+"/TprimeTprime_M-900_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root"); 
 	  TFile* TTM1000 = new TFile(folder+"/TprimeTprime_M-1000_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
 	  TFile* TTM1100 = new TFile(folder+"/TprimeTprime_M-1100_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
 	  TFile* TTM1200 = new TFile(folder+"/TprimeTprime_M-1200_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
@@ -416,7 +416,7 @@ void pdfsys_jess(){
 	  std::cout<<" Sample | up | down "<<std::endl;
 	  
 
-          getPDFUnc(TTM700,"TTM700",decay,filecontent,true);
+          getPDFUnc(TTM900,"TTM900",decay,filecontent,true);
 	  getPDFUnc(TTM1000,"TTM1000",decay,filecontent,true);
 	  getPDFUnc(TTM1100,"TTM1100",decay,filecontent,true);
 	  getPDFUnc(TTM1200,"TTM1200",decay,filecontent,true);
@@ -636,13 +636,13 @@ void pdfsys_jess(){
 
 //   TString MCfolder ="/uscms_data/d3/rsyarif/CERN2017/produceLjmetNtuples_TTSSdilep/CMSSW_8_0_26_patch1/src/PostLJMet/X53ThirteenTeVAnalysisCode/test/ProcessedByJulie_Oct18-2017/test/";
 //  TString MCfolder ="/uscms_data/d3/rsyarif/CERN2017/produceLjmetNtuples_TTSSdilep/CMSSW_8_0_26_patch1/src/PostLJMet/X53ThirteenTeVAnalysisCode/test/ProcessedByJulie_Oct20-2017/test/";
-  TString MCfolder ="/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc_nPU";
+  TString MCfolder ="/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_ANv8";
 
   std::ofstream outfile;
   outfile.open("unc_pdfNew_MCBkg.py");
 
   std::stringstream filecontent;
-  filecontent<<std::fixed<<std::setprecision(5);
+  filecontent<<std::fixed<<std::setprecision(6);
 
   filecontent<< "uncDict ={} \n";
   filecontent<< "uncDict['pdfUp'] = {} \n";
@@ -671,8 +671,8 @@ void pdfsys_jess(){
   getPDFUnc(ZZ,"ZZ","",filecontent,false);
   getPDFUnc(WpWp,"WpWp","",filecontent,false);
   getPDFUnc(WWZ,"WWZ","",filecontent,false);
-  getPDFUnc(WZZ,"WZZ","",filecontent,false);
-  getPDFUnc(ZZZ,"ZZZ","",filecontent,false);
+  //getPDFUnc(WZZ,"WZZ","",filecontent,false);
+  //getPDFUnc(ZZZ,"ZZZ","",filecontent,false);
 
   outfile<<filecontent.str();
   outfile.close();

@@ -51,7 +51,7 @@ void DrawAndSave(TH1F* h_pred, TH1F* h_obs, std::string pdfname, std::string fla
   h_obs->SetMarkerColor(kBlack);
 
   //make lumi weight
-  float lumiweight = 2110 * (831.76 / 115091972);
+  float lumiweight = 41.56*1000 * ( 687.1 / 68595608); // lumi in pb * XSec / NEvts
   if(flavor.find("qcd")==std::string::npos){
     h_pred->Scale(lumiweight);
     h_obs->Scale(lumiweight);
@@ -224,7 +224,7 @@ void ct_plotter(){
 
   setTDRStyle();
   
-  TFile* f = new TFile("SmartClosure_TTbar.root");
+  TFile* f = new TFile("SmartClosure_TTbar_2L2Nu.root");
   
   DrawAndSave((TH1F*) f->Get("h_el_pred_light"), (TH1F*) f->Get("h_el_obs_light"), "Closure_Light_Electrons.pdf","light","Electrons");
   DrawAndSave((TH1F*) f->Get("h_el_pred_charm"), (TH1F*) f->Get("h_el_obs_charm"), "Closure_Charm_Electrons.pdf","charm","Electrons");
@@ -283,7 +283,7 @@ void ct_plotter(){
 
   f->Close();
   
-  TFile* f1 = new TFile("SmartClosure_TTbar.root");
+  TFile* f1 = new TFile("SmartClosure_TTbar_2L2Nu.root");
 
   TH1F* h_pred_tot_el = getTotPredHist(f1,"el");
   TH1F* h_obs_tot_el = getTotObsHist(f1,"el");

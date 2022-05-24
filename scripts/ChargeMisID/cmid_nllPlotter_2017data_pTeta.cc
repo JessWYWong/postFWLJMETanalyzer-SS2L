@@ -147,7 +147,7 @@ void cmid_nllPlotter_2017data_pTeta() {
   text1->SetTextFont(42);
   text1->SetTextSizePixels(24);
 
-  TString lumiStr = "41.6 fb^{-1} (13 TeV)";
+  TString lumiStr = "41.53 fb^{-1} (13 TeV)";
   TLatex* text2 = new TLatex(3.570061,23.08044, lumiStr);
   text2->SetNDC();
   text2->SetTextAlign(13);

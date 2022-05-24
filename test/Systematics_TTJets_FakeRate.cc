@@ -14,7 +14,8 @@
 #include <sstream> 
 #include "../plugins/Macros.cc"
 
-bool debug = true;
+bool debug = false;
+bool testOnly = false;
 
 //helper functions
 bool matchToGenLep(TMuon* mu, std::vector<TGenParticle*> genParticles);
@@ -80,6 +81,7 @@ int main(int argc, char* argv[]){
   TTree* t = tr->tree;
   if(debug) std::cout<< "Get tree from Tree Reader " << t << std::endl;
   std::string outname = "FakeRate_"+sample+".root";
+  if(testOnly) outname.insert(0,"test_");
 
   TFile* outfile = new TFile(outname.c_str(),"RECREATE");
   TTree* outTree = new TTree("FakeRateByFlavor","FakeRateByFlavor");
@@ -93,12 +95,21 @@ int main(int argc, char* argv[]){
   outTree->Branch("dXY",&dxy);
   outTree->Branch("dZ",&dz);
   outTree->Branch("SIP3D",&sip3d);
+  float muEtabins[10]{-2.4,-2.1,-1.2,-0.9,-0.4,0.4,0.9,1.2,2.1,2.4};
+  float elEtabins[8]={-2.4,-1.57,-0.8,-0.4,0.4,0.8,1.57,2.4};
+  float htbins[7]={30,90,120,220,320,420,2000};
   TH1F* elNumHist_lpt = new TH1F("elNumHist_lpt","elNumHist_lpt",6,0,6);
   TH1F* elDenHist_lpt = new TH1F("elDenHist_lpt","elDenHist_lpt",6,0,6);
   TH1F* elNumHist_hpt = new TH1F("elNumHist_hpt","elNumHist_hpt",6,0,6);
   TH1F* elDenHist_hpt = new TH1F("elDenHist_hpt","elDenHist_hpt",6,0,6);
   TH1F* elNumHist_all = new TH1F("elNumHist_all","elNumHist_all",6,0,6);
   TH1F* elDenHist_all = new TH1F("elDenHist_all","elDenHist_all",6,0,6);
+  TH1F* elNumHist_lpt_eta = new TH1F("elNumHist_lpt_eta","elNumHist_lpt_eta",7,elEtabins);
+  TH1F* elDenHist_lpt_eta = new TH1F("elDenHist_lpt_eta","elDenHist_lpt_eta",7,elEtabins);
+  TH1F* elNumHist_hpt_eta = new TH1F("elNumHist_hpt_eta","elNumHist_hpt_eta",7,elEtabins);
+  TH1F* elDenHist_hpt_eta = new TH1F("elDenHist_hpt_eta","elDenHist_hpt_eta",7,elEtabins);
+  TH1F* elNumHist_all_eta = new TH1F("elNumHist_all_eta","elNumHist_all_eta",7,elEtabins);
+  TH1F* elDenHist_all_eta = new TH1F("elDenHist_all_eta","elDenHist_all_eta",7,elEtabins);
 
   TH1F* muNumHist_lpt = new TH1F("muNumHist_lpt","muNumHist_lpt",6,0,6);
   TH1F* muDenHist_lpt = new TH1F("muDenHist_lpt","muDenHist_lpt",6,0,6);
@@ -106,6 +117,15 @@ int main(int argc, char* argv[]){
   TH1F* muDenHist_hpt = new TH1F("muDenHist_hpt","muDenHist_hpt",6,0,6);
   TH1F* muNumHist_all = new TH1F("muNumHist_all","muNumHist_all",6,0,6);
   TH1F* muDenHist_all = new TH1F("muDenHist_all","muDenHist_all",6,0,6);
+  TH1F* muNumHist_lpt_eta = new TH1F("muNumHist_lpt_eta","muNumHist_lpt_eta",9,muEtabins);
+  TH1F* muDenHist_lpt_eta = new TH1F("muDenHist_lpt_eta","muDenHist_lpt_eta",9,muEtabins);
+  TH1F* muNumHist_hpt_eta = new TH1F("muNumHist_hpt_eta","muNumHist_hpt_eta",9,muEtabins);
+  TH1F* muDenHist_hpt_eta = new TH1F("muDenHist_hpt_eta","muDenHist_hpt_eta",9,muEtabins);
+  TH1F* muNumHist_all_eta = new TH1F("muNumHist_all_eta","muNumHist_all_eta",9,muEtabins);
+  TH1F* muDenHist_all_eta = new TH1F("muDenHist_all_eta","muDenHist_all_eta",9,muEtabins);
+
+  TH1F* muNumHist_lpt_ht = new TH1F("muNumHist_lpt_ht","muNumHist_lpt_ht",6,htbins);
+  TH1F* muDenHist_lpt_ht = new TH1F("muDenHist_lpt_ht","muDenHist_lpt_ht",6,htbins);
 
   //set bin labels
   elNumHist_lpt->GetXaxis()->SetBinLabel(1,"Light Quarks");elNumHist_hpt->GetXaxis()->SetBinLabel(1,"Light Quarks");elNumHist_all->GetXaxis()->SetBinLabel(1,"Light Quarks");
@@ -131,6 +151,12 @@ int main(int argc, char* argv[]){
     tr->GetEntry(ient);
 
     if(ient % 100000 ==0) std::cout<<"Completed "<<ient<<" out of "<<nEntries<<" events"<<std::endl;
+    if(testOnly && ient>1000000) break;
+
+    float ht = 0;
+    for(unsigned int i=0; i<tr->cleanedAK4Jets.size();i++){
+      ht+=tr->cleanedAK4Jets.at(i)->pt; 
+    }
 
     std::vector<TElectron*> electrons = tr->allElectrons;
     //event weight
@@ -155,7 +181,7 @@ int main(int argc, char* argv[]){
       }
 
       //skip any with pt below 30 GeV
-      if(iel->pt<30) continue;
+      if(iel->pt<25) continue;
       //skip if not at least loose
       if(!loose) continue;
       //save variables for tree
@@ -174,12 +200,26 @@ int main(int argc, char* argv[]){
       if( fabs(gp->id)!=11 || !(gp->isPrompt || gp->isFromPromptTau) ){
 	
 	elDenHist_all->Fill(5.5,eventweight);
-	if(iel->pt>35) elDenHist_hpt->Fill(5.5,eventweight);
-	else elDenHist_lpt->Fill(5.5,eventweight);
-	if(tight){
+        elDenHist_all_eta->Fill(lepEta, eventweight);
+	if(iel->pt>35){
+            elDenHist_hpt->Fill(5.5,eventweight);
+            elDenHist_hpt_eta->Fill(lepEta, eventweight);
+        }
+	else{
+            elDenHist_lpt->Fill(5.5,eventweight);
+            elDenHist_lpt_eta->Fill(lepEta, eventweight);
+        }
+     	if(tight){
 	  elNumHist_all->Fill(5.5,eventweight);
-	  if(iel->pt>35) elNumHist_hpt->Fill(5.5,eventweight);
-	else elNumHist_lpt->Fill(5.5,eventweight);
+          elNumHist_all_eta->Fill(lepEta, eventweight);
+	  if(iel->pt>35){
+	    elNumHist_hpt->Fill(5.5,eventweight);
+	    elNumHist_hpt_eta->Fill(lepEta, eventweight);
+          }
+	  else{
+            elNumHist_lpt->Fill(5.5,eventweight);
+            elNumHist_lpt_eta->Fill(lepEta,eventweight);
+          }
 	}
       }
 
@@ -283,7 +323,7 @@ int main(int argc, char* argv[]){
       }
 
       //skip any with pt below 30 GeV
-      if(imu->pt<30) continue;
+      if(imu->pt<25) continue;
       //skip if not at least loose
       if(!loose) continue;
 
@@ -304,12 +344,28 @@ int main(int argc, char* argv[]){
       if( fabs(gp->id)!=13 || !(gp->isPrompt || gp->isFromPromptTau) ){
 	
 	muDenHist_all->Fill(5.5,eventweight);
-	if(imu->pt>35) muDenHist_hpt->Fill(5.5,eventweight);
-	else muDenHist_lpt->Fill(5.5,eventweight);
+        muDenHist_all_eta->Fill(lepEta,eventweight);
+	if(imu->pt>35) {
+            muDenHist_hpt->Fill(5.5,eventweight);
+            muDenHist_hpt_eta->Fill(lepEta,eventweight);
+        }
+	else{ 
+            muDenHist_lpt->Fill(5.5,eventweight);
+            muDenHist_lpt_eta->Fill(lepEta,eventweight);
+            muDenHist_lpt_ht->Fill(ht,eventweight);
+        }
 	if(tight){
 	  muNumHist_all->Fill(5.5,eventweight);
-	  if(imu->pt>35) muNumHist_hpt->Fill(5.5,eventweight);
-	else muNumHist_lpt->Fill(5.5,eventweight);
+          muNumHist_all_eta->Fill(lepEta,eventweight);
+	  if(imu->pt>35){ 
+              muNumHist_hpt->Fill(5.5,eventweight);
+              muNumHist_hpt_eta->Fill(lepEta,eventweight);
+          }
+	  else{
+              muNumHist_lpt->Fill(5.5,eventweight);
+              muNumHist_lpt_eta->Fill(lepEta,eventweight);
+              muNumHist_lpt_ht->Fill(ht,eventweight);
+          }
 	}
       }
 
@@ -403,6 +459,12 @@ int main(int argc, char* argv[]){
   elDenHist_lpt->Sumw2();
   elDenHist_hpt->Sumw2();
   elDenHist_all->Sumw2();
+  elNumHist_lpt_eta->Sumw2();
+  elNumHist_hpt_eta->Sumw2();
+  elNumHist_all_eta->Sumw2();
+  elDenHist_lpt_eta->Sumw2();
+  elDenHist_hpt_eta->Sumw2();
+  elDenHist_all_eta->Sumw2();
 
   muNumHist_lpt->Sumw2();
   muNumHist_hpt->Sumw2();
@@ -410,30 +472,45 @@ int main(int argc, char* argv[]){
   muDenHist_lpt->Sumw2();
   muDenHist_hpt->Sumw2();
   muDenHist_all->Sumw2();
+  muNumHist_lpt_eta->Sumw2();
+  muNumHist_hpt_eta->Sumw2();
+  muNumHist_all_eta->Sumw2();
+  muDenHist_lpt_eta->Sumw2();
+  muDenHist_hpt_eta->Sumw2();
+  muDenHist_all_eta->Sumw2();
 
+  muNumHist_lpt_ht->Sumw2();
+  muDenHist_lpt_ht->Sumw2();
 
   //elNumHist_lpt->Divide(elDenHist_lpt);
   //elNumHist_hpt->Divide(elDenHist_hpt);
   //elNumHist_all->Divide(elDenHist_all);
-  std::cout<<"Electron fake rate for pt 25-35 electrons: "<<elNumHist_lpt->GetBinContent(1)<<" +/- "<<elNumHist_lpt->GetBinError(1)<<std::endl;
-  std::cout<<"Electron fake rate for pt>25 electrons: "<<elNumHist_hpt->GetBinContent(1)<<" +/- "<<elNumHist_hpt->GetBinError(1)<<std::endl;
-  std::cout<<"Electron fake rate for all electrons: "<<elNumHist_all->GetBinContent(1)<<" +/- "<<elNumHist_all->GetBinError(1)<<std::endl;
+  std::cout<<"Electron fake rate for pt 25-35 electrons: "<<elNumHist_lpt->GetBinContent(1)/elDenHist_lpt->GetBinContent(1)<<" +/- "<<elNumHist_lpt->GetBinError(1)<<std::endl;
+  std::cout<<"Electron fake rate for pt>25 electrons: "<<elNumHist_hpt->GetBinContent(1)/elDenHist_hpt->GetBinContent(1)<<" +/- "<<elNumHist_hpt->GetBinError(1)<<std::endl;
+  std::cout<<"Electron fake rate for all electrons: "<<elNumHist_all->GetBinContent(1)/elDenHist_all->GetBinContent(1)<<" +/- "<<elNumHist_all->GetBinError(1)<<std::endl;
 
   //muNumHist_lpt->Divide(muDenHist_lpt);
   //muNumHist_hpt->Divide(muDenHist_hpt);
   //muNumHist_all->Divide(muDenHist_all);
-  std::cout<<"Muon fake rate for pt 25-35 muons: "<<muNumHist_lpt->GetBinContent(1)<<" +/- "<<muNumHist_lpt->GetBinError(1)<<std::endl;
-  std::cout<<"Muon fake rate for pt>25 muons: "<<muNumHist_hpt->GetBinContent(1)<<" +/- "<<muNumHist_hpt->GetBinError(1)<<std::endl;
-  std::cout<<"Muon fake rate for all muons: "<<muNumHist_all->GetBinContent(1)<<" +/- "<<muNumHist_all->GetBinError(1)<<std::endl;
+  std::cout<<"Muon fake rate for pt 25-35 muons: "<<muNumHist_lpt->GetBinContent(1)/muDenHist_lpt->GetBinContent(1)<<" +/- "<<muNumHist_lpt->GetBinError(1)<<std::endl;
+  std::cout<<"Muon fake rate for pt>25 muons: "<<muNumHist_hpt->GetBinContent(1)/muDenHist_hpt->GetBinContent(1)<<" +/- "<<muNumHist_hpt->GetBinError(1)<<std::endl;
+  std::cout<<"Muon fake rate for all muons: "<<muNumHist_all->GetBinContent(1)/muDenHist_all->GetBinContent(1)<<" +/- "<<muNumHist_all->GetBinError(1)<<std::endl;
 
 
-
+  if(debug) std::cout<< "outfile keys "<< std::endl;
+  /*
   outfile->Append(elNumHist_lpt);
   outfile->Append(elNumHist_hpt);
   outfile->Append(elNumHist_all);
   outfile->Append(elDenHist_lpt);
   outfile->Append(elDenHist_hpt);
   outfile->Append(elDenHist_all);
+  outfile->Append(elNumHist_lpt_eta);
+  outfile->Append(elNumHist_hpt_eta);
+  outfile->Append(elNumHist_all_eta);
+  outfile->Append(elDenHist_lpt_eta);
+  outfile->Append(elDenHist_hpt_eta);
+  outfile->Append(elDenHist_all_eta);
 
   outfile->Append(muNumHist_lpt);
   outfile->Append(muNumHist_hpt);
@@ -441,11 +518,22 @@ int main(int argc, char* argv[]){
   outfile->Append(muDenHist_lpt);
   outfile->Append(muDenHist_hpt);
   outfile->Append(muDenHist_all);
-  outfile->WriteTObject(outTree);
+  outfile->Append(muNumHist_lpt_eta);
+  outfile->Append(muNumHist_hpt_eta);
+  outfile->Append(muNumHist_all_eta);
+  outfile->Append(muDenHist_lpt_eta);
+  outfile->Append(muDenHist_hpt_eta);
+  outfile->Append(muDenHist_all_eta);
+  */
+  //if(debug) std::cout<< "outTree"<< std::endl;
+  //outfile->WriteTObject(outTree);
+  if(debug) std::cout<< "Write"<< std::endl;
   outfile->Write();
+  if(debug) std::cout<< "outfile"<< std::endl;
+  outfile->Close();
+  if(debug) std::cout<< "end script"<< std::endl;
 
   return 0;
-
 }
 
 bool matchToGenLep(TElectron* el, std::vector<TGenParticle*> genParticles){

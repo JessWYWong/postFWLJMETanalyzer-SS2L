@@ -23,7 +23,8 @@ float getYields(TTree* t,TString cut){
 
 void combinedSignal(TString mass, int BRtype){
 
-  TString workArea = "/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc_nPU/";
+  TString workArea = "/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_ANv8/";
+  //"/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc_nPU/";
   TString fname = workArea+"TprimeTprime_M-"+mass;
 
   TString elID = "MVA2017TightV2IsoTightRC";
@@ -127,7 +128,7 @@ void combinedSignal(TString mass, int BRtype){
   float NEvts;
   //if (mass=="800"){ Xsec = 0.196; NEvts = 795000.;}
   //if (mass=="900"){ Xsec = 0.0903; NEvts = 831200.;}
-  if (mass=="700"){  Xsec = 0.455; NEvts = 973451.16;}
+  if (mass=="900"){  Xsec = 0.0903; NEvts = 973451.16;}
   if (mass=="1000"){ Xsec = 0.0440; NEvts = 1002517.455;} //829600.;}
   if (mass=="1100"){ Xsec = 0.0224; NEvts = 895042.045;}
   if (mass=="1200"){ Xsec = 0.0118; NEvts = 1003441.777;} //832600.;}
@@ -139,7 +140,7 @@ void combinedSignal(TString mass, int BRtype){
   if (mass=="1800"){ Xsec = 0.000391; NEvts= 884660.318;} //833000.;}
   
   //float lumi = 17.68; //fb^-1  
-  float lumi = 41.56; //fb^-1  
+  float lumi = 41.53; //fb^-1  
 
   //vector to hold weights
   float Weights_BWBW;
@@ -994,8 +995,7 @@ void combinedSignal(TString mass, int BRtype){
 void CombineTTsignal_integral_jess(){
 	for(int i=0;i<23;i++){
 		//combinedSignal("800",i);
-		//combinedSignal("900",i);
-                combinedSignal("700",i);
+		combinedSignal("900",i);
 		combinedSignal("1000",i);
 		combinedSignal("1100",i);
 		combinedSignal("1200",i);

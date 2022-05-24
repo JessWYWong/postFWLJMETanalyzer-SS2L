@@ -5,7 +5,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "../../../plugins/SetTDRStyle.cc"
-int TTmass[] = {700,1000,1100,1200,1300,1400,1500,1600,1700,1800};
+int TTmass[] = {900,1000,1100,1200,1300,1400,1500,1600,1700,1800};
 int BBmass[] = {900,1000,1100,1200,1300,1400,1500,1600,1700,1800};
 
 int nTT = sizeof(TTmass)/sizeof(TTmass[0]);
@@ -74,7 +74,7 @@ void printSys(TFile* f,std::string name,std::stringstream& filecontent){
 
   //SF from Julie (updated by Jess 30 Nov 2020) https://github.com/jmhogan/singleLepAnalyzer/blob/tptp_2017/makeTemplates/modifyBinning_byyear.py
   float scaleSFsUp = 1.0;
-  if(name=="TTM700") scaleSFsUp = 0.745;
+  if(name=="TTM900") scaleSFsUp = 0.745;
   if(name=="TTM1000") scaleSFsUp = 0.744;
   if(name=="TTM1100") scaleSFsUp = 0.747;
   if(name=="TTM1200") scaleSFsUp = 0.742;
@@ -85,7 +85,7 @@ void printSys(TFile* f,std::string name,std::stringstream& filecontent){
   if(name=="TTM1700") scaleSFsUp = 0.721;
   if(name=="TTM1800") scaleSFsUp = 0.746;
   float scaleSFsDn = 1.0;
-  if(name=="TTM700") scaleSFsDn = 1.311;
+  if(name=="TTM900") scaleSFsDn = 1.311;
   if(name=="TTM1000") scaleSFsDn = 1.312;
   if(name=="TTM1100") scaleSFsDn = 1.306;
   if(name=="TTM1200") scaleSFsDn = 1.315;
@@ -240,7 +240,7 @@ void scale_sys_jess(){
           filecontent<< "uncDict['scaleUp'] = {} \n";
           filecontent<< "uncDict['scaleDn'] = {} \n";
   
-          TFile* TTM700 = new TFile(folder+"/TprimeTprime_M-700_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
+          TFile* TTM900 = new TFile(folder+"/TprimeTprime_M-900_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
 	  TFile* TTM1000 = new TFile(folder+"/TprimeTprime_M-1000_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
 	  TFile* TTM1100 = new TFile(folder+"/TprimeTprime_M-1100_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
 	  TFile* TTM1200 = new TFile(folder+"/TprimeTprime_M-1200_"+decay+"_Mu"+muID+"_El"+elID+"_"+era+".root");
@@ -254,7 +254,7 @@ void scale_sys_jess(){
 	  std::cout<<" =========="+decay+"==========="<<std::endl;
 	  std::cout<<" Sample | up | down "<<std::endl;
 
-          printSys(TTM700,"TTM700",filecontent);
+          printSys(TTM900,"TTM900",filecontent);
 	  printSys(TTM1000,"TTM1000",filecontent);
 	  printSys(TTM1100,"TTM1100",filecontent);
 	  printSys(TTM1200,"TTM1200",filecontent);
@@ -468,7 +468,7 @@ void scale_sys_jess(){
   c2->SaveAs("plot_unc_muRFcorrdNew_BB.pdf");
 
   ///----------MC Bkg-------
-  TString MCfolder ="/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_IDSFunc_nPU";
+  TString MCfolder ="/eos/uscms/store/user/wywong/FWLJMET102X_2lep2017_wywong_082020_hadds_postFWLJMETanalyzer_IsoTrig_ANv8";
 
   std::ofstream outfile;
   outfile.open("unc_muRFcorrdNew_MCBkg.py");
@@ -488,8 +488,8 @@ void scale_sys_jess(){
   TFile* ZZ = new TFile(MCfolder+"/ZZ_Mu"+muID+"_El"+elID+"_"+era+".root");
   TFile* WpWp = new TFile(MCfolder+"/WpWp_Mu"+muID+"_El"+elID+"_"+era+".root");
   TFile* WWZ = new TFile(MCfolder+"/WWZ_Mu"+muID+"_El"+elID+"_"+era+".root");
-  TFile* WZZ = new TFile(MCfolder+"/WZZ_Mu"+muID+"_El"+elID+"_"+era+".root");
-  TFile* ZZZ = new TFile(MCfolder+"/ZZZ_Mu"+muID+"_El"+elID+"_"+era+".root");
+  //TFile* WZZ = new TFile(MCfolder+"/WZZ_Mu"+muID+"_El"+elID+"_"+era+".root");
+  //TFile* ZZZ = new TFile(MCfolder+"/ZZZ_Mu"+muID+"_El"+elID+"_"+era+".root");
 
   std::cout<<" ==========MC Bkg==========="<<std::endl;
 // 	  std::cout<<" Sample | RMSup*SF | RMSdown*SF "<<std::endl;
@@ -503,8 +503,8 @@ void scale_sys_jess(){
   printSys(ZZ,"ZZ",filecontent);
   printSys(WpWp,"WpWp",filecontent);
   printSys(WWZ,"WWZ",filecontent);
-  printSys(WZZ,"WZZ",filecontent);
-  printSys(ZZZ,"ZZZ",filecontent);
+  //printSys(WZZ,"WZZ",filecontent);
+  //printSys(ZZZ,"ZZZ",filecontent);
 
   outfile<<filecontent.str();
   outfile.close();

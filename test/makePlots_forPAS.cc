@@ -431,7 +431,7 @@ void DrawAndSaveCombined(Variable* var, std::vector<Sample*> vBkg, std::vector<S
   leg->AddEntry(h_bos,"VV(V)","f");
   h_ttX->SetFillColor(kYellow-3);
   tStack->Add(h_ttX);
-  leg->AddEntry(h_ttX,"t#bar{t} + X","f");
+  leg->AddEntry(h_ttX,"t#bar{t}V + t#bar{t}t#bar{t}","f");
   h_cmid->SetFillColor(kAzure+6);
   tStack->Add(h_cmid);
   leg->AddEntry(h_cmid,"ChargeMisID","f");

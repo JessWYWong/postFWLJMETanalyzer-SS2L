@@ -79,21 +79,21 @@ if __name__ == '__main__':
 	#samples['DoubleEG_FR_Run2017E'] = '/DoubleEG/diLepFakeRate2017/200917_200114/'#200831_090253/'#191029_210909/'
 	#samples['DoubleEG_FR_Run2017F'] = '/DoubleEG/diLepFakeRate2017/200917_200233/'#200831_090554/'#191029_211138/'	
 	
-	#samples['SingleElectronRun2017B'] = '/SingleElectron/diLepFakeRate2017/200923_190019/'
-	#samples['SingleElectronRun2017C'] = '/SingleElectron/diLepFakeRate2017/200923_190304/'
-	#samples['SingleElectronRun2017D'] = '/SingleElectron/diLepFakeRate2017/200923_192021/'
-	#samples['SingleElectronRun2017E'] = '/SingleElectron/diLepFakeRate2017/200923_192221/'
-	#samples['SingleElectronRun2017F'] = '/SingleElectron/diLepFakeRate2017/200923_193042/'
+	samples['SingleElectronRun2017B'] = '/SingleElectron/diLepFakeRate2017/210508_055938/'#200923_190019/'
+	samples['SingleElectronRun2017C'] = '/SingleElectron/diLepFakeRate2017/210508_055845/'#200923_190304/'
+	samples['SingleElectronRun2017D'] = '/SingleElectron/diLepFakeRate2017/210508_060215/'#200923_192021/'
+	samples['SingleElectronRun2017E'] = '/SingleElectron/diLepFakeRate2017/210508_060122/'#200923_192221/'
+	samples['SingleElectronRun2017F'] = '/SingleElectron/diLepFakeRate2017/210508_060030/'#200923_193042/'
 
-	#samples['SingleMuonRun2017B'] = '/SingleMuon/diLepFakeRate2017/200923_193712/'
-	#samples['SingleMuonRun2017C'] = '/SingleMuon/diLepFakeRate2017/200923_193910/'
-	#samples['SingleMuonRun2017D'] = '/SingleMuon/diLepFakeRate2017/200923_194037/'
-	#samples['SingleMuonRun2017E'] = '/SingleMuon/diLepFakeRate2017/200923_194659/'
-	#samples['SingleMuonRun2017F'] = '/SingleMuon/diLepFakeRate2017/200923_194800/'
+	samples['SingleMuonRun2017B'] = '/SingleMuon/diLepFakeRate2017/210508_060545/'#200923_193712/'
+	samples['SingleMuonRun2017C'] = '/SingleMuon/diLepFakeRate2017/210508_060635/'#200923_193910/'
+	samples['SingleMuonRun2017D'] = '/SingleMuon/diLepFakeRate2017/210508_060306/'#200923_194037/'
+	samples['SingleMuonRun2017E'] = '/SingleMuon/diLepFakeRate2017/210508_060400/'#200923_194659/'
+	samples['SingleMuonRun2017F'] = '/SingleMuon/diLepFakeRate2017/210508_060452/'#200923_194800/'
 
-        samples['TTTo2L2Nu'] = '/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/diLepFakeRate2017/201125_072328/'
-        samples['TTToSemiLeptonic'] = '/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/diLepFakeRate2017/201125_072442/'
-        samples['TTToHadronic'] = '/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/diLepFakeRate2017/201125_072631/'
+        #samples['TTTo2L2Nu'] = '/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/diLepFakeRate2017/201125_072328/'
+        #samples['TTToSemiLeptonic'] = '/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/diLepFakeRate2017/201125_072442/'
+        #samples['TTToHadronic'] = '/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/diLepFakeRate2017/201125_072631/'
 
 
 	#################################################

@@ -203,11 +203,11 @@ Int_t TreeReader::GetEntry(Long64_t entry){
   for (unsigned int i=0;i<nCleanedAK4Jets; i++){
     if( ( (*cleanedAK4JetPt)[i]<30) || fabs((*cleanedAK4JetEta)[i])>2.4) continue;
 
-    for(unsigned int j=0; j<nAK8Jets; j++){
+    //for(unsigned int j=0; j<nAK8Jets; j++){
       //float dR = pow( pow(allAK8Jets.at(j)->eta - (*cleanedAK4JetEta)[i],2) + pow(allAK8Jets.at(j)->phi - (*cleanedAK4JetPhi)[i],2),0.5);
       //if(dR>0.8) newCleanedAK4Jets.push_back(new TJet( (*cleanedAK4JetPt)[i], (*cleanedAK4JetEta)[i], (*cleanedAK4JetPhi)[i],(*cleanedAK4JetEnergy)[i]) );
-      newCleanedAK4Jets.push_back(new TJet( (*cleanedAK4JetPt)[i], (*cleanedAK4JetEta)[i], (*cleanedAK4JetPhi)[i],(*cleanedAK4JetEnergy)[i]) );
-    }
+    newCleanedAK4Jets.push_back(new TJet( (*cleanedAK4JetPt)[i], (*cleanedAK4JetEta)[i], (*cleanedAK4JetPhi)[i],(*cleanedAK4JetEnergy)[i]) );
+    //}
   }
 
 
@@ -682,6 +682,8 @@ void TreeReader::Init(TTree *treetemp)
   tree->SetBranchAddress("HLT_Mu17_TrkIsoVVL_DileptonCalc", &HLT_Mu17_TrkIsoVVL,&b_HLT_Mu17_TrkIsoVVL_DileptonCalc);
   tree->SetBranchAddress("HLT_Mu19_TrkIsoVVL_DileptonCalc", &HLT_Mu19_TrkIsoVVL,&b_HLT_Mu19_TrkIsoVVL_DileptonCalc);
   tree->SetBranchAddress("HLT_Mu3_PFJet40_DileptonCalc", &HLT_Mu3_PFJet40,&b_HLT_Mu3_PFJet40_DileptonCalc);
+  tree->SetBranchAddress("HLT_IsoMu27_DileptonCalc", &HLT_IsoMu27, &b_HLT_IsoMu27_DileptonCalc);
+  tree->SetBranchAddress("HLT_IsoMu24_DileptonCalc", &HLT_IsoMu24, &b_HLT_IsoMu24_DileptonCalc);
 
   //cross triggers
   tree->SetBranchAddress("HLT_Mu37Ele27_DileptonCalc",&HLT_Mu37Ele27,&b_HLT_Mu37Ele27_DileptonCalc);

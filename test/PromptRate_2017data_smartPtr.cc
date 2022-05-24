@@ -238,6 +238,8 @@ int main(int argc, char* argv[]){
 
     if(ient % 100000==0) std::cout<<"Completed "<<ient<<" out of "<<nEntries<<" events"<<std::endl;
 
+    if((tr->run==299480 && tr->lumi==7)||(tr->run==301397 && tr->lumi==518)||(tr->run==305366 && tr->lumi==395)) continue;
+
     //make tag lepton
     std::unique_ptr<TLepton> tagLepton = std::move(makeTagLepton(tr->allMuons,tr->allElectrons,MuonChannel,!data,FiftyNs, ID));
     

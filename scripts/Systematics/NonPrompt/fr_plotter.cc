@@ -4,8 +4,8 @@
 void fr_plotter(){
 
 
-  TFile* f = new TFile("FakeRate_TTbar.root");
-  //TFile* f = new TFile("FakeRate_TTTo2L2Nu.root");
+  //TFile* f = new TFile("FakeRate_TTbar.root");
+  TFile* f = new TFile("FakeRate_TTTo2L2Nu.root");
   TTree* t = (TTree*) f->Get("FakeRateByFlavor");
   
   float LepPt,LepEta;
@@ -88,7 +88,8 @@ void fr_plotter(){
 
   for(int i=0; i<t->GetEntries();i++){
     t->GetEntry(i);
-
+    if (LepPt<25 || LepPt>35) continue;
+    
     if(LepFlavor==0){//electron
       
       if(LepSourceFlavor==0){//light
